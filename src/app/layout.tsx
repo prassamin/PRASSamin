@@ -1,14 +1,7 @@
 import "./globals.css";
-import { poppins } from "@/constants/fonts";
+import { poppins, rethinkSans, inter } from "@/constants/fonts";
 import { Metadata } from "next";
-import { AnalyticsProvider } from "@/context/AnalyticsProvider";
-import { RootProvider } from "fumadocs-ui/provider";
-import { Suspense } from "react";
-import { Progress } from "@/components/Progress";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { Toaster } from "@/components/ui/sonner";
-import GlobalKeyBinderProvider from "@/context/GlobalKeyBinderProvider";
-import { ThemeProvider } from "@/context/ThemeProvider";
+import { RootProviders } from "@/providers/RootProviders";
 
 export const viewport = {
   width: "device-width",
@@ -70,39 +63,17 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const themeScript = `
-    (function() {
-      try {
-        const theme = localStorage.getItem('_ui_theme') || 'aurora';
-        document.documentElement.setAttribute('data-theme', theme);
-      } catch (e) {}
-    })();
-  `;
   return (
     <html
-      className="scrollbar-hidden overflow-x-hidden scroll-smooth dark"
+      className="overflow-x-hidden dark"
       lang="en"
       suppressHydrationWarning={true}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
-      </head>
-      <TooltipProvider>
-        <ThemeProvider>
-          <body
-            className={`${poppins.className} antialiased overflow-x-hidden`}
-          >
-            <Suspense fallback={null}>
-              <Progress />
-            </Suspense>
-            <Toaster />
-            <RootProvider search={{ enabled: false }} theme={{ defaultTheme: "dark", forcedTheme: "dark" }}>
-              <GlobalKeyBinderProvider>{children}</GlobalKeyBinderProvider>
-            </RootProvider>
-            <AnalyticsProvider />
-          </body>
-        </ThemeProvider>
-      </TooltipProvider>
+      <body
+        className={`${poppins.className} ${rethinkSans.variable} ${inter.variable} antialiased overflow-x-hidden`}
+      >
+        <RootProviders>{children}</RootProviders>
+      </body>
     </html>
   );
 }

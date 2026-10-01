@@ -1,7 +1,6 @@
 import "../globals.css";
 import NavigationBar from "@/components/NavigationBar";
 import Footer from "@/components/Footer";
-import Background from "@/components/Background";
 
 export default async function RootLayout({
   children,
@@ -10,7 +9,6 @@ export default async function RootLayout({
 }>) {
   return (
     <>
-      <Background />
       <NavigationBar />
       <main className="z-20 relative">{children}</main>
       <Footer />

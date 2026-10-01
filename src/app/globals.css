@@ -1,292 +1,299 @@
 @import "tailwindcss";
 @import "fumadocs-ui/css/neutral.css";
 @import "fumadocs-ui/css/preset.css";
+@import "@heroui/styles";
+@import "lenis/dist/lenis.css";
+@import "./styles/home.css";
+@import "./styles/toast.css";
 
 @plugin "tailwindcss-animate";
 @plugin "@tailwindcss/typography";
-
-@custom-variant hover (&:hover);
 
 @theme {
   --transition-duration-1500: 1500ms;
   --transition-duration-2000: 2000ms;
   --transition-duration-3000: 3000ms;
 
-  --color-background: hsl(var(--background));
-  --color-foreground: hsl(var(--foreground));
+  /* --- Core Colors --- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
 
-  --color-card: hsl(var(--card));
-  --color-card-foreground: hsl(var(--card-foreground));
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
 
-  --color-popover: hsl(var(--popover));
-  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
 
-  --color-primary: hsl(var(--primary));
-  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
 
-  --color-secondary: hsl(var(--secondary));
-  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
 
-  --color-muted: hsl(var(--muted));
-  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
 
-  --color-accent: hsl(var(--accent));
-  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
 
-  --color-destructive: hsl(var(--destructive));
-  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
 
-  --color-border: hsl(var(--border));
-  --color-input: hsl(var(--input));
-  --color-ring: hsl(var(--ring));
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
 
-  --color-chart-1: hsl(var(--chart-1));
-  --color-chart-2: hsl(var(--chart-2));
-  --color-chart-3: hsl(var(--chart-3));
-  --color-chart-4: hsl(var(--chart-4));
-  --color-chart-5: hsl(var(--chart-5));
+  /* --- Charts --- */
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
 
-  --color-sidebar: hsl(var(--sidebar-background));
-  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
-  --color-sidebar-accent: hsl(var(--sidebar-accent));
-  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
-  --color-sidebar-border: hsl(var(--sidebar-border));
-  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  /* --- Sidebar --- */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 
-  /* --- THEME COLORS --- */
-  --color-theme-accent-1: var(--accent-1);
-  --color-theme-accent-2: var(--accent-2);
+  /* --- Neutral Colors --- */
+  --color-neutral-50: var(--neutral-50);
+  --color-neutral-100: var(--neutral-100);
+  --color-neutral-200: var(--neutral-200);
+  --color-neutral-300: var(--neutral-300);
+  --color-neutral-400: var(--neutral-400);
+  --color-neutral-500: var(--neutral-500);
+  --color-neutral-600: var(--neutral-600);
+  --color-neutral-700: var(--neutral-700);
+  --color-neutral-800: var(--neutral-800);
+  --color-neutral-900: var(--neutral-900);
+  --color-neutral-925: var(--neutral-925);
+  --color-neutral-950: var(--neutral-950);
+
+  /* --- Accent Colors --- */
+  --color-accent-300: var(--accent-300);
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-accent-deep: var(--accent-deep);
+
+  /* --- Theo Design System Tokens --- */
+  --color-accent-1: var(--accent-1);
+  --color-accent-2: var(--accent-2);
   --color-theme-primary: var(--theme-primary);
   --color-theme-secondary: var(--theme-secondary);
-  /* --- THEME COLORS --- */
 
-  --radius-lg: var(--radius);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-sm: calc(var(--radius) - 4px);
-
+  /* --- Fonts --- */
   --font-frozito: frozito;
   --font-montserrat: "Montserrat", "sans-serif";
-  --font-icons: icons;
-
-  --animate-grad-travel: travel 15s ease-in-out forwards infinite;
-
-  @keyframes travel {
-    0%,
-    100% {
-      top: 0;
-      left: 0;
-      filter: hue-rotate(0deg);
-      rotate: -90deg;
-    }
-    50% {
-      top: 100%;
-      left: 100%;
-      filter: hue-rotate(360deg);
-      rotate: 360deg;
-    }
-  }
+  --font-rethink: var(--font-rethink-sans), "Rethink Sans", sans-serif;
+  --font-inter: var(--font-inter), "Inter", sans-serif;
+  --font-mono: "geistMono", monospace;
+  --font-vectra: "antroVectra", cursive;
 }
 
-/*
-  The default border color has changed to `currentcolor` in Tailwind CSS v4,
-  so we've added these compatibility styles to make sure everything still
-  looks the same as it did with Tailwind CSS v3.
+:root {
+  /* --- Core Colors --- */
+  --background: #0a0a0a;
+  --foreground: #fafafa;
 
-  If we ever want to remove these styles, we need to add an explicit border
-  color utility to any element that depends on these defaults.
-*/
+  --card: #0d0d0d;
+  --card-foreground: #fafafa;
+
+  --popover: #171717;
+  --popover-foreground: #fafafa;
+
+  --primary: #70ffc3;
+  --primary-foreground: #0a0a0a;
+
+  --secondary: #262626;
+  --secondary-foreground: #fafafa;
+
+  --muted: #262626;
+  --muted-foreground: #a3a3a3;
+
+  --accent: #70ffc3;
+  --accent-foreground: #0a0a0a;
+
+  --destructive: #7d1f1f;
+  --destructive-foreground: #fafafa;
+
+  --border: #262626;
+  --input: #262626;
+  --ring: #70ffc3;
+
+  /* --- Charts --- */
+  --chart-1: #70ffc3;
+  --chart-2: #33e699;
+  --chart-3: #2eb87a;
+  --chart-4: #2699d9;
+  --chart-5: #2666d9;
+
+  /* --- Sidebar --- */
+  --sidebar: #171717;
+  --sidebar-foreground: #fafafa;
+  --sidebar-accent: #262626;
+  --sidebar-accent-foreground: #fafafa;
+  --sidebar-border: #262626;
+  --sidebar-ring: #70ffc3;
+
+  /* --- Neutral Colors --- */
+  --neutral-50: #fafafa;
+  --neutral-100: #f5f5f5;
+  --neutral-200: #e5e5e5;
+  --neutral-300: #d4d4d4;
+  --neutral-400: #a3a3a3;
+  --neutral-500: #737373;
+  --neutral-600: #525252;
+  --neutral-700: #404040;
+  --neutral-800: #262626;
+  --neutral-900: #171717;
+  --neutral-925: #0d0d0d;
+  --neutral-950: #0a0a0a;
+
+  /* --- Accent Colors --- */
+  --accent-300: #70ffc3;
+  --accent: #4cffb4;
+  --accent-dark: #2e996c;
+  --accent-deep: #0f3324;
+
+  --pras-logo: brightness(0) saturate(100%) invert(100%) sepia(0%)
+    saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
+
+  /* --- Theme Colors --- */
+  --theme-primary: #70ffc3;
+  --theme-secondary: #4cffb4;
+  --accent-1: #70ffc3;
+  --accent-2: #4cffb4;
+
+  --radius: 0.5rem;
+}
+
 @layer base {
+  ::selection {
+    @apply bg-accent-1/20;
+  }
+
+  * {
+    @apply border-border scroll-smooth outline-ring/50;
+  }
+
   *,
   ::after,
   ::before,
   ::backdrop,
   ::file-selector-button {
-    border-color: var(--color-gray-200, currentcolor);
+    border-color: var(--color-border, currentcolor);
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  button,
+  a {
+    cursor: pointer;
+  }
+
+  button,
+  img {
+    @apply select-none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+
+  strong,
+  b {
+    @apply text-muted-foreground bg-muted font-mono font-medium px-1 py-[2px] rounded;
+  }
+
+  ::-webkit-scrollbar {
+    width: 7px;
+    height: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: #0000;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #8e95a11a;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #8e95a133;
+    border-radius: 10px;
+  }
+
+  @font-face {
+    font-family: "frozito";
+    font-style: normal;
+    font-display: swap;
+    src: url(/fonts/frozito.ttf) format("truetype");
+  }
+
+  @font-face {
+    font-family: "antroVectra";
+    src: url("/fonts/antro_vectra.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  @font-face {
+    font-family: "geistMono";
+    src: url("/fonts/geist_mono.ttf") format("truetype");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  #nd-tocnav {
+    display: none;
+  }
+
+  .fd-scroll-container {
+    @apply scrollbar-auto;
   }
 }
 
-@layer base {
-  :root {
-    --background: 240 10% 3.9%;
-    --foreground: 210 5.56% 92.94%;
-    --card: 240 10% 3.9%;
-    --card-foreground: 0 0% 98%;
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
-    --primary: 0 0% 98%;
-    --primary-foreground: 240 5.9% 10%;
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
-    --accent: 240 3.7% 15.9%;
-    --accent-foreground: 0 0% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-    --pras-logo: brightness(0) saturate(100%) invert(100%) sepia(0%)
-      saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
-    --radius: 0.5rem;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-    --scrollbar-visibility: none;
-  }
+/* Glass icons and gradient borders */
+@utility gradientBorder {
+  position: relative;
 
-  /* --- THEME Variants --- */
-  [data-theme="lavender"] {
-    --theme-primary: #e6e6fa;
-    --theme-secondary: #dda0dd;
-    --accent-1: hsl(270 80% 85%);
-    --accent-2: hsl(300 60% 70%);
-    --bg-gradient-1: hsl(270 80% 85% / 0.7);
-    --bg-gradient-2: hsl(300 60% 70% / 0.7);
-    --bg-gradient-3: hsl(280 70% 75% / 0.6);
-  }
-  [data-theme="luminous"] {
-    --theme-primary: #ff6ac1;
-    --theme-secondary: #ffe866;
-    --accent-1: hsl(316 100% 71%);
-    --accent-2: hsl(52 100% 65%);
-    --bg-gradient-1: hsl(316 100% 71% / 0.7);
-    --bg-gradient-2: hsl(52 100% 65% / 0.7);
-    --bg-gradient-3: hsl(192 97% 77% / 0.6);
-  }
-
-  [data-theme="synthwave"] {
-    --theme-primary: #8e2de2;
-    --theme-secondary: #4a00e0;
-    --accent-1: hsl(332 90% 55%);
-    --accent-2: hsl(275 90% 60%);
-    --bg-gradient-1: hsl(275 92% 51% / 0.7);
-    --bg-gradient-2: hsl(330 100% 55% / 0.7);
-    --bg-gradient-3: hsl(220 100% 70% / 0.6);
-  }
-
-  [data-theme="aquatic"] {
-    --theme-primary: #00c9ff;
-    --theme-secondary: #92fe9d;
-    --accent-1: hsl(195 100% 50%);
-    --accent-2: hsl(220 100% 60%);
-    --bg-gradient-1: hsl(195 100% 50% / 0.7);
-    --bg-gradient-2: hsl(125 98% 78% / 0.7);
-    --bg-gradient-3: hsl(220 100% 60% / 0.6);
-  }
-
-  [data-theme="cyberpunk"] {
-    --theme-primary: #ec008c;
-    --theme-secondary: #00bfff;
-    --accent-1: hsl(195 100% 50%);
-    --accent-2: hsl(320 100% 50%);
-    --bg-gradient-1: hsl(320 100% 50% / 0.7);
-    --bg-gradient-2: hsl(195 100% 50% / 0.7);
-    --bg-gradient-3: hsl(260 100% 55% / 0.6);
-  }
-
-  [data-theme="emerald"] {
-    --theme-primary: #009245;
-    --theme-secondary: #fcee21;
-    --accent-1: hsl(55 98% 55%);
-    --accent-2: hsl(125 98% 45%);
-    --bg-gradient-1: hsl(150 100% 30% / 0.7);
-    --bg-gradient-2: hsl(125 98% 45% / 0.7);
-    --bg-gradient-3: hsl(145 100% 20% / 0.6);
-  }
-
-  [data-theme="solar"] {
-    --theme-primary: #ffd700;
-    --theme-secondary: #ffa500;
-    --accent-1: hsl(45 100% 50%);
-    --accent-2: hsl(30 100% 50%);
-    --bg-gradient-1: hsl(45 100% 50% / 0.7);
-    --bg-gradient-2: hsl(30 100% 50% / 0.7);
-    --bg-gradient-3: hsl(55 100% 70% / 0.6);
-  }
-
-  [data-theme="sakura"] {
-    --theme-primary: #ffb6c1;
-    --theme-secondary: #ff69b4;
-    --accent-1: hsl(330 100% 85%);
-    --accent-2: hsl(340 90% 70%);
-    --bg-gradient-1: hsl(330 100% 85% / 0.7);
-    --bg-gradient-2: hsl(0 100% 95% / 0.7);
-    --bg-gradient-3: hsl(340 90% 70% / 0.6);
-  }
-
-  [data-theme="volcano"] {
-    --theme-primary: #ff4e50;
-    --theme-secondary: #f9d423;
-    --accent-1: hsl(10 100% 60%);
-    --accent-2: hsl(40 95% 55%);
-    --bg-gradient-1: hsl(10 100% 60% / 0.7);
-    --bg-gradient-2: hsl(20 90% 55% / 0.7);
-    --bg-gradient-3: hsl(40 95% 55% / 0.6);
-  }
-  [data-theme="minty"] {
-    --theme-primary: #a8ff78;
-    --theme-secondary: #78ffd6;
-    --accent-1: hsl(145 80% 70%);
-    --accent-2: hsl(165 75% 60%);
-    --bg-gradient-1: hsl(145 80% 70% / 0.7);
-    --bg-gradient-2: hsl(165 75% 60% / 0.7);
-    --bg-gradient-3: hsl(150 80% 65% / 0.6);
-  }
-
-  [data-theme="inferno"] {
-    --theme-primary: #ff512f;
-    --theme-secondary: #dd2476;
-    --accent-1: hsl(345 90% 50%);
-    --accent-2: hsl(20 95% 60%);
-    --bg-gradient-1: hsl(345 90% 50% / 0.7);
-    --bg-gradient-2: hsl(20 95% 60% / 0.7);
-    --bg-gradient-3: hsl(0 90% 55% / 0.6);
-  }
-
-  [data-theme="aurora"] {
-    --theme-primary: #00ffcc;
-    --theme-secondary: #3366ff;
-    --accent-1: hsl(165 100% 50%);
-    --accent-2: hsl(220 90% 55%);
-    --bg-gradient-1: hsl(165 100% 50% / 0.7);
-    --bg-gradient-2: hsl(200 100% 55% / 0.7);
-    --bg-gradient-3: hsl(220 90% 55% / 0.6);
+  &::before {
+    content: "";
+    position: absolute;
+    inset: calc(var(--borderWidth, 1) * -1px);
+    padding: calc(var(--borderWidth, 1) * 1px);
+    border-radius: inherit;
+    background: var(
+      --background,
+      linear-gradient(
+        to bottom right,
+        rgba(23, 23, 23, 0.7) 0%,
+        #525252 62%,
+        rgba(23, 23, 23, 0.7) 100%
+      )
+    );
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
 }
 
 @utility scrollbar-auto {
   scrollbar-width: auto;
   -ms-overflow-style: auto;
-
-  &::-webkit-scrollbar,
-  &::-webkit-scrollbar-track {
-    @apply block w-1.5 cursor-pointer;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    @apply block h-1 hover:!bg-muted-foreground/40 !bg-muted-foreground/30 hover:py-2 cursor-pointer rounded-full;
-  }
-}
-
-@utility bg-gradient-1 {
-  background: radial-gradient(circle, var(--bg-gradient-1), transparent 70%);
-}
-
-@utility bg-gradient-2 {
-  background: radial-gradient(circle, var(--bg-gradient-2), transparent 70%);
-}
-
-@utility bg-gradient-3 {
-  background: radial-gradient(circle, var(--bg-gradient-3), transparent 70%);
 }
 
 @utility scrollbar-hidden {
@@ -302,107 +309,121 @@
   filter: var(--pras-logo);
 }
 
-@utility icons {
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
+@utility cursor-newtab {
+  cursor:
+    url("/assets/new-tab.png") 10 10,
+    pointer;
+}
+
+@utility h1 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 3.75rem;
+  font-weight: 700;
   line-height: 1;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @apply font-icons;
 }
 
-@layer base {
-  html {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-
-  * {
-    @apply border-border scroll-smooth;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-
-  button,
-  a {
-    cursor: pointer;
-  }
-
-  button,
-  img {
-    @apply select-none;
-    -webkit-user-drag: none;
-  }
-
-  img {
-    @apply select-none;
-    -webkit-user-drag: none;
-    -khtml-user-drag: none;
-    -moz-user-drag: none;
-    -o-user-drag: none;
-    user-drag: none;
-  }
-
-  strong,
-  b {
-    @apply text-muted-foreground bg-muted font-mono font-medium px-1 py-[2px] rounded;
-  }
-
-  @font-face {
-    font-family: "frozito";
-    font-style: normal;
-    font-display: swap;
-    src: url(/fonts/frozito.ttf) format("truetype");
-  }
-
-  @font-face {
-    font-family: "icons";
-    src: url("/icons/icons.eot?4ca6v4");
-    src: url("/icons/icons.eot?4ca6v4#iefix") format("embedded-opentype"),
-      url("/icons/icons.ttf?4ca6v4") format("truetype"),
-      url("/icons/icons.woff?4ca6v4") format("woff");
-    font-weight: normal;
-    font-style: normal;
-    font-display: block;
-  }
-
-  #nd-tocnav {
-    display: none;
-  }
-
-  .fd-scroll-container {
-    @apply scrollbar-auto;
-  }
-
-  .scrollbar-auto-light {
-    scrollbar-width: auto;
-    -ms-overflow-style: auto;
-  }
-
-  .scrollbar-auto-light::-webkit-scrollbar:vertical,
-  .scrollbar-auto-light::-webkit-scrollbar-track:vertical {
-    @apply block w-1 cursor-pointer;
-  }
-
-  .scrollbar-auto-light::-webkit-scrollbar:horizontal,
-  .scrollbar-auto-light::-webkit-scrollbar-track:horizontal {
-    @apply block h-1 hover:bg-muted-foreground/40 hover:py-2 cursor-pointer;
-  }
-
-  .scrollbar-auto-light::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground rounded-full cursor-pointer hover:my-2 hover:bg-muted-foreground/80;
-  }
+@utility h2 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
 }
 
-@layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+@utility h3 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 2.5rem;
+}
+
+@utility h4 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 2rem;
+}
+
+@utility h5 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+}
+
+@utility h6 {
+  font-family:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.5rem;
+}
+
+@utility b1 {
+  font-family: var(--font-inter), "Inter", sans-serif;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 400;
+}
+
+@utility b2 {
+  font-family: var(--font-inter), "Inter", sans-serif;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 400;
+}
+
+@utility c1 {
+  font-family: var(--font-inter), "Inter", sans-serif;
+  font-size: 0.75rem;
+  line-height: 1rem;
+}
+
+@utility layout {
+  width: 91.6667%;
+  max-width: 68rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Fix table cell padding stripped by @tailwindcss/typography on :first-child / :last-child */
+.prose thead th:first-child,
+.prose tbody td:first-child,
+.prose tfoot td:first-child {
+  padding-inline-start: 1rem !important;
+}
+
+.prose thead th:last-child,
+.prose tbody td:last-child,
+.prose tfoot td:last-child {
+  padding-inline-end: 1rem !important;
+}
+
+.prose thead th {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+.prose tbody td {
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+/* Remove default backticks added by @tailwindcss/typography around code elements */
+.prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
+.prose code::before,
+.prose code::after {
+  content: "" !important;
+  display: none !important;
 }
