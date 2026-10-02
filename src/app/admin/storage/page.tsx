@@ -1,4 +1,4 @@
-import { metatag } from "@/utils/metatag";
+import { metatag } from "@/lib/metatag";
 import AdminMediaView from "./view";
 
 export const generateMetadata = () => {
@@ -8,7 +8,7 @@ export const generateMetadata = () => {
   });
 };
 
-const AdminMediaPage = async () => {
+const AdminMediaPage = () => {
   return <AdminMediaView />;
 };
 
