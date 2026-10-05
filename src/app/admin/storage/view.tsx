@@ -1,96 +1,90 @@
 "use client";
 
-import FileBrowser from "./components/FileBrowser";
-import { cn } from "@/utils";
-import { useMediaView } from "./hooks/useMediaView";
-import { SelectionDetails } from "./components/SelectionDetails";
+import React, { useEffect } from "react";
+import { Spinner } from "@heroui/react";
 import {
-  AddFolderDialog,
-  DeleteConfirmationDialog,
-  RenameDialog,
-} from "./components/Dialogs";
+  ContentManagerProvider,
+  useContent,
+} from "./hooks/use-content-manager";
+import { ContentBreadcrumbs } from "./components/content-breadcrumbs";
+import { ContentToolbar } from "./components/content-toolbar";
+import { ContentTree } from "./components/content-tree";
+import { ContentGrid } from "./components/content-grid";
+import { CreateFolderModal } from "./components/create-folder-modal";
+import { MediaViewer } from "./components/media-viewer";
+import { UploadProgressPanel } from "@/components/UploadProgressPanel";
 
-const AdminMediaView = () => {
+function ContentManagerViewInner() {
   const {
-    selection,
-    setSelection,
-    isDeleting,
-    deleteTarget,
-    setDeleteTarget,
-    isUploading,
-    isRenaming,
-    renameTarget,
-    setRenameTarget,
-    newName,
-    setNewName,
-    isAddFolderDialogOpen,
-    setIsAddFolderDialogOpen,
-    newFolderName,
-    setNewFolderName,
-    isAddingFolder,
-    handleRequestDelete,
-    executeDelete,
-    handleFileUpload,
-    handleRename,
-    handleRequestAddFolder,
-    handleAddFolder,
-    openRenameDialog,
-  } = useMediaView();
+    currentPath,
+    rootPath,
+    expandedPaths,
+    toggleExpandPath,
+    uploadQueue,
+    clearUploadQueue,
+  } = useContent();
+
+  const root = rootPath || "pras/portfolio";
+
+  useEffect(() => {
+    if (!root) return;
+    if (expandedPaths.has(root)) return;
+    toggleExpandPath(root);
+  }, [root, expandedPaths, toggleExpandPath]);
+
+  if (!currentPath) {
+    return (
+      <div className="w-full h-full flex items-center justify-center">
+        <Spinner className="text-accent" />
+      </div>
+    );
+  }
 
   return (
-    <div className="w-full h-full bg-fd-card/75 rounded-md border flex flex-col lg:flex-row justify-between">
-      <div
-        className={cn(
-          "overflow-y-auto scrollbar-auto",
-          selection ? "w-full lg:w-[60%] h-[60%] lg:h-full" : "w-full h-full"
-        )}
-      >
-        <FileBrowser
-          setSelection={setSelection}
-          onRequestDelete={handleRequestDelete}
-          onUploadFile={handleFileUpload}
-          onRename={openRenameDialog}
-          onRequestAddFolder={handleRequestAddFolder}
-          isUploading={isUploading}
-        />
+    <div className="w-full h-[calc(100dvh-112px)] rounded-2xl border border-white/[0.06] bg-muted/40 backdrop-blur-2xl flex flex-col overflow-hidden shadow-2xl relative">
+      {/* Ambient gloss glow */}
+      <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-sky-500/[0.04] blur-3xl" />
+
+      {/* Header with Breadcrumbs */}
+      <div className="border-b border-white/[0.05] bg-white/[0.02] px-4 py-2.5">
+        <ContentBreadcrumbs />
       </div>
-      <SelectionDetails
-        selection={selection}
-        onClose={() => setSelection(null)}
-        onDelete={handleRequestDelete}
-      />
 
-      <DeleteConfirmationDialog
-        isOpen={!!deleteTarget}
-        onOpenChange={() => setDeleteTarget(null)}
-        onConfirm={executeDelete}
-        isDeleting={isDeleting}
-        targetName={
-          deleteTarget?.__meta
-            ? deleteTarget.__meta.name
-            : `${deleteTarget?.secure_url.split("/").pop().substring(0, 20)}...`
-        }
-      />
+      {/* Toolbar */}
+      <ContentToolbar />
 
-      <RenameDialog
-        isOpen={!!renameTarget}
-        onOpenChange={() => setRenameTarget(null)}
-        onConfirm={handleRename}
-        isRenaming={isRenaming}
-        value={newName}
-        onChange={(e) => setNewName(e.target.value)}
-      />
+      {/* Main Split Area (Tree + Grid) */}
+      <div className="flex flex-1 min-h-0 overflow-hidden">
+        {/* Left Folder Tree Sidebar */}
+        <ContentTree />
 
-      <AddFolderDialog
-        isOpen={isAddFolderDialogOpen}
-        onOpenChange={setIsAddFolderDialogOpen}
-        onConfirm={handleAddFolder}
-        value={newFolderName}
-        onChange={(e) => setNewFolderName(e.target.value)}
-        isAdding={isAddingFolder}
-      />
+        {/* Right Content Grid / Table */}
+        <ContentGrid />
+      </div>
+
+      {/* Create Folder Modal */}
+      <CreateFolderModal />
+
+      {/* Media Viewer Drawer */}
+      <MediaViewer />
+
+      {/* Upload Progress Panel (Fixed bottom-right side with Framer Motion) */}
+      <UploadProgressPanel queue={uploadQueue} onClear={clearUploadQueue} />
     </div>
   );
-};
+}
+
+interface AdminMediaViewProps {
+  initialStructure?: Record<string, any>;
+}
+
+export function AdminMediaView({ initialStructure = {} }: AdminMediaViewProps) {
+  return (
+    <ContentManagerProvider initialStructure={initialStructure}>
+      <ContentManagerViewInner />
+    </ContentManagerProvider>
+  );
+}
 
 export default AdminMediaView;
