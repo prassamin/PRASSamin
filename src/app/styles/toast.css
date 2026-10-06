@@ -1,0 +1,75 @@
+/* ==========================================================================
+   HeroUI Toast — Pure Frosted Glass UI (Zero Neon Glow, Pure Elegance)
+   Ultra-sleek translucent glassmorphism matching the portfolio's aesthetic
+   ========================================================================== */
+
+/* Toast Region Positioning */
+.toast-region {
+  z-index: 100002 !important;
+}
+
+/* Base Glass Card */
+.toast {
+  @apply bg-muted;
+  font-family: var(--font-rethink), "Rethink Sans", sans-serif !important;
+  transition:
+    transform var(--toast-translate-duration, 350ms) var(--toast-ease, cubic-bezier(0, 0, 0.2, 1)),
+    height var(--toast-height-duration, 350ms) var(--toast-ease, cubic-bezier(0, 0, 0.2, 1)),
+    opacity var(--toast-opacity-duration, 150ms) var(--toast-ease, cubic-bezier(0, 0, 0.2, 1)),
+    border-color 150ms ease !important;
+}
+
+/* ==========================================================================
+   Close Button: Frosted Squircle
+   ========================================================================== */
+.toast .toast__close-button {
+  position: absolute !important;
+  top: 50% !important;
+  right: 0.625rem !important;
+  bottom: auto !important;
+  left: auto !important;
+  inset-inline-end: 0.625rem !important;
+  inset-inline-start: auto !important;
+  transform: translateY(-50%) !important;
+  width: 1.625rem !important; /* 26px */
+  height: 1.625rem !important;
+  border-radius: 0.375rem !important; /* rounded-md */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background-color: transparent !important;
+  border: 1px solid transparent !important;
+  color: #71717a !important;
+  opacity: 0.6 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  transition: all 150ms ease !important;
+}
+
+.toast:hover .toast__close-button,
+.toast[data-frontmost="true"]:hover .toast__close-button {
+  opacity: 1 !important;
+  color: #a1a1aa !important;
+}
+
+.toast .toast__close-button:hover,
+.toast .toast__close-button[data-hovered="true"] {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.toast .toast__close-button svg,
+.toast .toast__close-button [data-slot="close-button-icon"] {
+  width: 0.8125rem !important;
+  height: 0.8125rem !important;
+  margin: 0 !important;
+}
+
+/* Hide close button on exiting or collapsed background toasts */
+.toast[data-exiting="true"] .toast__close-button,
+.toast:not([data-frontmost="true"]):not([data-expanded="true"]) .toast__close-button {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}

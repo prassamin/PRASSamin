@@ -1,0 +1,561 @@
+/* 
+===================================
+Hero > Grid
+===================================
+*/
+
+@keyframes floating {
+  0%,
+  100% {
+    transform: translate(-50%, -50%);
+  }
+  50% {
+    transform: translate(-55%, -70%);
+  }
+}
+
+@utility animate-floating {
+  animation: 3s ease-in-out infinite floating;
+}
+
+@utility composite-exclude {
+  -webkit-mask-composite: xor;
+  -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+  -webkit-mask-clip: content-box, border-box;
+  mask-clip: content-box, border-box;
+  -webkit-mask-origin: content-box, border-box;
+  mask-origin: content-box, border-box;
+  mask-composite: exclude;
+}
+
+@utility torn-paper {
+  clip-path: polygon(
+    0% 5%,
+    2% 1%,
+    5% 4%,
+    9% 1%,
+    14% 4%,
+    20% 1%,
+    26% 4%,
+    33% 1%,
+    40% 4%,
+    47% 1%,
+    54% 4%,
+    61% 1%,
+    68% 4%,
+    75% 1%,
+    82% 4%,
+    88% 1%,
+    94% 4%,
+    98% 1%,
+    100% 5%,
+    99% 18%,
+    100% 32%,
+    98% 46%,
+    100% 60%,
+    98% 74%,
+    100% 88%,
+    99% 96%,
+    98% 99%,
+    94% 96%,
+    88% 99%,
+    82% 96%,
+    75% 99%,
+    68% 96%,
+    61% 99%,
+    54% 96%,
+    47% 99%,
+    40% 96%,
+    33% 99%,
+    26% 96%,
+    20% 99%,
+    14% 96%,
+    9% 99%,
+    5% 96%,
+    2% 100%,
+    0% 95%,
+    1% 88%,
+    0% 74%,
+    2% 60%,
+    0% 46%,
+    2% 32%,
+    0% 18%
+  );
+}
+
+/* 
+===================================
+Mental Models > Card 1 
+===================================
+*/
+
+@keyframes conduitStream {
+  0% {
+    stroke-dashoffset: 40;
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  68% {
+    opacity: 1;
+  }
+  71.4% {
+    stroke-dashoffset: -250;
+    opacity: 0;
+  }
+  71.5%,
+  100% {
+    stroke-dashoffset: 40;
+    opacity: 0;
+  }
+}
+
+.animate-conduit-1 {
+  stroke-dasharray: 40 300;
+  animation: conduitStream 2.1s linear infinite 0s;
+}
+
+.animate-conduit-2 {
+  stroke-dasharray: 40 300;
+  animation: conduitStream 2.1s linear infinite -1.4s;
+}
+
+.animate-conduit-3 {
+  stroke-dasharray: 40 300;
+  animation: conduitStream 2.1s linear infinite -0.7s;
+}
+@keyframes workerPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    stroke: rgba(255, 255, 255, 0.26);
+  }
+  30% {
+    transform: scale(1.06);
+    stroke: rgba(255, 255, 255, 0.7);
+    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.4));
+  }
+  60% {
+    transform: scale(1);
+    stroke: rgba(255, 255, 255, 0.26);
+  }
+}
+
+@utility animate-worker-1 {
+  animation: workerPulse 2.1s ease-in-out infinite 0.6s;
+}
+
+@utility animate-worker-2 {
+  animation: workerPulse 2.1s ease-in-out infinite 1.3s;
+}
+
+@utility animate-worker-3 {
+  animation: workerPulse 2.1s ease-in-out infinite 2s;
+}
+
+@keyframes hubPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+}
+
+@utility animate-ingress-hub {
+  animation: hubPulse 0.7s ease-out infinite;
+}
+
+/* 
+===================================
+Mental Models > Card 2 
+===================================
+*/
+
+@keyframes queryStream {
+  /* Pass 1: Cache Hit Query (0.0s - 0.6s = 0% - 6.7%) */
+  0% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  6.0% {
+    stroke-dashoffset: -46;
+    opacity: 1;
+  }
+  6.7%,
+  68.8% {
+    stroke-dashoffset: -46;
+    opacity: 0;
+  }
+  /* Pass 2: Cache Miss Query (6.2s - 6.8s = 68.9% - 75.6%) */
+  68.9% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+  }
+  70.0% {
+    opacity: 1;
+  }
+  75.0% {
+    stroke-dashoffset: -46;
+    opacity: 1;
+  }
+  75.6%,
+  100% {
+    stroke-dashoffset: -46;
+    opacity: 0;
+  }
+}
+
+@utility animate-query-stream {
+  stroke-dasharray: 24 200;
+  animation: queryStream 9s linear infinite;
+}
+
+/* Return Stream: Cache -> Client along center rail (Length 46px, dasharray: 24 200) */
+@keyframes returnStream {
+  /* Pass 1: Cache Hit Return (0.6s - 1.2s = 6.7% - 13.3%) */
+  0%,
+  6.6% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+  }
+  7.5% {
+    opacity: 1;
+  }
+  12.5% {
+    stroke-dashoffset: -46;
+    opacity: 1;
+  }
+  13.3%,
+  88.8% {
+    stroke-dashoffset: -46;
+    opacity: 0;
+  }
+  /* Pass 2: Cache Miss Fresh Return (8.0s - 8.6s = 88.9% - 95.6%) */
+  88.9% {
+    stroke-dashoffset: 24;
+    opacity: 0;
+  }
+  90.0% {
+    opacity: 1;
+  }
+  95.0% {
+    stroke-dashoffset: -46;
+    opacity: 1;
+  }
+  95.6%,
+  100% {
+    stroke-dashoffset: -46;
+    opacity: 0;
+  }
+}
+
+@utility animate-return-stream {
+  stroke-dasharray: 24 200;
+  animation: returnStream 9s linear infinite;
+}
+
+/* PUT Mutation Write Stream: Client -> Origin DB over top highway (Length 185px, dasharray: 45 350) */
+@keyframes putWriteStream {
+  0%,
+  26.6% {
+    stroke-dashoffset: 45;
+    opacity: 0;
+  }
+  28.0% {
+    opacity: 1;
+  }
+  40.0% {
+    stroke-dashoffset: -188;
+    opacity: 1;
+  }
+  41.1%,
+  100% {
+    stroke-dashoffset: -188;
+    opacity: 0;
+  }
+}
+
+@utility animate-put-write {
+  stroke-dasharray: 45 350;
+  animation: putWriteStream 9s linear infinite;
+}
+
+/* Origin DB Commit Bloom (3.5s - 4.1s = 39% - 46%) */
+@keyframes dbCommitPulse {
+  0%,
+  38.0% {
+    transform: scale(1);
+    filter: none;
+  }
+  41.5% {
+    transform: scale(1.09);
+    filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.95));
+  }
+  46.0%,
+  100% {
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+@utility animate-db-commit {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: dbCommitPulse 9s ease-out infinite;
+}
+
+/* PURGE Invalidation Laser: Origin DB -> Cache Slot 2 (Length 54px, dasharray: 32 200) */
+@keyframes purgeLaserStream {
+  0%,
+  45.5% {
+    stroke-dashoffset: 32;
+    opacity: 0;
+  }
+  46.5% {
+    opacity: 1;
+  }
+  51.5% {
+    stroke-dashoffset: -56;
+    opacity: 1;
+  }
+  52.2%,
+  100% {
+    stroke-dashoffset: -56;
+    opacity: 0;
+  }
+}
+
+@utility animate-purge-laser {
+  stroke-dasharray: 32 200;
+  animation: purgeLaserStream 9s linear infinite;
+}
+
+/* Eviction Shockwave Ripple on Impact (4.6s - 5.2s = 51.1% - 57.8%) */
+@keyframes evictShockwavePulse {
+  0%,
+  51.0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  52.0% {
+    opacity: 1;
+  }
+  57.0% {
+    transform: scale(3);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+@utility animate-evict-shockwave {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: evictShockwavePulse 9s ease-out infinite;
+}
+
+/* On-Demand Refill Stream: Origin DB -> Cache Slot 2 along bottom highway (Length 67px, dasharray: 32 250) */
+@keyframes refillStream {
+  0%,
+  75.5% {
+    stroke-dashoffset: 32;
+    opacity: 0;
+  }
+  76.5% {
+    opacity: 1;
+  }
+  83.5% {
+    stroke-dashoffset: -68;
+    opacity: 1;
+  }
+  84.4%,
+  100% {
+    stroke-dashoffset: -68;
+    opacity: 0;
+  }
+}
+
+@utility animate-refill-stream {
+  stroke-dasharray: 32 250;
+  animation: refillStream 9s linear infinite;
+}
+
+/* Target Cache Block Lifecycle:
+   - 0.0s - 4.1s (0% - 46%):  Warm valid data block (serves Act 1 cache hit)
+   - 4.4s (49%):              Laser strikes! Eviction flash!
+   - 4.6s (51.5%):            Evicted! Dissolves to 0 opacity
+   - 4.6s - 6.8s (51.5% - 76%): 2.2s CALM EMPTY STATE (Slot sits visibly empty [     ])
+   - 6.8s (76%):              Client experiences Cache Miss; Refill arrives from DB
+   - 7.5s (83.5%):            Slot rehydrates to full bright white
+   - 7.8s - 9.0s (87% - 100%): Fresh warm state settles before seamless loop
+*/
+@keyframes targetSlotEviction {
+  0%,
+  46.0% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+  49.0% {
+    opacity: 1;
+    transform: scale(1.08);
+    filter: drop-shadow(0 0 14px #ffffff);
+  }
+  51.5% {
+    opacity: 0;
+    transform: scale(0.6);
+    filter: none;
+  }
+  52.0%,
+  76.0% {
+    opacity: 0;
+    transform: scale(0.6);
+    filter: none;
+  }
+  78.0% {
+    opacity: 0.3;
+    transform: scale(0.85);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.7));
+  }
+  83.5% {
+    opacity: 1;
+    transform: scale(1.06);
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.9));
+  }
+  87.0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: none;
+  }
+}
+
+@utility animate-target-slot {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: targetSlotEviction 9s ease-in-out infinite;
+}
+
+/* 
+===================================
+Mental Models > Card 3
+===================================
+*/
+@keyframes rotateBlockTopLeft {
+  0%,
+  20% {
+    transform: translate(0, 0);
+  }
+  25%,
+  45% {
+    transform: translate(4rem, 0);
+  }
+  50%,
+  70% {
+    transform: translate(4rem, 4rem);
+  }
+  75%,
+  95% {
+    transform: translate(0, 4rem);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes rotateBlockTopRight {
+  0%,
+  20% {
+    transform: translate(0, 0);
+  }
+  25%,
+  45% {
+    transform: translate(0, 4rem);
+  }
+  50%,
+  70% {
+    transform: translate(-4rem, 4rem);
+  }
+  75%,
+  95% {
+    transform: translate(-4rem, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes rotateBlockBottomLeft {
+  0%,
+  20% {
+    transform: translate(0, 0);
+  }
+  25%,
+  45% {
+    transform: translate(0, -4rem);
+  }
+  50%,
+  70% {
+    transform: translate(4rem, -4rem);
+  }
+  75%,
+  95% {
+    transform: translate(4rem, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@keyframes rotateBlockBottomRight {
+  0%,
+  20% {
+    transform: translate(0, 0);
+  }
+  25%,
+  45% {
+    transform: translate(-4rem, 0);
+  }
+  50%,
+  70% {
+    transform: translate(-4rem, -4rem);
+  }
+  75%,
+  95% {
+    transform: translate(0, -4rem);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+@utility animate-block-1 {
+  will-change: transform;
+  animation: rotateBlockTopLeft 8s cubic-bezier(0.34, 1.4, 0.64, 1) infinite;
+}
+
+@utility animate-block-2 {
+  will-change: transform;
+  animation: rotateBlockTopRight 8s cubic-bezier(0.34, 1.4, 0.64, 1) infinite;
+}
+
+@utility animate-block-3 {
+  will-change: transform;
+  animation: rotateBlockBottomLeft 8s cubic-bezier(0.34, 1.4, 0.64, 1) infinite;
+}
+
+@utility animate-block-4 {
+  will-change: transform;
+  animation: rotateBlockBottomRight 8s cubic-bezier(0.34, 1.4, 0.64, 1) infinite;
+}
