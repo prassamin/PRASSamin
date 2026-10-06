@@ -9,7 +9,7 @@ import { TextSelectionMenu } from "./TextSelectionMenu";
 import { InlineTooltipProvider } from "./InlineTooltipContext";
 import { IconPickerProvider } from "./IconPickerContext";
 import { IconPickerModal } from "./IconPickerModal";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 interface CanvasAreaProps {
   blocks: MdxBlock[];
@@ -75,7 +75,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     const midY = rect.top + rect.height / 2;
     const position: "top" | "bottom" = e.clientY < midY ? "top" : "bottom";
 
-    if (dropIndicator?.index !== index || dropIndicator?.position !== position) {
+    if (
+      dropIndicator?.index !== index ||
+      dropIndicator?.position !== position
+    ) {
       setDropIndicator({ index, position });
     }
   };
@@ -97,11 +100,14 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     const targetIndex = position === "top" ? index : index + 1;
 
     // Case 1: Reordering existing blocks
-    const reorderData = e.dataTransfer.getData("application/mdx-canvas-reorder");
+    const reorderData = e.dataTransfer.getData(
+      "application/mdx-canvas-reorder",
+    );
     if (reorderData !== "") {
       const srcIdx = parseInt(reorderData, 10);
       if (!isNaN(srcIdx)) {
-        const finalTarget = srcIdx < targetIndex ? targetIndex - 1 : targetIndex;
+        const finalTarget =
+          srcIdx < targetIndex ? targetIndex - 1 : targetIndex;
         if (srcIdx !== finalTarget) {
           onReorder(srcIdx, finalTarget);
         }
@@ -111,7 +117,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     }
 
     // Case 2: Dropping new block from the component tray
-    const newBlockType = e.dataTransfer.getData("application/mdx-block-type") as MdxBlockType;
+    const newBlockType = e.dataTransfer.getData(
+      "application/mdx-block-type",
+    ) as MdxBlockType;
     if (newBlockType) {
       onDropNewBlock(newBlockType, targetIndex);
     }
@@ -124,7 +132,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     setDropIndicator(null);
     setIsDropTargetActive(false);
 
-    const reorderData = e.dataTransfer.getData("application/mdx-canvas-reorder");
+    const reorderData = e.dataTransfer.getData(
+      "application/mdx-canvas-reorder",
+    );
     if (reorderData !== "") {
       const srcIdx = parseInt(reorderData, 10);
       if (!isNaN(srcIdx) && srcIdx !== blocks.length - 1) {
@@ -134,7 +144,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       return;
     }
 
-    const newBlockType = e.dataTransfer.getData("application/mdx-block-type") as MdxBlockType;
+    const newBlockType = e.dataTransfer.getData(
+      "application/mdx-block-type",
+    ) as MdxBlockType;
     if (newBlockType) {
       onDropNewBlock(newBlockType, blocks.length);
     }
@@ -156,87 +168,90 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
           <IconPickerModal />
 
           {blocks.length === 0 ? (
-        /* Empty State Drop Target */
-        <div
-          onDragOver={(e) => {
-            e.preventDefault();
-            setIsDropTargetActive(true);
-          }}
-          onDragLeave={() => setIsDropTargetActive(false)}
-          onDrop={handleContainerDrop}
-          className={cn(
-            "border-2 border-dashed rounded-3xl p-12 text-center flex flex-col items-center justify-center transition-all min-h-[300px]",
-            isDropTargetActive
-              ? "border-accent bg-accent/5 scale-[1.01]"
-              : "border-white/10 bg-white/[0.01]"
-          )}
-        >
-          <h3 className="text-sm font-semibold text-white font-rethink">
-            Your Canvas is Empty
-          </h3>
-          <p className="text-xs text-neutral-400 font-inter mt-1 max-w-sm mx-auto leading-relaxed">
-            Drag components from the library panel on the left or click on them to start building your MDX content visually!
-          </p>
-        </div>
-      ) : (
-        /* Blocks Stack */
-        <div className="space-y-4 max-w-3xl mx-auto">
-          {blocks.map((block, index) => (
+            /* Empty State Drop Target */
             <div
-              key={block.id}
-              data-canvas-block-id={block.id}
-              onClickCapture={() => onActiveBlockChange?.(block.id)}
-              onFocusCapture={() => onActiveBlockChange?.(block.id)}
-              onDragOver={(e) => handleItemDragOver(e, index)}
-              onDragLeave={handleItemDragLeave}
-              onDrop={(e) => handleItemDrop(e, index)}
-              className="relative transition-all"
+              onDragOver={(e) => {
+                e.preventDefault();
+                setIsDropTargetActive(true);
+              }}
+              onDragLeave={() => setIsDropTargetActive(false)}
+              onDrop={handleContainerDrop}
+              className={cn(
+                "border-2 border-dashed rounded-3xl p-12 text-center flex flex-col items-center justify-center transition-all min-h-[300px]",
+                isDropTargetActive
+                  ? "border-accent bg-accent/5 scale-[1.01]"
+                  : "border-white/10 bg-white/[0.01]",
+              )}
             >
-              {/* Drop Indicator (Insert Above) */}
-              {dropIndicator?.index === index && dropIndicator?.position === "top" && (
-                <DropIndicator className="absolute -top-3.5 left-0 right-0" />
-              )}
-
-              <CanvasBlockItem
-                block={block}
-                index={index}
-                totalBlocks={blocks.length}
-                onUpdateProps={onUpdateProps}
-                onMoveUp={onMoveUp}
-                onMoveDown={onMoveDown}
-                onDuplicate={onDuplicate}
-                onDelete={onDelete}
-                onDragStart={handleDragStart}
-                onNestedDragChange={handleNestedDragChange}
-              />
-
-              {/* Drop Indicator (Insert Below) */}
-              {dropIndicator?.index === index && dropIndicator?.position === "bottom" && (
-                <DropIndicator className="absolute -bottom-3.5 left-0 right-0" />
-              )}
+              <h3 className="text-sm font-semibold text-white font-rethink">
+                Your Canvas is Empty
+              </h3>
+              <p className="text-xs text-neutral-400 font-inter mt-1 max-w-sm mx-auto leading-relaxed">
+                Drag components from the library panel on the left or click on
+                them to start building your MDX content visually!
+              </p>
             </div>
-          ))}
+          ) : (
+            /* Blocks Stack */
+            <div className="space-y-4 max-w-3xl mx-auto">
+              {blocks.map((block, index) => (
+                <div
+                  key={block.id}
+                  data-canvas-block-id={block.id}
+                  onClickCapture={() => onActiveBlockChange?.(block.id)}
+                  onFocusCapture={() => onActiveBlockChange?.(block.id)}
+                  onDragOver={(e) => handleItemDragOver(e, index)}
+                  onDragLeave={handleItemDragLeave}
+                  onDrop={(e) => handleItemDrop(e, index)}
+                  className="relative transition-all"
+                >
+                  {/* Drop Indicator (Insert Above) */}
+                  {dropIndicator?.index === index &&
+                    dropIndicator?.position === "top" && (
+                      <DropIndicator className="absolute -top-3.5 left-0 right-0" />
+                    )}
 
-          {/* End of list drop zone */}
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setIsDropTargetActive(true);
-            }}
-            onDragLeave={() => setIsDropTargetActive(false)}
-            onDrop={handleContainerDrop}
-            className={cn(
-              "border-2 border-dashed rounded-2xl p-4 text-center text-xs font-medium transition-all flex items-center justify-center gap-2 select-none",
-              isDropTargetActive
-                ? "border-accent text-accent bg-accent/5 scale-[1.01]"
-                : "border-white/10 text-neutral-500 hover:border-white/20 hover:text-neutral-400"
-            )}
-          >
-            <LuPlus className="w-4 h-4" />
-            <span>Drop next block here from library</span>
-          </div>
-        </div>
-      )}
+                  <CanvasBlockItem
+                    block={block}
+                    index={index}
+                    totalBlocks={blocks.length}
+                    onUpdateProps={onUpdateProps}
+                    onMoveUp={onMoveUp}
+                    onMoveDown={onMoveDown}
+                    onDuplicate={onDuplicate}
+                    onDelete={onDelete}
+                    onDragStart={handleDragStart}
+                    onNestedDragChange={handleNestedDragChange}
+                  />
+
+                  {/* Drop Indicator (Insert Below) */}
+                  {dropIndicator?.index === index &&
+                    dropIndicator?.position === "bottom" && (
+                      <DropIndicator className="absolute -bottom-3.5 left-0 right-0" />
+                    )}
+                </div>
+              ))}
+
+              {/* End of list drop zone */}
+              <div
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  setIsDropTargetActive(true);
+                }}
+                onDragLeave={() => setIsDropTargetActive(false)}
+                onDrop={handleContainerDrop}
+                className={cn(
+                  "border-2 border-dashed rounded-2xl p-4 text-center text-xs font-medium transition-all flex items-center justify-center gap-2 select-none",
+                  isDropTargetActive
+                    ? "border-accent text-accent bg-accent/5 scale-[1.01]"
+                    : "border-white/10 text-neutral-500 hover:border-white/20 hover:text-neutral-400",
+                )}
+              >
+                <LuPlus className="w-4 h-4" />
+                <span>Drop next block here from library</span>
+              </div>
+            </div>
+          )}
         </IconPickerProvider>
       </InlineTooltipProvider>
     </div>

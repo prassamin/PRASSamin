@@ -31,7 +31,7 @@ import {
   ComponentTrayItem,
   MdxBlockType,
 } from "../types";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 interface ComponentTrayProps {
   onAddBlock: (type: MdxBlockType) => void;

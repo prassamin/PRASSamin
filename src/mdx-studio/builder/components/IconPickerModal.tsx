@@ -21,7 +21,7 @@ import {
 import * as luIcons from "react-icons/lu";
 import * as siIcons from "react-icons/si";
 import { useIconPicker } from "./IconPickerContext";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 // Map of all icon components from both libraries
 const ALL_ICONS_MAP: Record<

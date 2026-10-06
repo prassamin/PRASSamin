@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 interface DropIndicatorProps {
   className?: string;
@@ -10,7 +10,7 @@ export const DropIndicator: React.FC<DropIndicatorProps> = ({ className }) => {
     <div
       className={cn(
         "relative w-full h-1 my-1 flex items-center justify-center pointer-events-none z-50 animate-in fade-in-0 duration-150",
-        className
+        className,
       )}
     >
       {/* Central Glowing Beam */}

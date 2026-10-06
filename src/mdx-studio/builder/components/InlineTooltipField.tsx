@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LuMessageSquareQuote, LuX, LuSmile } from "react-icons/lu";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { useInlineTooltip } from "./InlineTooltipContext";
 import { useIconPicker } from "./IconPickerContext";
 import {
@@ -46,9 +46,9 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
   variant = "glass",
   className,
 }) => {
-  const [node, setNode] = useState<HTMLInputElement | HTMLTextAreaElement | null>(
-    null,
-  );
+  const [node, setNode] = useState<
+    HTMLInputElement | HTMLTextAreaElement | null
+  >(null);
   const [pendingTip, setPendingTip] = useState("");
   const { target, close } = useInlineTooltip();
   const { openIconPicker } = useIconPicker();
@@ -161,7 +161,10 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
       // Already live-written (possibly with empty content while typing) -
       // if the user blurred with no text, empty tooltips are undone
       if (!pendingTip.trim()) {
-        setFieldValue(node!, value.substring(0, at.start) + anchor.raw + value.substring(at.end));
+        setFieldValue(
+          node!,
+          value.substring(0, at.start) + anchor.raw + value.substring(at.end),
+        );
       }
       close();
       return;
@@ -311,7 +314,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
           className="rounded-xl border border-pink-400/20 bg-pink-400/[0.05] p-2.5 space-y-1.5"
         >
           <div className="flex items-center gap-1.5">
-            <LuMessageSquareQuote className="w-3.5 h-3.5 text-pink-300 shrink-0" /> 
+            <LuMessageSquareQuote className="w-3.5 h-3.5 text-pink-300 shrink-0" />
             <input
               type="text"
               readOnly

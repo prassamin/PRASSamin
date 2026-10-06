@@ -5,7 +5,7 @@ import { StudioHeader } from "./components/StudioHeader";
 import { MdxBuilder } from "./builder";
 import { useMdxStudio } from "./MdxStudioContext";
 import { MdxStudioModalProps } from "./types";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
   informationSlot,

@@ -23,7 +23,7 @@ import {
   LuX,
 } from "react-icons/lu";
 import { toast } from "@heroui/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { motion, AnimatePresence } from "motion/react";
 import { createPortal } from "react-dom";
 

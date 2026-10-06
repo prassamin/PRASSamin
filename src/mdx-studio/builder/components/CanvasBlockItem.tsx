@@ -61,7 +61,7 @@ import {
 } from "../types";
 import { LuList, LuListOrdered, LuListTodo, LuCheck } from "react-icons/lu";
 import { createBlock } from "../compiler";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { DropIndicator } from "./DropIndicator";
 import { ImagePicker } from "@/components/ImagePicker";
 import { InlineTooltipField } from "./InlineTooltipField";
