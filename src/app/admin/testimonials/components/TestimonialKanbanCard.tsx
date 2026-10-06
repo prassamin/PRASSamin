@@ -5,7 +5,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { TestimonialType } from "@/types";
 import { TestimonialCard } from "./TestimonialCard";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 interface TestimonialKanbanCardProps {
   testimonial: TestimonialType;
@@ -13,18 +13,13 @@ interface TestimonialKanbanCardProps {
   onDelete: (item: TestimonialType) => void;
 }
 
-export const TestimonialKanbanCard: React.FC<TestimonialKanbanCardProps> = React.memo(
-  function TestimonialKanbanCard({ testimonial, onEdit, onDelete }) {
-    const {
-      attributes,
-      listeners,
-      setNodeRef,
-      transform,
-      isDragging,
-    } = useSortable({
-      id: String(testimonial.id),
-      data: { testimonial },
-    });
+export const TestimonialKanbanCard: React.FC<TestimonialKanbanCardProps> =
+  React.memo(function TestimonialKanbanCard({ testimonial, onEdit, onDelete }) {
+    const { attributes, listeners, setNodeRef, transform, isDragging } =
+      useSortable({
+        id: String(testimonial.id),
+        data: { testimonial },
+      });
 
     return (
       <div
@@ -54,5 +49,4 @@ export const TestimonialKanbanCard: React.FC<TestimonialKanbanCardProps> = React
         />
       </div>
     );
-  },
-);
+  });

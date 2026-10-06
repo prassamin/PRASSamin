@@ -17,7 +17,7 @@ import {
 } from "react-icons/lu";
 import { Spinner, toast } from "@heroui/react";
 import { TestimonialCategoryType } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 export interface TestimonialFormData {
   name: string;

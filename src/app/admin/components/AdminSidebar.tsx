@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { Avatar, Chip } from "@heroui/react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { UserType } from "@/types";
 import { LuUser } from "react-icons/lu";
 import { Tooltip } from "@/components/tooltip";
@@ -26,7 +26,12 @@ interface AdminSidebarProps {
   onClose: () => void;
 }
 
-const mainNavItems: { title: string; href: string; icon: any; badge?: string }[] = [
+const mainNavItems: {
+  title: string;
+  href: string;
+  icon: any;
+  badge?: string;
+}[] = [
   {
     title: "Dashboard",
     href: "/admin",
@@ -101,12 +106,11 @@ const SidebarInner: React.FC<SidebarInnerProps> = ({
         {/* Navigation Items List */}
         <nav className="flex flex-col gap-1.5">
           {mainNavItems.map((item) => {
-            const isActive =
-              pathname
-                ? item.href === "/admin"
-                  ? pathname === "/admin"
-                  : pathname.startsWith(item.href)
-                : false;
+            const isActive = pathname
+              ? item.href === "/admin"
+                ? pathname === "/admin"
+                : pathname.startsWith(item.href)
+              : false;
 
             const linkItem = (
               <Link

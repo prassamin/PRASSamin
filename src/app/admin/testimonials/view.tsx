@@ -38,7 +38,7 @@ import {
   deleteTestimonialAction,
   TestimonialActionInput,
 } from "./actions";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 interface TestimonialsViewProps {
   testimonials?: TestimonialType[];

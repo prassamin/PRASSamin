@@ -11,12 +11,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import {
-  BarChart2,
-  Table as TableIcon,
-  ExternalLink,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
+import { BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
+import { cn } from "@heroui/react";
 
 export interface AnalyticsItem {
   slug: string;

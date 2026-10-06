@@ -1,5 +1,5 @@
 import React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 export interface AdminBodyProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ export const AdminBody: React.FC<AdminBodyProps> = ({
     <div
       className={cn(
         "w-full rounded-2xl bg-muted/35 border border-white/[0.06] p-4 sm:p-6 lg:p-7 shadow-lg not-sm:min-h-[calc(100dvh-100px)] min-h-[calc(100dvh-112px)] flex flex-col gap-6",
-        className
+        className,
       )}
       {...props}
     >

@@ -13,7 +13,7 @@ import {
   LuChevronDown,
   LuChevronUp,
 } from "react-icons/lu";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface EducationCardProps {
@@ -44,7 +44,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
         "p-5 md:p-6 transition-all duration-300 shadow-md group overflow-hidden",
         isCurrent
           ? "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-emerald-400 before:to-emerald-500/20"
-          : "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-white/20 before:to-transparent"
+          : "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-white/20 before:to-transparent",
       )}
     >
       {/* Top ambient hover glow */}
@@ -53,7 +53,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
           "absolute -top-16 -right-16 w-44 h-44 rounded-full blur-3xl pointer-events-none transition-all duration-500",
           isCurrent
             ? "bg-emerald-500/5 group-hover:bg-emerald-500/10"
-            : "bg-white/[0.02] group-hover:bg-white/[0.05]"
+            : "bg-white/[0.02] group-hover:bg-white/[0.05]",
         )}
       />
 
@@ -67,7 +67,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
                 "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
                 isCurrent
                   ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-emerald-500/10"
-                  : "bg-white/[0.06] border border-white/10 text-neutral-300"
+                  : "bg-white/[0.06] border border-white/10 text-neutral-300",
               )}
             >
               <LuGraduationCap className="w-5 h-5 md:w-6 md:h-6" />
@@ -98,7 +98,9 @@ export const EducationCard: React.FC<EducationCardProps> = ({
             {/* Period Badge — grows to fill on mobile */}
             <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-neutral-300 shadow-xs md:flex-none justify-center md:justify-start min-w-0">
               <LuCalendar className="w-3.5 h-3.5 text-emerald-400/80 shrink-0" />
-              <span className="truncate min-w-0">{education.period || "Present"}</span>
+              <span className="truncate min-w-0">
+                {education.period || "Present"}
+              </span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -112,7 +114,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
               >
                 <LuPencil className="w-3.5 h-3.5" />
               </button>
-  
+
               {/* Delete Button */}
               <button
                 type="button"
