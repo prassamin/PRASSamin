@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useState } from "react";
-import { Tooltip } from "@/components/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 
 export interface InlineTooltipProps {
   /** Hover text - may contain real newlines (stored as &#10; in MDX) */

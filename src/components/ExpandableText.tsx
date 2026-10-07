@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import { cn } from "@/utils";
+import { cn } from "@heroui/react";
 
 interface ExpandableTextProps {
   text: string;
@@ -30,8 +30,8 @@ const ExpandableText: React.FC<ExpandableTextProps> = ({
   const displayText = isExpanded
     ? text
     : typeof maxLength === "number"
-    ? `${text.slice(0, maxLength)}${text.length > maxLength ? "..." : ""}`
-    : maxLength === "max" && text;
+      ? `${text.slice(0, maxLength)}${text.length > maxLength ? "..." : ""}`
+      : maxLength === "max" && text;
 
   return (
     <div className={cn(className)}>

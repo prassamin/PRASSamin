@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, HTMLAttributes, useContext } from "react";
-import { cn } from "@/utils";
+import { cn } from "@heroui/react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Element } from "@pras-ui/slot";
 
@@ -17,7 +17,7 @@ const iconVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 const contentVariants = cva(
@@ -32,7 +32,7 @@ const contentVariants = cva(
     defaultVariants: {
       variant: "default",
     },
-  }
+  },
 );
 
 interface TimelineVariantsProps extends VariantProps<typeof iconVariants> {
@@ -101,7 +101,7 @@ const Timeline: React.FC<TimelineProps> = ({
         }}
         className={cn(
           `flex flex-col`,
-          typeof maxWidth === "string" ? maxWidth : ""
+          typeof maxWidth === "string" ? maxWidth : "",
         )}
       >
         {childWithContext}
@@ -124,7 +124,7 @@ const TimelineItem: React.FC<HTMLAttributes<HTMLDivElement>> = ({
       className={cn(
         `relative flex items-start gap-4`,
         position === "left" ? "flex-row-reverse" : "flex-row",
-        className
+        className,
       )}
       {...props}
     >
@@ -152,7 +152,7 @@ const TimelineIcon = React.forwardRef<HTMLDivElement, TimelineIconProps>(
         {icon || index}
       </div>
     );
-  }
+  },
 );
 TimelineIcon.displayName = "TimelineIcon";
 
@@ -170,7 +170,7 @@ const TimelineContent: React.FC<HTMLAttributes<HTMLDivElement>> = ({
       className={cn(
         TimelineVariants({ type: "content", variant }),
         position === "left" ? "text-right" : "text-left",
-        className
+        className,
       )}
     >
       {children}
@@ -233,7 +233,7 @@ const TimelineDescription = React.forwardRef<
     ref={ref}
     className={cn(
       `text-sm text-foreground/70 max-h-full min-w-full max-w-full overflow-y-auto`,
-      className
+      className,
     )}
     {...props}
   >
@@ -256,7 +256,7 @@ const TimelineConnector: React.FC<HTMLAttributes<HTMLDivElement>> = ({
         className={cn(
           `absolute top-8 w-0.5 bg-border h-full -z-10`,
           position === "left" ? "right-[17px]" : "left-[17px]",
-          className
+          className,
         )}
       />
     )

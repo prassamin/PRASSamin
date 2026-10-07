@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { cn } from "@/utils";
+import { cn } from "@heroui/react";
 
 interface CountDownProps extends React.HTMLAttributes<HTMLDivElement> {
   targetDate: Date;

@@ -1,63 +1,96 @@
 "use client";
+
 import NextLink from "next/link";
-import NProgress from "nprogress";
-
-import { addBasePath } from "next/dist/client/add-base-path";
 import React from "react";
+import { cn } from "@heroui/react";
 
-function getURL(href: string) {
-  return new URL(addBasePath(href), location.href);
+export type LinkProps = {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+} & Omit<React.ComponentPropsWithRef<"a">, "href" | "children" | "className">;
+
+const INTERNAL_PROTOCOLS = new Set(["http:", "https:"]);
+
+function isExternalUrl(href: string): boolean {
+  // Relative paths, anchors, and query strings stay internal.
+  if (href.startsWith("/") || href.startsWith("#") || href.startsWith("?")) {
+    return false;
+  }
+
+  // Non-web protocols aren't external website navigation.
+  if (/^(mailto|tel|sms):/i.test(href)) {
+    return false;
+  }
+
+  try {
+    const url = new URL(href, "https://internal.local");
+
+    // Protocol-relative URLs and absolute URLs are supported.
+    if (href.startsWith("//") || /^[a-z][a-z\d+.-]*:/i.test(href)) {
+      return (
+        INTERNAL_PROTOCOLS.has(url.protocol) &&
+        url.origin !== "https://internal.local"
+      );
+    }
+
+    // Ordinary relative paths remain internal.
+    return false;
+  } catch {
+    return false;
+  }
 }
 
-// https://github.com/vercel/next.js/blob/400ccf7b1c802c94127d8d8e0d5e9bdf9aab270c/packages/next/src/client/link.tsx#L169
-function isModifiedEvent(
-  event: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-) {
-  const eventTarget = event.currentTarget;
-  const target = eventTarget.getAttribute("target");
-  return (
-    (target && target !== "_self") ||
-    event.metaKey ||
-    event.ctrlKey ||
-    event.shiftKey ||
-    event.altKey || // triggers resource download
-    (event.nativeEvent && event.nativeEvent.button === 1)
-  );
-}
+export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
+  ({ children, href, className, target, rel, ...rest }, ref) => {
+    const external = isExternalUrl(href);
 
-export function shouldTriggerStartEvent(
-  href: string,
-  clickEvent: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-) {
-  const current = window.location;
-  const target = getURL(href);
+    // Respect explicit target preferences.
+    const resolvedTarget = target ?? (external ? "_blank" : undefined);
+    const opensNewTab = resolvedTarget === "_blank";
 
-  if (clickEvent && isModifiedEvent(clickEvent)) return false; // modified events: fallback to browser behaviour
-  if (current.origin !== target.origin) return false; // external URL
-  if (current.pathname === target.pathname && current.search === target.search)
-    return false; // same URL
+    const resolvedRel = opensNewTab
+      ? Array.from(
+          new Set([
+            ...(rel?.split(/\s+/).filter(Boolean) ?? []),
+            "noopener",
+            "noreferrer",
+          ]),
+        ).join(" ")
+      : rel;
 
-  return true;
-}
+    const classes = cn(opensNewTab && "cursor-newtab", className);
 
-export const Link = React.forwardRef<
-  HTMLAnchorElement,
-  React.ComponentPropsWithoutRef<typeof NextLink>
->(({ onClick, href, ...props }, ref) => {
-  const useLink = href && (href as string).startsWith("/");
-  if (!useLink) return <a href={href as string} onClick={onClick} {...props} />;
+    // External websites use a regular anchor.
+    if (external) {
+      return (
+        <a
+          {...rest}
+          ref={ref}
+          href={href}
+          target={resolvedTarget}
+          rel={resolvedRel}
+          className={classes}
+        >
+          {children}
+        </a>
+      );
+    }
 
-  return (
-    <NextLink
-      href={href as any}
-      onClick={(event) => {
-        if (shouldTriggerStartEvent(href as string, event)) NProgress.start();
-        if (onClick) onClick(event);
-      }}
-      {...props}
-      ref={ref}
-    />
-  );
-});
+    // Internal navigation uses Next.js routing.
+    return (
+      <NextLink
+        {...rest}
+        ref={ref}
+        href={href}
+        target={target}
+        rel={rel}
+        className={className}
+      >
+        {children}
+      </NextLink>
+    );
+  },
+);
 
 Link.displayName = "Link";

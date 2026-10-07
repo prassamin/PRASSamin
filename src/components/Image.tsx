@@ -1,16 +1,16 @@
 "use client";
 
 import * as React from "react";
-import NextImage, {
-  type ImageProps as NextImageProps,
-} from "next/image";
+import NextImage, { type ImageProps as NextImageProps } from "next/image";
 import { ImageOff } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 export type ImageSrc = NextImageProps["src"];
 
-export interface ImageProps
-  extends Omit<NextImageProps, "src" | "alt" | "width" | "height"> {
+export interface ImageProps extends Omit<
+  NextImageProps,
+  "src" | "alt" | "width" | "height"
+> {
   src: ImageSrc;
   alt: string;
   width?: number | `${number}`;
@@ -60,7 +60,8 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     ref,
   ) {
     const isFill = fill ?? (!width && !height);
-    const isProgressive = mode !== undefined ? mode === "progressive" : progressive;
+    const isProgressive =
+      mode !== undefined ? mode === "progressive" : progressive;
 
     const srcKey = getSrcKey(src);
     const [currentSrc, setCurrentSrc] = React.useState<ImageSrc>(src);

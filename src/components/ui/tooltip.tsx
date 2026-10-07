@@ -1,51 +1,65 @@
-"use client";
+import { cn } from "@heroui/react";
+import { Placement } from "@/types/heroui";
+import {
+  TooltipContentProps,
+  Tooltip as TooltipPrimitive,
+} from "@heroui/react";
+import React from "react";
 
-import * as React from "react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+type TooltipProps = React.ComponentPropsWithRef<typeof TooltipPrimitive> & {
+  children: React.ReactNode;
+  content: React.ReactNode;
+  placement?: Placement;
+  showArrow?: boolean;
+  noDelay?: boolean;
+  /**
+   * The delay time for the tooltip to close. [See guidelines](https://spectrum.adobe.com/page/tooltip/#Warmup-and-cooldown).
+   * @default 100
+   */
+  closeDelay?: number;
+  /**
+   * The delay time for the tooltip to show up. [See guidelines](https://spectrum.adobe.com/page/tooltip/#Immediate-or-delayed-appearance).
+   * @default 400
+   */
+  delay?: number;
+  /**
+   * The props for the tooltip content.
+   */
+  contentProps?: Omit<
+    TooltipContentProps,
+    "children" | "placement" | "showArrow"
+  >;
+};
 
-import { cn } from "@/utils";
-
-const TooltipProvider = TooltipPrimitive.Provider;
-
-const Tooltip = TooltipPrimitive.Root;
-
-const TooltipTrigger = TooltipPrimitive.Trigger;
-
-const TooltipArrow = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.TooltipArrow>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.TooltipArrow>
->(({ className, ...props }, ref) => (
-  <TooltipPrimitive.TooltipArrow
-    ref={ref}
-    className={cn("fill-muted", className)}
-    {...props}
-  />
-));
-
-TooltipArrow.displayName = "TooltipArrow";
-
-const TooltipContent = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className, sideOffset = 4, ...props }, ref) => (
-  <TooltipPrimitive.Portal>
-    <TooltipPrimitive.Content
-      ref={ref}
-      sideOffset={sideOffset}
-      className={cn(
-        "z-50 overflow-hidden rounded-md bg-accent px-3 py-1.5 text-md text-foreground animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
+export const Tooltip: React.FC<TooltipProps> = ({
+  children,
+  content,
+  placement,
+  showArrow,
+  noDelay,
+  delay,
+  closeDelay,
+  contentProps,
+  ...props
+}) => {
+  return (
+    <TooltipPrimitive
+      delay={delay || (noDelay ? 0 : 400)}
+      closeDelay={closeDelay || (noDelay ? 0 : 100)}
       {...props}
-    />
-  </TooltipPrimitive.Portal>
-));
-TooltipContent.displayName = TooltipPrimitive.Content.displayName;
-
-export {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-  TooltipProvider,
-  TooltipArrow,
+    >
+      <TooltipPrimitive.Trigger>{children}</TooltipPrimitive.Trigger>
+      <TooltipPrimitive.Content
+        {...contentProps}
+        className={cn(
+          "bg-neutral-700/50 backdrop-blur-lg gradientBorder",
+          contentProps?.className,
+        )}
+        placement={placement}
+        showArrow={showArrow}
+      >
+        {content}
+      </TooltipPrimitive.Content>
+    </TooltipPrimitive>
+  );
 };

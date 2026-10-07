@@ -10,7 +10,7 @@ import {
 } from "react-icons/lu";
 import { useShortcuts } from "@keybindy/react";
 import { CloudinaryFile } from "@/types";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import { formatBytes } from "@/lib/utils";
 import {
   getMediaLibraryImages,

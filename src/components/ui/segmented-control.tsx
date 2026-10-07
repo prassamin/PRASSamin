@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion, MotionConfig, useReducedMotion } from "framer-motion";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 
 /* -------------------------------------------------------------------------- */
 /*                                    Types                                   */
@@ -31,27 +31,39 @@ type NormalizedOption<T extends string> = {
  * "Single / Multiple"   -> "single-multiple"
  */
 
-type Digit =
-  | "0"
-  | "1"
-  | "2"
-  | "3"
-  | "4"
-  | "5"
-  | "6"
-  | "7"
-  | "8"
-  | "9";
+type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
 
 type Letter =
-  | "a" | "b" | "c" | "d" | "e" | "f" | "g" | "h" | "i"
-  | "j" | "k" | "l" | "m" | "n" | "o" | "p" | "q" | "r"
-  | "s" | "t" | "u" | "v" | "w" | "x" | "y" | "z";
+  | "a"
+  | "b"
+  | "c"
+  | "d"
+  | "e"
+  | "f"
+  | "g"
+  | "h"
+  | "i"
+  | "j"
+  | "k"
+  | "l"
+  | "m"
+  | "n"
+  | "o"
+  | "p"
+  | "q"
+  | "r"
+  | "s"
+  | "t"
+  | "u"
+  | "v"
+  | "w"
+  | "x"
+  | "y"
+  | "z";
 
 type AlphaNumeric = Letter | Uppercase<Letter> | Digit;
 
-type IsAlphaNumeric<C extends string> =
-  C extends AlphaNumeric ? true : false;
+type IsAlphaNumeric<C extends string> = C extends AlphaNumeric ? true : false;
 
 type Slugify<
   S extends string,
@@ -70,20 +82,15 @@ type Slugify<
             : ""}${Lowercase<Char>}`,
           false
         >
-      : Slugify<
-          Rest,
-          Output,
-          Output extends "" ? false : true
-        >
+      : Slugify<Rest, Output, Output extends "" ? false : true>
     : Output;
 
 /** Extracts the value type from a string or object option. */
-type OptionValue<O> =
-  O extends string
-    ? Slugify<O>
-    : O extends { value: infer V extends string }
-      ? V
-      : never;
+type OptionValue<O> = O extends string
+  ? Slugify<O>
+  : O extends { value: infer V extends string }
+    ? V
+    : never;
 
 type BaseProps<O extends readonly SegmentedControlOption[]> = {
   options: O;
@@ -122,10 +129,9 @@ export type UncontrolledSegmentedControlProps<
 };
 
 export type SegmentedControlProps<
-  O extends readonly SegmentedControlOption[] = readonly SegmentedControlOption[],
-> =
-  | ControlledSegmentedControlProps<O>
-  | UncontrolledSegmentedControlProps<O>;
+  O extends readonly SegmentedControlOption[] =
+    readonly SegmentedControlOption[],
+> = ControlledSegmentedControlProps<O> | UncontrolledSegmentedControlProps<O>;
 
 /* -------------------------------------------------------------------------- */
 /*                                   Helpers                                  */
@@ -161,9 +167,7 @@ function slugify(value: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function normalizeOptions<
-  const O extends readonly SegmentedControlOption[],
->(
+function normalizeOptions<const O extends readonly SegmentedControlOption[]>(
   options: O,
 ): NormalizedOption<OptionValue<O[number]>>[] {
   return options.map((option) => {
@@ -178,9 +182,7 @@ function normalizeOptions<
   }) as NormalizedOption<OptionValue<O[number]>>[];
 }
 
-function isSelectable<T extends string>(
-  option: NormalizedOption<T>,
-): boolean {
+function isSelectable<T extends string>(option: NormalizedOption<T>): boolean {
   return !option.disabled;
 }
 
@@ -214,27 +216,23 @@ export function SegmentedControl<
     [options],
   );
 
-  const [internalValue, setInternalValue] = React.useState<
-    Value | undefined
-  >(() => {
-    if (props.defaultValue !== undefined) {
-      return props.defaultValue;
-    }
+  const [internalValue, setInternalValue] = React.useState<Value | undefined>(
+    () => {
+      if (props.defaultValue !== undefined) {
+        return props.defaultValue;
+      }
 
-    return normalizedOptions.find(isSelectable)?.value;
-  });
+      return normalizedOptions.find(isSelectable)?.value;
+    },
+  );
 
-  const value: Value | undefined = isControlled
-    ? props.value
-    : internalValue;
+  const value: Value | undefined = isControlled ? props.value : internalValue;
 
   const generatedId = React.useId();
   const groupId = id ?? generatedId;
   const shouldReduceMotion = useReducedMotion();
 
-  const buttonRefs = React.useRef(
-    new Map<Value, HTMLButtonElement>(),
-  );
+  const buttonRefs = React.useRef(new Map<Value, HTMLButtonElement>());
 
   const enabledOptions = React.useMemo(
     () => normalizedOptions.filter(isSelectable),
@@ -253,8 +251,7 @@ export function SegmentedControl<
     if (isControlled) return;
 
     const currentIsValid = normalizedOptions.some(
-      (option) =>
-        option.value === internalValue && isSelectable(option),
+      (option) => option.value === internalValue && isSelectable(option),
     );
 
     if (currentIsValid) return;
@@ -266,9 +263,7 @@ export function SegmentedControl<
     (nextValue: Value) => {
       if (disabled) return;
 
-      const option = normalizedOptions.find(
-        (item) => item.value === nextValue,
-      );
+      const option = normalizedOptions.find((item) => item.value === nextValue);
 
       if (!option || !isSelectable(option)) return;
 
@@ -280,13 +275,7 @@ export function SegmentedControl<
         onValueChange?.(nextValue);
       }
     },
-    [
-      disabled,
-      isControlled,
-      normalizedOptions,
-      onValueChange,
-      value,
-    ],
+    [disabled, isControlled, normalizedOptions, onValueChange, value],
   );
 
   const focusOption = React.useCallback(
@@ -298,10 +287,7 @@ export function SegmentedControl<
   );
 
   const handleKeyDown = React.useCallback(
-    (
-      event: React.KeyboardEvent<HTMLButtonElement>,
-      currentValue: Value,
-    ) => {
+    (event: React.KeyboardEvent<HTMLButtonElement>, currentValue: Value) => {
       if (disabled || enabledOptions.length === 0) return;
 
       const currentIndex = enabledOptions.findIndex(
@@ -407,16 +393,13 @@ export function SegmentedControl<
                 tabIndex={
                   isSelected
                     ? 0
-                    : !hasSelection &&
-                        enabledOptions[0]?.value === option.value
+                    : !hasSelection && enabledOptions[0]?.value === option.value
                       ? 0
                       : -1
                 }
                 disabled={isDisabled}
                 onClick={() => selectValue(option.value)}
-                onKeyDown={(event) =>
-                  handleKeyDown(event, option.value)
-                }
+                onKeyDown={(event) => handleKeyDown(event, option.value)}
                 className={cn(
                   "relative isolate flex shrink-0 items-center justify-center",
                   "select-none whitespace-nowrap font-medium outline-none",
@@ -453,9 +436,7 @@ export function SegmentedControl<
                   />
                 )}
 
-                <span className="relative z-10">
-                  {option.label}
-                </span>
+                <span className="relative z-10">{option.label}</span>
               </button>
             );
           })}
