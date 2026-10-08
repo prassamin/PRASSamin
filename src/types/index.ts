@@ -58,3 +58,20 @@ export interface CloudinaryFolder {
   files?: CloudinaryFile[];
   [key: string]: any;
 }
+
+export type TestimonialCategoryType =
+  | "SOFTWARE_ENGINEER"
+  | "GUESTBOOK"
+  | "MENTOR";
+
+export type TestimonialType = {
+  id: number;
+  quote: string;
+  name: string;
+  role: string;
+  avatar: string;
+  category: TestimonialCategoryType;
+  order: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+};
