@@ -1,4 +1,4 @@
-import { db } from "@/utils/db";
+import { db } from "@/lib/db";
 import { faker } from "@faker-js/faker";
 
 async function main() {
@@ -620,7 +620,6 @@ async function main() {
   //     },
   //   ],
   // });
-
   // Function to generate a single blog object
   // function generateBlog() {
   //   const title = faker.lorem.words({ min: 2, max: 7 });
@@ -638,7 +637,6 @@ async function main() {
   //     { length: faker.number.int({ min: 1, max: 5 }) },
   //     () => faker.lorem.word().toLowerCase()
   //   );
-
   //   return {
   //     title,
   //     slug,
@@ -663,7 +661,6 @@ async function main() {
   //   const category = faker.lorem.word();
   //   const githubUrl = faker.internet.url();
   //   const liveUrl = faker.internet.url();
-
   //   return {
   //     title,
   //     slug,

@@ -77,3 +77,21 @@ model Education {
   created_at  DateTime @default(now()) 
   updated_at  DateTime @updatedAt
 }
+
+enum TestimonialCategory {
+  SOFTWARE_ENGINEER
+  GUESTBOOK
+  MENTOR
+}
+
+model Testimonial {
+  id        Int                 @id @default(autoincrement())
+  quote     String              @db.Text
+  name      String
+  role      String
+  avatar    String
+  category  TestimonialCategory
+  order     Int                 @default(0)
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+}
