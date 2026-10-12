@@ -1,15 +1,49 @@
 import { format, differenceInMonths, parseISO } from "date-fns";
 
+const formatStartDate = (startDate: any): string => {
+  if (!startDate) return "";
+  try {
+    const d =
+      typeof startDate === "string" ? parseISO(startDate) : new Date(startDate);
+    if (isNaN(d.getTime())) return "";
+    return format(d, "MMMM yyyy");
+  } catch {
+    return "";
+  }
+};
+
+const formatEndDate = (endDate: any): string => {
+  if (
+    !endDate ||
+    endDate === "Present" ||
+    String(endDate).toLowerCase() === "present"
+  ) {
+    return "Present";
+  }
+  try {
+    const d =
+      typeof endDate === "string" ? parseISO(endDate) : new Date(endDate);
+    if (isNaN(d.getTime()) || d.getTime() === 0) return "Present";
+    return format(d, "MMMM yyyy");
+  } catch {
+    return "Present";
+  }
+};
+
 const getDuration = (
   startDate: Date | string,
-  endDate: Date | string | null
+  endDate: Date | string | null,
 ) => {
-  const start = typeof startDate === "string" ? parseISO(startDate) : startDate;
-  const end = !endDate
-    ? new Date()
-    : typeof endDate === "string"
-    ? parseISO(endDate)
-    : endDate;
+  const start =
+    typeof startDate === "string" ? parseISO(startDate) : startDate;
+  const end =
+    !endDate ||
+    endDate === "Present" ||
+    String(endDate).toLowerCase() === "present"
+      ? new Date()
+      : typeof endDate === "string"
+      ? parseISO(endDate)
+      : endDate;
 
   // Calculate the difference in months
   let months = differenceInMonths(end, start);
@@ -48,16 +82,22 @@ export const EXPERIENCESERIALIZER = (experiences: any) => {
 
   // main serializer function
   const serializer = (experience: any) => {
+    const startStr = formatStartDate(experience?.start);
+    const endStr = formatEndDate(experience?.end);
+    const duration = getDuration(experience?.start, experience?.end);
+    const period = startStr
+      ? `${startStr} - ${endStr} • ${duration}`
+      : `${endStr} • ${duration}`;
+
     return {
       id: experience.id,
       company: experience.company,
       role: experience.role,
       description: experience?.description,
-      period: `${format(experience.start, "MMMM yyyy")} - ${
-        format(experience?.end, "MMMM yyyy") || "Present"
-      } • ${getDuration(experience.start, experience?.end)}`,
+      period,
       start: experience?.start,
-      end: experience?.end || "Present",
+      end:
+        experience?.end && experience.end !== "Present" ? experience.end : null,
       created_at: experience.created_at,
       updated_at: experience.updated_at,
     };
@@ -78,17 +118,20 @@ export const EDUCATIONSERIALIZER = (educations: any) => {
 
   // main serializer function
   const serializer = (education: any) => {
+    const startStr = formatStartDate(education?.start);
+    const endStr = formatEndDate(education?.end);
+    const period = startStr ? `${startStr} - ${endStr}` : endStr;
+
     return {
       id: education.id,
       degree: education.degree,
       field: education.field,
       school: education.school,
       description: education?.description,
-      period: `${format(education.start, "MMMM yyyy")} - ${
-        format(education?.end, "MMMM yyyy") || "Present"
-      }`,
+      period,
       start: education?.start,
-      end: education?.end || "Present",
+      end:
+        education?.end && education.end !== "Present" ? education.end : null,
       created_at: education.created_at,
       updated_at: education.updated_at,
     };

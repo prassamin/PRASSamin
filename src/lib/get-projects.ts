@@ -1,5 +1,6 @@
-import { projectSource, source } from "@/utils/source";
-import { db } from "@/utils/db";
+import { projectSource, source } from "@/lib/source";
+import { db } from "@/lib/db";
+import type { ThumbnailType } from "@/lib/utils";
 
 type GetProjectsParams = {
   page?: number;
@@ -14,7 +15,7 @@ export interface QueryProjects {
     tools?: string[];
     title: string;
     description?: string;
-    thumbnail?: string;
+    thumbnail?: ThumbnailType;
     createdAt: string;
     updatedAt: string;
     views?: number;
@@ -92,11 +93,11 @@ export async function getProjects({
       case "created_at":
         aKey = Math.max(
           new Date(a.createdAt ?? 0).getTime(),
-          new Date(a.updatedAt ?? 0).getTime()
+          new Date(a.updatedAt ?? 0).getTime(),
         );
         bKey = Math.max(
           new Date(b.createdAt ?? 0).getTime(),
-          new Date(b.updatedAt ?? 0).getTime()
+          new Date(b.updatedAt ?? 0).getTime(),
         );
         break;
       default: // title
@@ -114,7 +115,7 @@ export async function getProjects({
   const start = (page - 1) * limit;
   const pagedprojects = sorted.slice(
     start,
-    limit === Infinity ? undefined : start + limit
+    limit === Infinity ? undefined : start + limit,
   );
 
   const total = filtered.length;

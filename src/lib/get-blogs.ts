@@ -1,5 +1,6 @@
-import { source } from "@/utils/source";
-import { db } from "@/utils/db";
+import { source } from "@/lib/source";
+import { db } from "@/lib/db";
+import readingTime from "reading-time";
 
 type GetBlogsParams = {
   page?: number;
@@ -14,11 +15,12 @@ export interface QueryBlogs {
     tags?: string[];
     title: string;
     description?: string;
-    thumbnail?: string;
+    thumbnail: string;
     createdAt: string;
     updatedAt: string;
     views?: number;
     slug?: string;
+    readingTime?: string;
   })[];
   page: number;
   limit: number;
@@ -46,7 +48,7 @@ export async function getBlogs({
     const inTitle = entry.data.title?.toLowerCase().includes(search);
     const inDesc = entry.data.description?.toLowerCase().includes(search);
     const inTags = entry.data.tags?.some((t) =>
-      t.toLowerCase().includes(search)
+      t.toLowerCase().includes(search),
     );
     return inTitle || inDesc || inTags;
   });
@@ -65,16 +67,18 @@ export async function getBlogs({
   // Combine metadata + stats
   const blogsWithViews = filtered.map((entry) => {
     const views = statsMap.get(entry.slugs.join("/")) || 0;
+
     return {
       title: entry.data.title,
       description: entry.data.description,
       updatedAt: entry.data.updatedAt,
       createdAt: entry.data.createdAt,
       tags: entry.data.tags,
-      thumbnail: entry.data.thumbnail,
+      thumbnail: entry.data.thumbnail || "/assets/blog-placeholder.webp",
       slug: entry.slugs.join("/"),
       url: entry.url,
       views: views,
+      readingTime: readingTime(entry.data.content).text,
     };
   });
 
@@ -91,11 +95,11 @@ export async function getBlogs({
       case "created_at":
         aKey = Math.max(
           new Date(a.createdAt ?? 0).getTime(),
-          new Date(a.updatedAt ?? 0).getTime()
+          new Date(a.updatedAt ?? 0).getTime(),
         );
         bKey = Math.max(
           new Date(b.createdAt ?? 0).getTime(),
-          new Date(b.updatedAt ?? 0).getTime()
+          new Date(b.updatedAt ?? 0).getTime(),
         );
         break;
       default: // title
@@ -113,7 +117,7 @@ export async function getBlogs({
   const start = (page - 1) * limit;
   const pagedBlogs = sorted.slice(
     start,
-    limit === Infinity ? undefined : start + limit
+    limit === Infinity ? undefined : start + limit,
   );
 
   const total = filtered.length;
