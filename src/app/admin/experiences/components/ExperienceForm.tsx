@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { useMdxStudio } from "@/mdx-studio";
 import { LuBriefcase, LuBuilding2, LuArrowRight } from "react-icons/lu";
-import { DatePicker } from "@/components/date-picker";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@heroui/react";
-import { Checkbox } from "@/components/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export interface ExperienceFormData {
   company: string;

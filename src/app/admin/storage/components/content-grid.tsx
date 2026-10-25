@@ -15,15 +15,8 @@ import {
   LuUpload,
 } from "react-icons/lu";
 import type { ContentItem } from "../types";
-import {
-  Dropdown,
-  Header,
-  Label,
-  Skeleton,
-  cn,
-  toast,
-} from "@heroui/react";
-import { Checkbox } from "@/components/checkbox";
+import { Dropdown, Header, Label, Skeleton, cn, toast } from "@heroui/react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import { useContent } from "../hooks/use-content-manager";
 import {
@@ -341,7 +334,10 @@ export function ContentGrid({ onPreview: onPreviewProp }: Props = {}) {
         className="flex-1 flex flex-col items-center justify-center p-8 min-h-80"
       >
         <div className="w-full max-w-md">
-          <ContentUploadDropzone onUpload={uploadFiles} disabled={isUploading} />
+          <ContentUploadDropzone
+            onUpload={uploadFiles}
+            disabled={isUploading}
+          />
         </div>
       </div>
     );

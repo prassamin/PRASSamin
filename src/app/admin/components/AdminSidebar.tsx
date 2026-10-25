@@ -16,7 +16,7 @@ import { Avatar, Chip } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { UserType } from "@/types";
 import { LuUser } from "react-icons/lu";
-import { Tooltip } from "@/components/tooltip";
+import { Tooltip } from "@/components/ui/tooltip";
 import { motion, AnimatePresence } from "motion/react";
 
 interface AdminSidebarProps {

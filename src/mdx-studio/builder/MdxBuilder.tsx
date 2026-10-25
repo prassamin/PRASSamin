@@ -7,8 +7,8 @@ import { createBlock, blocksToMdx, mdxToBlocks } from "./compiler";
 import { ComponentTray } from "./components/ComponentTray";
 import { CanvasArea } from "./components/CanvasArea";
 import { useBlockHistory } from "./hooks/useBlockHistory";
-import MDXContent from "@/components/MDXContent";
-import { SegmentedControl } from "@/components/SegmentedControl";
+import MDXContent from "@/components/mdx/MDXContent";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   LuLayoutTemplate,
   LuCode,

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "@/lib/utils";
+import { cn } from "@heroui/react";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import {
   MdxFiles,
@@ -8,7 +8,7 @@ import {
   Files,
   Folder,
   File,
-} from "./components/MdxFiles";
+} from "./components/mdx/MdxFiles";
 export { MdxFiles, MdxFolder, MdxFile, Files, Folder, File };
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import * as StepsComponents from "fumadocs-ui/components/steps";
@@ -20,7 +20,7 @@ import { Banner } from "fumadocs-ui/components/banner";
 import {
   MdxTypeTable,
   MdxTypeTable as TypeTable,
-} from "./components/MdxTypeTable";
+} from "./components/mdx/MdxTypeTable";
 export { MdxTypeTable, TypeTable };
 import { Callout } from "fumadocs-ui/components/callout";
 import { Heading } from "fumadocs-ui/components/heading";
@@ -32,9 +32,9 @@ import {
   Avatar,
   MdxAvatarGroup,
   AvatarGroup,
-} from "./components/MdxAvatar";
-import { MdxProfile, Profile } from "./components/MdxProfile";
-import { MdxBlockquote, Blockquote } from "./components/MdxBlockquote";
+} from "./components/mdx/MdxAvatar";
+import { MdxProfile, Profile } from "./components/mdx/MdxProfile";
+import { MdxBlockquote, Blockquote } from "./components/mdx/MdxBlockquote";
 export {
   MdxAvatar,
   Avatar,
@@ -45,10 +45,10 @@ export {
   MdxBlockquote,
   Blockquote,
 };
-import { InlineTooltip as MdxInlineTooltip } from "@/components/inline-tooltip";
-import { MdxAccordion, MdxAccordionItem } from "./components/MdxAccordion";
-import { MdxCard, MdxCards } from "./components/MdxCard";
-import { MdxCodeBlock } from "./components/MdxCodeBlock";
+import { InlineTooltip as MdxInlineTooltip } from "@/components/ui/inline-tooltip";
+import { MdxAccordion, MdxAccordionItem } from "./components/mdx/MdxAccordion";
+import { MdxCard, MdxCards } from "./components/mdx/MdxCard";
+import { MdxCodeBlock } from "./components/mdx/MdxCodeBlock";
 
 type HeadProps = React.ComponentProps<typeof Heading>;
 const Head = ({ className, ...props }: HeadProps) => (

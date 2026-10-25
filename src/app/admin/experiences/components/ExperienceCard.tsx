@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { ExperienceType } from "@/types";
-import MDXContent from "@/components/MDXContent";
+import MDXContent from "@/components/mdx/MDXContent";
 import {
   LuBriefcase,
   LuCalendar,

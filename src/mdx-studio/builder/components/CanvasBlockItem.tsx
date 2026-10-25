@@ -67,12 +67,12 @@ import { ImagePicker } from "@/components/ImagePicker";
 import { InlineTooltipField } from "./InlineTooltipField";
 import { Input } from "@heroui/react";
 import { MdxChip } from "@/mdx-components";
-import { MdxAvatar, MdxAvatarGroup } from "@/components/MdxAvatar";
-import { MdxProfile } from "@/components/MdxProfile";
-import { MdxBlockquote } from "@/components/MdxBlockquote";
+import { MdxAvatar, MdxAvatarGroup } from "@/components/mdx/MdxAvatar";
+import { MdxProfile } from "@/components/mdx/MdxProfile";
+import { MdxBlockquote } from "@/components/mdx/MdxBlockquote";
 import { HeroSelect } from "../../components/HeroSelect";
 import { motion, AnimatePresence } from "motion/react";
-import { SegmentedControl } from "@/components/SegmentedControl";
+import { SegmentedControl } from "@/components/ui/segmented-control";
 
 const CODE_LANGUAGES = [
   { label: "TypeScript", value: "typescript" },

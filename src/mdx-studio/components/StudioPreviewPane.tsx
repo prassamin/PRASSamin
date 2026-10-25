@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import MDXContent from "@/components/MDXContent";
+import MDXContent from "@/components/mdx/MDXContent";
 import { Monitor, Smartphone, X } from "lucide-react";
 
 interface StudioPreviewPaneProps {
@@ -101,7 +101,8 @@ export const StudioPreviewPane: React.FC<StudioPreviewPaneProps> = ({
               <MDXContent content={mdx} />
             ) : (
               <p className="text-xs text-neutral-500 italic text-center py-8">
-                No MDX content yet. Add components from the builder to preview live.
+                No MDX content yet. Add components from the builder to preview
+                live.
               </p>
             )}
           </div>
