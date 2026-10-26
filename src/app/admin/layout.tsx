@@ -1,25 +1,24 @@
-import NavigationBar from "@/components/NavigationBar";
-import AdminSidebar from "./components/AdminSidebar";
-import { Toaster } from "@/components/ui/sonner";
-import { getUser } from "@/utils/get-user";
+import { AUTH_PUBLIC_KEY } from "@/constants/env";
+import { AdminLayout } from "./components/AdminLayout";
+import { SESSION_COOKIE_NAME } from "@/constants";
+import { cookies } from "next/headers";
+import { UserType } from "@/types";
+import jwt from "jsonwebtoken";
 
 const AdminRoot = async ({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const user = await getUser();
-  return (
-    <div className="bg-background max-h-screen overflow-hidden">
-      <NavigationBar />
-      <AdminSidebar user={user!}>
-        <main className="px-4 py-3 overflow-auto max-h-[calc(100vh-64px)] w-full scrollbar-auto">
-          {children}
-        </main>
-      </AdminSidebar>
-      <Toaster />
-    </div>
-  );
+  let user: UserType | null;
+  const token = (await cookies()).get(SESSION_COOKIE_NAME)?.value;
+  if (!token) {
+    user = null;
+  } else {
+    user = jwt.verify(token, AUTH_PUBLIC_KEY) as UserType;
+  }
+
+  return <AdminLayout user={user}>{children}</AdminLayout>;
 };
 
 export default AdminRoot;
