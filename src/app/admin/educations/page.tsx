@@ -1,8 +1,9 @@
-import { metatag } from "@/utils/metatag";
+import { metatag } from "@/lib/metatag";
 import AdminEduView from "./view";
 import { cache } from "react";
-import { db } from "@/utils/db";
-import { EDUCATIONSERIALIZER } from "@/utils/serializers";
+import { db } from "@/lib/db";
+import { EDUCATIONSERIALIZER } from "@/lib/serializers";
+import { AdminBody } from "@/app/admin/components/AdminBody";
 
 const Educations = cache(async () => {
   const p = await db.education.findMany({
@@ -19,10 +20,14 @@ export const generateMetadata = () => {
   });
 };
 
-const AdminBlogPage = async () => {
+const AdminEducationsPage = async () => {
   const educations = await Educations();
 
-  return <AdminEduView educations={educations} />;
+  return (
+    <AdminBody>
+      <AdminEduView educations={educations} />
+    </AdminBody>
+  );
 };
 
-export default AdminBlogPage;
+export default AdminEducationsPage;

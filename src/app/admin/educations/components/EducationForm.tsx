@@ -1,266 +1,181 @@
-import { ChangeEvent, useEffect, useState } from "react";
-import { Input } from "@/components/ui/input";
-import { EducationType } from "@/types";
-import { motion } from "motion/react";
-import { toast } from "sonner";
-import { EducationSchema } from "@/validation/zod";
-import { useSonner } from "@/hooks/useSonner";
-import DateRangeSelector from "@/components/DateRangeSelector";
-import HtmlEditor from "@/components/HtmlEditor";
-import { MDXProvider } from "@mdx-js/react";
-import { evaluate } from "@mdx-js/mdx";
-import * as runtime from "react/jsx-runtime";
-import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import { MDXContent } from "mdx/types";
-import { getMDXComponents, mdxComponents } from "@/mdx-components";
-import { debounce } from "@/utils/debounce";
-import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
-import { Keybindy } from "@keybindy/react";
+"use client";
 
-type EducationFormProps = {
-  initialData: Partial<EducationType>;
-  onSubmit: (data: Partial<EducationType>) => void;
-  isSubmitting: boolean;
-  submitButtonText?: string;
-};
+import React, { useState } from "react";
+import { useMdxStudio } from "@/mdx-studio";
+import { LuSchool, LuArrowRight } from "react-icons/lu";
+import { DatePicker } from "@/components/date-picker";
+import { Label } from "@heroui/react";
+import { Checkbox } from "@/components/checkbox";
 
-const EduForm = ({
+export interface EducationFormData {
+  school: string;
+  degree: string;
+  field: string;
+  start: string;
+  end: string;
+  isCurrent: boolean;
+}
+
+interface EducationFormProps {
+  initialData?: EducationFormData;
+  onChange?: (data: EducationFormData) => void;
+}
+
+export const EducationForm: React.FC<EducationFormProps> = ({
   initialData,
-  onSubmit,
-  isSubmitting,
-  submitButtonText = "Save",
-}: EducationFormProps) => {
-  const [formData, setFormData] = useState(initialData);
-  const [currentPage, setCurrentPage] = useState(0);
-  const { resetOptions, setOptions } = useSonner();
-  const [CompiledComponent, setCompiledComponent] = useState<MDXContent | null>(
-    null
-  );
-  const [error, setError] = useState<string | null>(null);
-  const [debounced, setDebounced] = useState(formData.description || "");
+  onChange,
+}) => {
+  const { goToTab } = useMdxStudio();
 
-  useEffect(() => {
-    setFormData(initialData);
-  }, [initialData]);
+  const [form, setForm] = useState<EducationFormData>(() => ({
+    school: initialData?.school || "",
+    degree: initialData?.degree || "",
+    field: initialData?.field || "",
+    start: initialData?.start || "",
+    end: initialData?.end || "",
+    isCurrent: initialData?.isCurrent ?? false,
+  }));
 
-  useEffect(() => {
-    const debouncedFn = debounce((value: string) => {
-      setDebounced(value);
-    }, 400);
-
-    debouncedFn(formData.description || "");
-
-    return debouncedFn.cancel;
-  }, [formData.description]);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    (async () => {
-      try {
-        setError(null);
-
-        const { default: Content } = await evaluate(debounced, {
-          ...runtime,
-          remarkPlugins: [remarkGfm],
-          rehypePlugins: [rehypeSlug],
-        });
-
-        if (!cancelled) {
-          setCompiledComponent(() => Content);
-        }
-      } catch (e: any) {
-        if (!cancelled) {
-          console.warn("MDX Compile Error:", e.message);
-          setError(e.message || "Unknown MDX error");
-          setCompiledComponent(null);
-        }
-      }
-    })();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [debounced]);
-
-  useEffect(() => {
-    setOptions({
-      position: "top-right",
-      expand: true,
-      visibleToasts: 6,
-    });
-
-    return () => resetOptions();
-  }, [resetOptions, setOptions]);
-
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  const updateField = <K extends keyof EducationFormData>(
+    key: K,
+    val: EducationFormData[K],
   ) => {
-    const { name, value } = e.target;
-    const result = EducationSchema.safeParse({ ...formData, [name]: value });
-
-    if (!result.success) {
-      const fieldError = result.error.formErrors.fieldErrors;
-      // @ts-expect-error: zod typescript issue
-      if (fieldError[name]) {
-        // @ts-expect-error: zod typescript issue
-        toast.error(fieldError[name][0]);
+    setForm((prev) => {
+      const next = { ...prev, [key]: val };
+      if (key === "isCurrent" && val === true) {
+        next.end = "";
       }
-    }
-
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = () => {
-    const result = EducationSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors = result.error.formErrors.fieldErrors;
-      Object.keys(fieldErrors).forEach((field) => {
-        // @ts-expect-error: zod error message
-        toast.error(fieldErrors[field][0]);
-      });
-      return;
-    }
-    onSubmit(formData);
+      onChange?.(next);
+      return next;
+    });
   };
 
   return (
-    <Keybindy
-      shortcuts={[
-        {
-          keys: ["Enter"],
-          handler(event, state) {
-            if (currentPage === 1) {
-              handleSubmit();
-            } else {
-              setCurrentPage((prev) => prev + 1);
-            }
-          },
-          options: {
-            data: {
-              description: currentPage === 0 ? "Next" : "Submit",
-              group: "On this page",
-            },
-          },
-        },
-        {
-          keys: ["Ctrl", "Enter"],
-          handler(event, state) {
-            if (currentPage === 1) {
-              setCurrentPage((prev) => prev - 1);
-            }
-          },
-          options: {
-            data: {
-              description: currentPage === 0 ? "Previous" : "Previous",
-              group: "On this page",
-            },
-          },
-        },
-      ]}
-    >
-      <div className="relative overflow-hidden w-full h-full">
-        <motion.div
-          className="flex w-[200%]"
-          animate={{ x: currentPage === 0 ? "0%" : "-50%" }}
-          transition={{ duration: 0.4 }}
-        >
-          {/* Page 1: Education Form */}
-          <div className="w-1/2">
-            <div className="flex flex-col gap-4 p-1">
-              {["school", "degree", "field"].map((field) => (
-                <div className="relative" key={field}>
-                  <Input
-                    name={field}
-                    // @ts-expect-error: avoid
-                    value={formData[field as keyof EducationType] || ""}
-                    onChange={handleChange}
-                    placeholder={
-                      field === "school"
-                        ? "School name"
-                        : field === "degree"
-                        ? "Degree (e.g. Bachelor of Science)"
-                        : "Field of study (e.g. Computer Science)"
-                    }
-                  />
-                  <div className="h-2 w-2 animate-ping rounded-full bg-rose-600 absolute -top-0.5 -left-0.5" />
-                </div>
-              ))}
-              <DateRangeSelector
-                onChange={({ startDate, endDate }) => {
-                  setFormData((prev) => ({
-                    ...prev,
-                    start: startDate,
-                    end: endDate,
-                  }));
-                }}
-                value={{ startDate: formData.start!, endDate: formData.end }}
+    <div className="flex-1 w-full h-full overflow-y-auto px-4 py-8 sm:py-12 flex items-center justify-center relative">
+      <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
+        {/* Header */}
+        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight flex items-center gap-2.5">
+              <span>Academic Credential</span>
+            </h2>
+            <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1 leading-relaxed">
+              Fill in your degree details and timeline
+            </p>
+          </div>
+        </div>
+
+        {/* Form Fields */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* School */}
+          <div className="space-y-1.5 sm:col-span-2">
+            <label className="block text-xs font-medium text-neutral-300 font-inter">
+              Institution / University <span className="text-accent">*</span>
+            </label>
+            <div className="relative">
+              <LuSchool className="w-4 h-4 text-neutral-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={form.school}
+                onChange={(e) => updateField("school", e.target.value)}
+                placeholder="e.g. Uttara University, Harvard, MIT"
+                className="w-full h-10 pl-10 pr-3.5 rounded-xl bg-foreground/4 border border-foreground/6 text-xs text-foreground placeholder:text-neutral-500 focus:outline-none focus:border-accent/60 transition-colors"
+                required
               />
             </div>
           </div>
 
-          {/* Page 2: Markdown Editor & Preview */}
-          <div className="w-1/2 flex flex-col gap-4 p-1 h-[75vh] scrollbar-auto">
-            <div className="h-1/2 flex flex-col">
-              <HtmlEditor
-                defaultValue={formData.description || ""}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, description: value || "" }))
-                }
-              />
-            </div>
-
-            <div className="border p-3 rounded-md bg-muted/40 overflow-auto h-1/2 prose prose-invert max-w-full scrollbar-auto">
-              {error && (
-                <p className="text-red-400 text-sm mb-2 italic">
-                  Preview error: {error}
-                </p>
-              )}
-              {CompiledComponent ? (
-                <MDXProvider>
-                  <CompiledComponent
-                    components={getMDXComponents({ ...mdxComponents })}
-                  />
-                </MDXProvider>
-              ) : !error ? (
-                <p className="text-center text-muted-foreground">
-                  No content to preview
-                </p>
-              ) : null}
-            </div>
+          {/* Degree */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-neutral-300 font-inter">
+              Degree / Qualification <span className="text-accent">*</span>
+            </label>
+            <input
+              type="text"
+              value={form.degree}
+              onChange={(e) => updateField("degree", e.target.value)}
+              placeholder="e.g. Bachelor of Science, Diploma"
+              className="w-full h-10 px-3.5 rounded-xl bg-foreground/4 border border-foreground/6 text-xs text-foreground placeholder:text-neutral-500 focus:outline-none focus:border-accent/60 transition-colors"
+              required
+            />
           </div>
-        </motion.div>
-      </div>
-      <div className="flex justify-between mt-4">
-        {currentPage > 0 ? (
-          <Button onClick={() => setCurrentPage((prev) => prev - 1)}>
-            Previous
-          </Button>
-        ) : (
-          <div />
-        )}
-        {currentPage < 1 ? (
-          <Button onClick={() => setCurrentPage((prev) => prev + 1)}>
-            Next
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            className="bg-blue-600 text-white hover:bg-blue-700"
-            disabled={isSubmitting}
+
+          {/* Field of Study */}
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-neutral-300 font-inter">
+              Field of Study / Major <span className="text-accent">*</span>
+            </label>
+            <input
+              type="text"
+              value={form.field}
+              onChange={(e) => updateField("field", e.target.value)}
+              placeholder="e.g. Computer Science, Software Eng."
+              className="w-full h-10 px-3.5 rounded-xl bg-foreground/4 border border-foreground/6 text-xs text-foreground placeholder:text-neutral-500 focus:outline-none focus:border-accent/60 transition-colors"
+              required
+            />
+          </div>
+
+          {/* Start Date */}
+          <div className="space-y-1.5">
+            <DatePicker
+              name="start-date"
+              aria-label="Start Date"
+              isRequired
+              value={form.start}
+              onValueChange={(val) => updateField("start", val)}
+              onChange={(date) =>
+                updateField("start", date ? date.toString() : "")
+              }
+            >
+              <Label className="block text-xs font-medium text-neutral-300 font-inter">
+                Start Date
+              </Label>
+            </DatePicker>
+          </div>
+
+          {/* End Date */}
+          <div className="space-y-1.5">
+            <DatePicker
+              name="end-date"
+              aria-label="End Date"
+              isDisabled={form.isCurrent}
+              value={form.isCurrent ? "" : form.end}
+              onValueChange={(val) => updateField("end", val)}
+              onChange={(date) =>
+                updateField("end", date ? date.toString() : "")
+              }
+            >
+              <Label className="block text-xs font-medium text-neutral-300 font-inter">
+                End Date
+              </Label>
+            </DatePicker>
+          </div>
+
+          {/* Is Current Checkbox */}
+          <div className="sm:col-span-2 pt-1">
+            <Checkbox
+              isSelected={form.isCurrent}
+              onChange={(v) => updateField("isCurrent", v)}
+            >
+              I am currently studying here
+            </Checkbox>
+          </div>
+        </div>
+
+        {/* Footer Navigation */}
+        <div className="flex items-center justify-end border-t border-white/[0.08] pt-5">
+          <button
+            type="button"
+            onClick={() => goToTab("builder")}
+            className="px-5 py-2.5 rounded-xl bg-accent text-neutral-950 font-medium text-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-accent/20 active:scale-95"
           >
-            {isSubmitting ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              submitButtonText
-            )}
-          </Button>
-        )}
+            <span>Continue</span>
+            <LuArrowRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
       </div>
-    </Keybindy>
+    </div>
   );
 };
 
-export default EduForm;
+export default EducationForm;
