@@ -1,43 +1,66 @@
-import { GITHUB_API_KEY } from "@/constants/env";
+import { getBlogs } from "@/lib/get-blogs";
 import HomeView from "./home/view";
-import { getProjects } from "@/utils/get-projects";
-import { metatag } from "@/utils/metatag";
+import { getProjects } from "@/lib/get-projects";
+import { metatag } from "@/lib/metatag";
 import { cache } from "react";
+import { db } from "@/lib/db";
+import { TestimonialType } from "@/types";
 
-const getPRASGithub = cache(async () => {
+const getTestimonials = cache(async (): Promise<TestimonialType[]> => {
   try {
-    const res = await fetch(`https://api.github.com/user`, {
-      next: { revalidate: 600 }, // 10m
-      headers: {
-        Authorization: `Bearer ${GITHUB_API_KEY}`,
-        Accept: "application/vnd.github+json",
-      },
+    const list = await db.testimonial.findMany({
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
-
-    if (!res.ok) {
-      throw new Error(`Failed to fetch GitHub user: ${res.status}`);
-    }
-
-    const data = await res.json();
-    return data;
+    return list.map((item) => ({
+      ...item,
+      category: item.category as TestimonialType["category"],
+    }));
   } catch (error) {
-    console.error("Error fetching GitHub user:", error);
-    return null;
+    console.error("Failed to load testimonials:", error);
+    return [];
   }
 });
+
 export default async function Home() {
-  const pras = await getPRASGithub();
-  let repoCount = 0;
-  if (pras) {
-    repoCount += pras.public_repos;
-    repoCount += pras.total_private_repos;
-  }
   const projects = await getProjects({
     page: 1,
-    limit: 4,
+    limit: 2,
     sortBy: "created_at",
   });
-  return <HomeView totalProjects={repoCount} projects={projects.projects} />;
+
+  const blogs = await getBlogs({
+    page: 1,
+    limit: "all",
+    sortBy: "created_at",
+  });
+
+  const testimonials = await getTestimonials();
+
+  // Blogs linked from the mental model cards, resolved by their slugs.
+  const mentalModels = {
+    concurrency: blogs.blogs.find((blog) => blog.slug === "concurrency"),
+    cacheInvalidation: blogs.blogs.find(
+      (blog) => blog.slug === "cache-invalidation",
+    ),
+  };
+
+  // Retrospectives carry both a "retro" tag and their year tag, e.g. ["retro", "2025"].
+  const retros = blogs.blogs.flatMap((blog) => {
+    const tags = blog.tags?.map((tag) => tag.toLowerCase()) ?? [];
+    const year = tags.find((tag) => /^\d{4}$/.test(tag));
+
+    return tags.includes("retro") && year ? [{ ...blog, year }] : [];
+  });
+
+  const ignoreSlugs = new Set<string>(
+    [...retros, ...Object.values(mentalModels)]
+      .filter((blog) => blog !== undefined)
+      .map((blog) => blog.slug),
+  );
+
+  blogs.blogs = blogs.blogs.filter((blog) => !ignoreSlugs.has(blog.slug));
+
+  return <HomeView projects={projects.projects} blogs={blogs.blogs.slice(0, 2)} retros={retros} mentalModels={mentalModels} testimonials={testimonials} />;
 }
 
 Home.DisplayName = "Home";
