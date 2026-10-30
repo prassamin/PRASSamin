@@ -1,8 +1,9 @@
-import { metatag } from "@/utils/metatag";
+import { metatag } from "@/lib/metatag";
 import AdminExpView from "./view";
 import { cache } from "react";
-import { db } from "@/utils/db";
-import { EXPERIENCESERIALIZER } from "@/utils/serializers";
+import { db } from "@/lib/db";
+import { EXPERIENCESERIALIZER } from "@/lib/serializers";
+import { AdminBody } from "@/app/admin/components/AdminBody";
 
 const Experiences = cache(async () => {
   const p = await db.experience.findMany({
@@ -19,10 +20,14 @@ export const generateMetadata = () => {
   });
 };
 
-const AdminBlogPage = async () => {
+const AdminExperiencesPage = async () => {
   const experiences = await Experiences();
 
-  return <AdminExpView experiences={experiences} />;
+  return (
+    <AdminBody>
+      <AdminExpView experiences={experiences} />
+    </AdminBody>
+  );
 };
 
-export default AdminBlogPage;
+export default AdminExperiencesPage;
