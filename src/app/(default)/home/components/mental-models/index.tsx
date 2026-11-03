@@ -141,17 +141,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
                 variants={textVariants}
                 className="pointer-events-auto transition-transform duration-500 hover:scale-110"
               >
-                <div
-                  className="isolate before:transition-opacity glass-icon flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&amp;&gt;svg]:size-12 [&amp;&gt;svg]:text-current gradientBorder"
-                  style={
-                    {
-                      "--borderWidth": "1",
-                      "--background":
-                        "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                      border: "1px solid transparent",
-                    } as React.CSSProperties
-                  }
-                >
+                <div className="isolate before:transition-opacity glass-icon flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
                   <svg
                     className="size-[50%]"
                     fill="none"

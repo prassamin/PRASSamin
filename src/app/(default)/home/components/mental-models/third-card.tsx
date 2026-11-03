@@ -2,11 +2,11 @@
 
 import { Link } from "@/components/Link";
 import { cardItemVariants } from "./motion";
-import { motion } from "framer-motion";
+import { motion, type Variants } from "framer-motion";
 
 export const ThirdCard = () => {
   return (
-    <motion.div variants={cardItemVariants} className="z-10">
+    <motion.div variants={cardItemVariants as Variants} className="z-10">
       <Link
         className="group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-[150%] w-80 lg:rotate-[4deg]"
         href="/#featured-posts"
@@ -23,65 +23,41 @@ export const ThirdCard = () => {
             {[...Array(18)].map((_, i) => (
               <div
                 key={i}
-                className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradientBorder"
-                style={
-                  {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
-                  } as React.CSSProperties
-                }
+                className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
               />
             ))}
           </div>
           <div
-            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradientBorder animate-block-1"
+            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl animate-block-1 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
             style={
               {
-                "--borderWidth": "1",
-                "--background":
-                  "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                border: "1px solid transparent",
                 boxShadow:
                   "rgba(255, 255, 255, 0.14) 0px 0px 15px inset, rgba(255, 255, 255, 0.03) 0px 27px 40px",
               } as React.CSSProperties
             }
           />
           <div
-            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradientBorder animate-block-2"
+            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl animate-block-2 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
             style={
               {
-                "--borderWidth": "1",
-                "--background":
-                  "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                border: "1px solid transparent",
                 boxShadow:
                   "rgba(255, 255, 255, 0.14) 0px 0px 15px inset, rgba(255, 255, 255, 0.03) 0px 27px 40px",
               } as React.CSSProperties
             }
           />
           <div
-            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradientBorder animate-block-3"
+            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl animate-block-3 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
             style={
               {
-                "--borderWidth": "1",
-                "--background":
-                  "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                border: "1px solid transparent",
                 boxShadow:
                   "rgba(255, 255, 255, 0.14) 0px 0px 15px inset, rgba(255, 255, 255, 0.03) 0px 27px 40px",
               } as React.CSSProperties
             }
           />
           <div
-            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl gradientBorder animate-block-4"
+            className="relative isolate before:transition-opacity w-14 h-14 rounded-2xl animate-block-4 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
             style={
               {
-                "--borderWidth": "1",
-                "--background":
-                  "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                border: "1px solid transparent",
                 boxShadow:
                   "rgba(255, 255, 255, 0.14) 0px 0px 15px inset, rgba(255, 255, 255, 0.03) 0px 27px 40px",
               } as React.CSSProperties

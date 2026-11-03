@@ -1,12 +1,12 @@
 "use client";
 import { Link } from "@/components/Link";
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { cardItemVariants } from "./motion";
 
 export const FirstCard = () => {
   return (
-    <motion.div variants={cardItemVariants} className="z-30">
+    <motion.div variants={cardItemVariants as Variants} className="z-30">
       <Link
         className="group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-[150%] w-80 lg:rotate-[5deg]"
         href="/#concurrency"

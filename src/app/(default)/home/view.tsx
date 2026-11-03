@@ -54,7 +54,7 @@ const HomeView: React.FC<Props> = ({
       {projects.length > 0 && <FeaturedProjects projects={projects} />}
 
       {/* Testimonials */}
-      <Testimonials testimonials={testimonials} />
+      {testimonials.length > 0 && <Testimonials testimonials={testimonials} />}
     </div>
   );
 };

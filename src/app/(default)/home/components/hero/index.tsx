@@ -165,15 +165,7 @@ const HeroSection: React.FC = () => {
 
               {/* Glass Icon with Down Arrow */}
               <div
-                className="isolate before:transition-opacity glass-icon size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradientBorder"
-                style={
-                  {
-                    "--borderWidth": 1,
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
-                  } as React.CSSProperties
-                }
+                className="isolate before:transition-opacity glass-icon size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
               >
                 <LuArrowDown className="text-accent-300 group-hover:translate-y-0.5 transition-transform duration-200" />
               </div>
@@ -185,15 +177,7 @@ const HeroSection: React.FC = () => {
               className="flex items-center px-4 py-3 relative rounded-xl transition-colors hover:bg-neutral-600/10 focus:bg-neutral-600/10 backdrop-blur-sm text-neutral-300 hover:text-white font-rethink text-sm font-medium"
             >
               <div
-                className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradientBorder"
-                style={
-                  {
-                    "--borderWidth": 1,
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
-                  } as React.CSSProperties
-                }
+                className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
               />
               <span className="relative z-10">More about me</span>
             </Link>

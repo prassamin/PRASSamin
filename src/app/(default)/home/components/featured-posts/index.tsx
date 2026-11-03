@@ -240,15 +240,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
           >
             <span>See more posts</span>
             <div
-              className="isolate before:transition-opacity glass-icon size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradientBorder group-hover:scale-105 transition-transform"
-              style={
-                {
-                  "--borderWidth": 1,
-                  "--background":
-                    "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                  border: "1px solid transparent",
-                } as React.CSSProperties
-              }
+              className="isolate before:transition-opacity glass-icon size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] group-hover:scale-105 transition-transform"
             >
               <LuChevronRight
                 className="size-[70%] text-neutral-300 group-hover:text-neutral-100 transition-colors"

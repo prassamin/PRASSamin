@@ -643,14 +643,9 @@ export const HeroGrid: React.FC = () => {
             <div className="absolute inset-0 transition-all duration-700 ease-in-out delay-200 origin-center group-hover:scale-[0.6] group-hover:rotate-[360deg] group-hover:translate-[12%]">
               {/* PostgreSQL */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[70%] top-[50%] rotate-[-16deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[70%] top-[50%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
-                    "--borderWidth": "1.5",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1.5px solid transparent",
-                    transition: "transform 0.7s ease-in-out",
                     boxShadow:
                       "inset 0 0 15px rgba(255, 255, 255, 0.14), 0 -27px 40px rgba(255, 255, 255, 0.03)",
                   } as React.CSSProperties
@@ -662,13 +657,9 @@ export const HeroGrid: React.FC = () => {
 
               {/* TypeScript */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[45%] top-[65%] rotate-[-16deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[45%] top-[65%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
-                    "--borderWidth": "1.5",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1.5px solid transparent",
                     transition: "transform 0.7s ease-in-out",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.14)",
                   } as React.CSSProperties
@@ -680,13 +671,9 @@ export const HeroGrid: React.FC = () => {
 
               {/* Go */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[46%] top-[36%] rotate-[16deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[46%] top-[36%] rotate-[16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
-                    "--borderWidth": "1.5",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1.5px solid transparent",
                     transition: "transform 0.7s ease-in-out",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.14)",
                   } as React.CSSProperties
@@ -697,13 +684,9 @@ export const HeroGrid: React.FC = () => {
               </div>
               {/* Tailwind */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[29%] top-[48%] rotate-[-33deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[29%] top-[48%] rotate-[-33deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     transition: "transform 0.7s ease-in-out",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.14)",
                   } as React.CSSProperties
@@ -715,13 +698,9 @@ export const HeroGrid: React.FC = () => {
 
               {/* Next.js */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-8 absolute translate-x-[-50%] translate-y-[-50%] left-[64%] top-[68%] rotate-[20deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-8 absolute translate-x-[-50%] translate-y-[-50%] left-[64%] top-[68%] rotate-[20deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     transition: "transform 0.7s ease-in-out",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.14)",
                   } as React.CSSProperties
@@ -731,62 +710,42 @@ export const HeroGrid: React.FC = () => {
                 <SiNextdotjs className="size-[58%] text-neutral-100 hover:text-white transition-colors" />
               </div>
               <div
-                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[40%] top-[50%] gradientBorder"
+                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[40%] top-[50%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.1)",
                   } as React.CSSProperties
                 }
               ></div>
               <div
-                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[58%] top-[23%] gradientBorder"
+                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[58%] top-[23%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.1)",
                   } as React.CSSProperties
                 }
               ></div>
               <div
-                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[78%] top-[63%] gradientBorder"
+                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[78%] top-[63%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.1)",
                   } as React.CSSProperties
                 }
               ></div>
               <div
-                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[55%] top-[77%] gradientBorder"
+                className="isolate before:transition-opacity opacity-60 absolute rounded-[3.5px] size-2 translate-x-[-50%] translate-y-[-50%] left-[55%] top-[77%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.1)",
                   } as React.CSSProperties
                 }
               ></div>
               {/* Redis */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[68%] top-[28%] rotate-[-21deg] gradientBorder"
+                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[68%] top-[28%] rotate-[-21deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
-                    "--borderWidth": "1",
-                    "--background":
-                      "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                    border: "1px solid transparent",
                     transition: "transform 0.7s ease-in-out",
                     boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.14)",
                   } as React.CSSProperties
@@ -1360,13 +1319,9 @@ export const HeroGrid: React.FC = () => {
               </svg>
               <div className="absolute inset-0">
                 <div
-                  className="isolate before:transition-opacity absolute rounded-[20px] left-[10%] top-[22%] p-0.5 animate-floating gradientBorder"
+                  className="isolate before:transition-opacity absolute rounded-[20px] left-[10%] top-[22%] p-0.5 animate-floating gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                   style={
                     {
-                      "--borderWidth": "1",
-                      "--background":
-                        "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                      border: "1px solid transparent",
                       boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.18)",
                     } as React.CSSProperties
                   }
@@ -1384,37 +1339,25 @@ export const HeroGrid: React.FC = () => {
                   </div>
                 </div>
                 <div
-                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[78.6%] top-[21%] gradientBorder"
+                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[78.6%] top-[21%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                   style={
                     {
-                      "--borderWidth": "1",
-                      "--background":
-                        "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                      border: "1px solid transparent",
                       boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.18)",
                     } as React.CSSProperties
                   }
                 ></div>
                 <div
-                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[21%] top-[59.5%] gradientBorder"
+                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[21%] top-[59.5%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                   style={
                     {
-                      "--borderWidth": "1",
-                      "--background":
-                        "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                      border: "1px solid transparent",
                       boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.18)",
                     } as React.CSSProperties
                   }
                 ></div>
                 <div
-                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[40%] top-[78.5%] gradientBorder"
+                  className="isolate before:transition-opacity absolute rounded-[17px] size-[49px] translate-x-[-50%] translate-y-[-50%] left-[40%] top-[78.5%] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                   style={
                     {
-                      "--borderWidth": "1",
-                      "--background":
-                        "linear-gradient(to bottom right, rgba(23, 23, 23, 70%) 0%, #525252 62%, rgba(23, 23, 23, 70%) 100%)",
-                      border: "1px solid transparent",
                       boxShadow: "inset 0 0 15px rgba(255, 255, 255, 0.18)",
                     } as React.CSSProperties
                   }

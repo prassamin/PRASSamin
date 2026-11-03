@@ -263,32 +263,51 @@
   }
 }
 
-/* Glass icons and gradient borders */
-@utility gradientBorder {
+@utility gradient-border {
+  --gb-width: 1;
+
   position: relative;
 
   &::before {
     content: "";
-    position: absolute;
-    inset: calc(var(--borderWidth, 1) * -1px);
-    padding: calc(var(--borderWidth, 1) * 1px);
+    padding: calc(var(--gb-width, 1) * 1px);
+    background: var(--gb-bg, currentcolor);
     border-radius: inherit;
-    background: var(
-      --background,
-      linear-gradient(
-        to bottom right,
-        rgba(23, 23, 23, 0.7) 0%,
-        #525252 62%,
-        rgba(23, 23, 23, 0.7) 100%
-      )
-    );
-    -webkit-mask:
-      linear-gradient(#fff 0 0) content-box,
-      linear-gradient(#fff 0 0);
+    inset: calc(var(--gb-width, 1) * -1px);
+    pointer-events: none;
+    position: absolute;
+    -webkit-mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    mask-image: linear-gradient(#fff 0 0), linear-gradient(#fff 0 0);
+    -webkit-mask-position:
+      0 0,
+      0 0;
+    mask-position:
+      0 0,
+      0 0;
+    -webkit-mask-size: auto, auto;
+    mask-size: auto, auto;
+    -webkit-mask-repeat: repeat, repeat;
+    mask-repeat: repeat, repeat;
+    -webkit-mask-clip: content-box, border-box;
+    mask-clip: content-box, border-box;
+    -webkit-mask-origin: content-box, border-box;
+    mask-origin: content-box, border-box;
     -webkit-mask-composite: xor;
     mask-composite: exclude;
-    pointer-events: none;
+    -webkit-mask-source-type: auto, auto;
+    mask-mode: match-source, match-source;
   }
+}
+
+@utility gb-width-* {
+  --gb-width: calc(--value(number) * 4);
+  --gb-width: --value([length]);
+}
+
+/* Color Modifier (Maps to tailwind colors namespace + supports custom arbitrary colors) */
+@utility gb-color-* {
+  --gb-bg: --value(--color-*);
+  --gb-bg: --value([*]);
 }
 
 @utility scrollbar-auto {
@@ -420,10 +439,36 @@
 }
 
 /* Remove default backticks added by @tailwindcss/typography around code elements */
-.prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::before,
-.prose :where(code):not(:where([class~="not-prose"],[class~="not-prose"] *))::after,
+.prose
+  :where(code):not(
+    :where([class~="not-prose"], [class~="not-prose"] *)
+  )::before,
+.prose
+  :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after,
 .prose code::before,
 .prose code::after {
   content: "" !important;
   display: none !important;
+}
+
+@keyframes aurora {
+  0% {
+    background-position: 0% 50%;
+  }
+  25% {
+    background-position: 50% 100%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  75% {
+    background-position: 50% 0%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-aurora {
+  animation: aurora 10s ease-in-out infinite alternate;
 }

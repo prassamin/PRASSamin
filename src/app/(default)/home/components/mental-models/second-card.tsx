@@ -2,11 +2,11 @@
 
 import { Link } from "@/components/Link";
 import { cardItemVariants } from "./motion";
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 
 export const SecondCard = () => {
   return (
-    <motion.div variants={cardItemVariants} className="z-20">
+    <motion.div variants={cardItemVariants as Variants} className="z-20">
       <Link
         className="relative group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-[150%] w-80 lg:rotate-[-3deg] lg:translate-y-12"
         href="/#cache-invalidation"
