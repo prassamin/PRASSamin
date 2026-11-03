@@ -8,6 +8,16 @@ import {
 import remarkAttributes from "remark-attributes";
 import type { Pluggable } from "unified";
 
+const thumbnailSchema = z
+  .union([
+    z.string(),
+    z.object({
+      landscape: z.string().optional(),
+      portrait: z.string().optional(),
+    }),
+  ])
+  .optional();
+
 export const blog = defineDocs({
   dir: "content/blogs",
   docs: {
@@ -16,6 +26,7 @@ export const blog = defineDocs({
       createdAt: z.string(),
       tags: z.array(z.string()).optional(),
       thumbnail: z.string().optional(),
+      banner: z.string().optional(),
       views: z.number().optional(),
     }),
   },
@@ -27,7 +38,7 @@ export const project = defineCollections({
   schema: frontmatterSchema.extend({
     updatedAt: z.string(),
     createdAt: z.string(),
-    thumbnail: z.string().optional(),
+    thumbnail: thumbnailSchema,
     banner: z.string().optional(),
     links: z
       .object({
