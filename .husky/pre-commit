@@ -4,7 +4,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m'
 
 # Check if the prisma client is set to edge
-if grep -q 'from "@prisma/client/edge";' src/utils/db.ts; then
+if grep -q 'from "@prisma/client/edge";' src/lib/db.ts; then
   exit 0
 else
   echo -e "${YELLOW}WARNING: You are trying to push with the development Prisma client. Please switch to the edge client first.${NC}\n"
