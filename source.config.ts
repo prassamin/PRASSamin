@@ -8,15 +8,7 @@ import {
 import remarkAttributes from "remark-attributes";
 import type { Pluggable } from "unified";
 
-const thumbnailSchema = z
-  .union([
-    z.string(),
-    z.object({
-      landscape: z.string().optional(),
-      portrait: z.string().optional(),
-    }),
-  ])
-  .optional();
+const thumbnailSchema = z.string().optional();
 
 export const blog = defineDocs({
   dir: "content/blogs",
