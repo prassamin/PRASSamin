@@ -1,6 +1,6 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, type Variants } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
 import {
   LuBookText,
@@ -98,8 +98,35 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
     });
   }, [blogs, searchQuery, selectedTopics, sortBy]);
 
+  const containerVariants: Variants = {
+    hidden: {},
+    visible: {
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      },
+    },
+  };
+
+  const itemVariants: Variants = {
+    hidden: { opacity: 0, y: 28 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: [0.16, 1, 0.3, 1],
+      },
+    },
+  };
+
   return (
-    <div className="relative min-h-screen bg-neutral-950 text-neutral-100 selection:bg-accent/30 selection:text-white">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="relative min-h-screen bg-neutral-950 text-neutral-100 selection:bg-accent/30 selection:text-white"
+    >
       {/* Background Architectural Glow and Wireframe Header */}
       <div
         className="absolute overflow-hidden inset-0 h-[450px] bg-neutral-950 pointer-events-none"
@@ -121,7 +148,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
       </div>
 
       {/* Main Header Content */}
-      <div className="relative">
+      <motion.div variants={itemVariants} className="relative">
         <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
           {/* Glass Icon Squircle Badge with Gradient Border */}
           <div
@@ -182,10 +209,10 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* 2-Column Content Layout */}
-      <div className="border-t border-neutral-900">
+      <motion.div variants={itemVariants} className="border-t border-neutral-900">
         <div className="layout pb-16 md:pb-24">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_18rem] md:gap-8 min-h-[calc(100vh-28rem)]">
             {/* BLOG POSTS LIST - Column 1 on desktop, Column 2 on mobile */}
@@ -306,10 +333,10 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
             </aside>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Footer */}
       <Footer />
-    </div>
+    </motion.div>
   );
 }
