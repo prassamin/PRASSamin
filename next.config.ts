@@ -9,6 +9,18 @@ const withFM = withFrontmatter({
 });
 
 const nextConfig: NextConfig = {
+  async rewrites() {
+    return [
+      {
+        source: "/blog",
+        destination: "/blogs",
+      },
+      {
+        source: "/blog/:path*",
+        destination: "/blogs/:path*",
+      },
+    ];
+  },
   images: {
     remotePatterns: [
       {

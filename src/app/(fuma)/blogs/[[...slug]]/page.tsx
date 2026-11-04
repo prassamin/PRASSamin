@@ -1,36 +1,40 @@
-import { db } from "@/utils/db";
-import { metatag } from "@/utils/metatag";
+import { db } from "@/lib/db";
+import { metatag } from "@/lib/metatag";
 import { headers } from "next/headers";
-import { source } from "@/utils/source";
+import { source } from "@/lib/source";
 import { notFound } from "next/navigation";
-import { DocsBody, DocsPage } from "fumadocs-ui/page";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
-import { formatDate } from "@/utils/format-date";
+import { getTableOfContents } from "fumadocs-core/server";
+import { RailToc, type RailTocItem } from "@/components/rail-toc";
+import { BlogCard } from "@/components/blog-card";
 import Image from "next/image";
-import ExpandableText from "@/components/ExpandableText";
-import { Eye } from "lucide-react";
-import { Heading } from "fumadocs-ui/components/heading";
+import Link from "next/link";
+import { LuBookOpen, LuEye, LuHeart } from "react-icons/lu";
 import { geolocation } from "@vercel/functions";
 import { NextRequest } from "next/server";
 import Footer from "@/components/Footer";
 import BlogsView from "../view";
-import { getBlogs } from "@/utils/get-blogs";
+import { getBlogs } from "@/lib/get-blogs";
+import readingTime from "reading-time";
+import { getOwnerCached, toPublicOwner } from "@/lib/github";
+import { TWITTER_USERNAME } from "@/constants";
+import { getOrigin } from "@/lib/url";
 
 type Props = Promise<{ slug?: string[] }>;
 
 const BlogPage = async ({ params }: { params: Props }) => {
   const { slug } = await params;
-  const page = source.getPage(slug);
-  if (!slug) {
-    const blogsData = await getBlogs({ page: 1, limit: 20 });
-    return (
-      <BlogsView
-        initialBlogs={blogsData.blogs}
-        totalPages={blogsData.totalPages}
-      />
-    );
+  if (!slug || slug.length === 0) {
+    const blogsData = await getBlogs({ limit: "all" });
+    return <BlogsView blogs={blogsData.blogs} />;
   }
+
+  const owner = toPublicOwner((await getOwnerCached()).owner);
+  const origin = await getOrigin();
+
+  const page = source.getPage(slug);
   if (!page) notFound();
+
   const Headers = await headers();
   const ip =
     Headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -39,7 +43,6 @@ const BlogPage = async ({ params }: { params: Props }) => {
   const { country, flag } = geolocation({ headers: Headers } as NextRequest);
 
   const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
-
   const fSlug = page.slugs.join("/");
 
   const tracker = await db.blogViewTracker.findUnique({
@@ -70,9 +73,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
         },
       }),
     ]);
-  }
-  // Existing visitor
-  else if (tracker.lastSeen < threeMinutesAgo) {
+  } else if (tracker.lastSeen < threeMinutesAgo) {
     await db.$transaction([
       db.blogViewTracker.update({
         where: {
@@ -94,106 +95,235 @@ const BlogPage = async ({ params }: { params: Props }) => {
     ]);
   }
 
-  // total views
+  // Total views
   const blogStat = await db.blogStat.findUnique({
     where: { slug: fSlug },
     select: { totalViews: true },
   });
 
-  page.data.views = blogStat?.totalViews;
+  page.data.views = blogStat?.totalViews || 0;
   const MDX = page.data.body;
+
+  const readStats = readingTime(page.data.content || "");
+  const readingTimeText = readStats.text || "5 min read";
+
+  const formattedDate = new Date(
+    page.data.createdAt || Date.now(),
+  ).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+
+  // Related posts — prioritize shared tags, then fill with other posts
+  const currentTags = (page.data.tags || []).map((t) => t.toLowerCase());
+  const allBlogsData = await getBlogs({ limit: "all" });
+  const otherPosts = allBlogsData.blogs.filter((b) => b.slug !== fSlug);
+  const recommendations = [...otherPosts]
+    .sort((a, b) => {
+      const aShared =
+        a.tags?.filter((t) => currentTags.includes(t.toLowerCase())).length ??
+        0;
+      const bShared =
+        b.tags?.filter((t) => currentTags.includes(t.toLowerCase())).length ??
+        0;
+      return bShared - aShared;
+    })
+    .slice(0, 3);
+
+  const tags: string[] = page.data.tags || [];
+
+  // Table of contents from the raw MDX (headings get slugged by the Heading component)
+  const toc = getTableOfContents(page.data.content || "");
+  const tocItems: RailTocItem[] = toc.map((item) => ({
+    id: item.url.replace(/^#/, ""),
+    label: typeof item.title === "string" ? item.title : "",
+    depth: item.depth,
+  }));
 
   return (
     <>
-      <div
-        className={`bg-background w-full min-h-[calc(100vh-44px)] pb-4 relative`}
-      >
-        <div />
-        {page.data.thumbnail ? (
-          <div className="relative w-full h-80">
-            <Image
-              src={page.data.thumbnail.replace(/\.(png|jpe?g)$/i, ".webp")}
-              width={1200}
-              height={600}
-              alt={page.data.title}
-              className="w-screen h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background to-background/60" />
-          </div>
-        ) : null}
-        <div
-          className={`lg:flex items-center justify-center max-w-[calc(100vw-2.5rem)] lg:max-w-full mx-auto relative z-50 ${
-            page?.data?.thumbnail ? "-mt-28" : "mt-40"
-          }`}
-        >
-          <div className="prose-invert prose !max-w-[100ch] w-full flex flex-col gap-6">
-            {/* page.data Header */}
-            <div className="h-full flex flex-col justify-between border-none not-prose">
-              <h2 className="text-white text-4xl truncate font-bold capitalize pb-1.5">
-                {page.data.title}
-              </h2>
-              <div>
-                <ExpandableText
-                  text={page.data.description || ""}
-                  maxLength={"max"}
-                  expandable={false}
+      <main className="relative min-h-screen bg-neutral-950 text-neutral-100">
+        <section className="relative isolate">
+          {/* Ambient Banner Cover Image */}
+          {page.data.banner || !page.data.thumbnail ? (
+            <div className="absolute inset-x-0 top-0 h-[18rem] md:h-[24rem] overflow-hidden pointer-events-none -z-10">
+              <figure className="relative w-full h-full">
+                <Image
+                  src={page.data.banner || page.data.thumbnail}
+                  alt={page.data.title || "Banner"}
+                  fill
+                  priority
+                  className="object-cover object-center"
                 />
-              </div>
-              <div className="flex flex-col gap-4 mt-16">
-                {/* Line */}
-                <div className="h-[1px] bg-border w-full" />
-                {/* page.data Meta */}
-                <div className="flex justify-between">
-                  <div className="flex items-center gap-1">
-                    <span className="text-sm text-muted-foreground font-mono">
-                      {formatDate(page.data.createdAt, page.data.updatedAt)}
-                    </span>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    <span className="px-2.5 flex gap-1.5 items-center text-[13px] ">
-                      <Eye className="text-muted-foreground/70" size={16} />
-                      <span>{page.data.views || 0} views</span>
-                    </span>
-                  </div>
-                </div>
-                {/* Line */}
-                <div className="h-[1px] bg-border w-full" />
-              </div>
+                <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/30 via-5% via-neutral-950/65 to-neutral-950" />
+              </figure>
             </div>
+          ) : (
+            <div>
+              <div
+                aria-hidden="true"
+                className="h-[25px] w-[400px] rounded-r-[50%] bg-gradient-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
+              />
+              <div
+                aria-hidden="true"
+                className="h-[400px] w-[650px] rounded-full bg-gradient-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
+              />
+            </div>
+          )}
 
-            <DocsPage
-              footer={{ enabled: false }}
-              container={{ className: "!pt-0" }}
-              article={{ className: "!px-0" }}
-            >
-              <DocsBody className="prose prose-invert !max-w-[100ch] !px-0">
-                <MDX components={getMDXComponents(mdxComponents)} />
-              </DocsBody>
-            </DocsPage>
-
-            <div className="prose-invert prose flex flex-col">
-              <Heading
-                as="h2"
-                id="topics"
-                className="border-l-[5px] border-theme-accent-1 pl-2.5 [&_a]:!no-underline"
-              >
-                Topics
-              </Heading>
-              <div className="flex gap-2 items-center scrollbar-hidden">
-                {page.data?.tags &&
-                  page.data?.tags?.map((tag, i) => (
+          {/* Main Layout Container */}
+          <div className="layout pb-12 pt-32 md:pb-20 md:pt-65 relative z-10">
+            {/* CHILD 0: Header Section */}
+            <div className="pb-4">
+              {/* Tags / Topics pills */}
+              {tags.length > 0 && (
+                <div className="flex flex-wrap gap-x-2 gap-y-1 text-sm text-neutral-100">
+                  {tags.map((tag) => (
                     <span
-                      key={i}
-                      className="px-2.5 py-0.5 bg-theme-accent-1/20 border border-theme-accent-1 rounded-full text-[13px] text-theme-accent-1 font-semibold select-none"
+                      key={tag}
+                      className="inline-block rounded-lg px-2 py-0.5 text-sm font-medium transition bg-neutral-800 text-neutral-400"
                     >
                       {tag}
                     </span>
                   ))}
+                </div>
+              )}
+
+              {/* Title */}
+              <h1 className="text-neutral-100 mt-6 leading-tight h3 sm:h2">
+                {page.data.title}
+              </h1>
+
+              {/* Description */}
+              {page.data.description && (
+                <p className="b1 mt-2 text-neutral-400 font-inter">
+                  {page.data.description}
+                </p>
+              )}
+
+              {/* Author info */}
+              <div className="mt-12 flex gap-3 items-center">
+                <div className="size-10 rounded-full overflow-hidden relative ring-1 ring-neutral-800">
+                  {owner?.avatar_url ? (
+                    <Image
+                      src={owner.avatar_url}
+                      alt={owner.name || owner.username}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src="/pras.jpg"
+                      alt="PRAS"
+                      fill
+                      className="object-cover"
+                    />
+                  )}
+                </div>
+                <div>
+                  <p className="b1 text-neutral-100 font-medium">
+                    {owner?.name || owner?.username || "PRAS Samin"}
+                  </p>
+                  <p className="c1 text-neutral-400 mt-0.5">{formattedDate}</p>
+                </div>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="mt-12 py-4 border-y border-neutral-800 flex items-center gap-5 flex-wrap">
+                <p className="c1 text-neutral-300 flex items-center gap-2">
+                  <LuEye className="size-4 text-neutral-500" />
+                  <span>{page.data.views || 0} views</span>
+                </p>
+                <p className="c1 text-neutral-300 flex items-center gap-2 ml-auto">
+                  <LuBookOpen className="size-4 text-neutral-500" />
+                  <span>{readingTimeText}</span>
+                </p>
               </div>
             </div>
+
+            {/* CHILD 1: Main Article & TOC Sidebar */}
+            <section className="mt-6 md:flex md:gap-8">
+              <article className="mdx prose mx-auto mt-4 w-full min-w-0 flex-1 transition-colors dark:prose-invert max-w-none">
+                <MDX components={getMDXComponents(mdxComponents)} />
+              </article>
+
+              <aside className="hidden md:block w-64 shrink-0 py-4">
+                {tocItems.length > 0 && (
+                  <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-y-auto overflow-x-hidden">
+                    <RailToc items={tocItems} className="w-full" />
+                  </div>
+                )}
+              </aside>
+            </section>
+
+            {/* CHILD 3: Share on Twitter / X Button */}
+            <div className="flex items-center">
+              <a
+                className="relative group px-5 py-3 rounded-xl backdrop-blur-sm border border-transparent inline-flex items-center gap-2 mt-4 cursor-pointer bg-neutral-900/40 hover:bg-neutral-900/70 transition text-sm text-neutral-300 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]"
+                href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${origin}/blog/${fSlug}`)}&text=${encodeURIComponent(`I just read an article about ${page.data.title}${TWITTER_USERNAME && ` by @${TWITTER_USERNAME}`}.\n\n`)}`}
+                rel="noopener noreferrer"
+                target="_blank"
+              >
+                <span>Share this article on</span>
+                <svg
+                  className="size-3.5 fill-current ml-0.5 text-neutral-300 group-hover:text-white transition"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+            </div>
+
+            {/* CHILD 7: Recommendations Section */}
+            <div className="mt-20">
+              <h3 className="h3 text-neutral-100 font-bold leading-snug">
+                <span>Other posts that you </span>
+                <span className="inline-flex items-center gap-2 whitespace-nowrap align-baseline">
+                  <span>might</span>
+                  <span className="text-neutral-600 relative inline-block">
+                    like
+                    <svg
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-full"
+                      fill="none"
+                      height="6"
+                      viewBox="0 0 59 6"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M1.64551 2.13477C19.9663 2.33536 38.4441 2.4829 56.7064 4.00476"
+                        stroke="white"
+                        strokeLinecap="round"
+                        strokeWidth="3"
+                      />
+                    </svg>
+                  </span>
+                  <span className="font-vectra! text-accent font-black text-5xl ml-1 mt-5 leading-none inline-block">
+                    love
+                  </span>
+                </span>
+              </h3>
+              <ul className="mt-4 flex flex-col divide-y divide-neutral-900">
+                {recommendations.map((post) => (
+                  <li key={post.slug} className="w-full py-3">
+                    <BlogCard post={post} />
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* CHILD 8: Back to Blog Link */}
+            <div className="mt-12 flex flex-col items-start gap-4">
+              <Link
+                className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,_currentColor_30%,_#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] text-sm"
+                href="/blog"
+              >
+                ← Back to blog
+              </Link>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
       <Footer />
     </>
   );
@@ -204,6 +334,7 @@ export default BlogPage;
 export async function generateStaticParams() {
   return source.generateParams();
 }
+
 export async function generateMetadata(props: {
   params: Promise<{ slug?: string[] }>;
 }) {

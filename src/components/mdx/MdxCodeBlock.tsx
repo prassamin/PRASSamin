@@ -253,6 +253,24 @@ export const MdxCodeBlock = (props: any) => {
           stripNotationFromLine(node);
         },
         root(rootNode: any) {
+          // Shiki emits stray "\n" text nodes between line spans. With block
+          // display on `.line` (see Pre classes), each leftover newline becomes
+          // an empty block line → blank line between every code line. Strip them.
+          const stripStrayNewlines = (node: any) => {
+            if (Array.isArray(node.children)) {
+              node.children = node.children.filter(
+                (child: any) =>
+                  !(
+                    child.type === "text" &&
+                    typeof child.value === "string" &&
+                    /^\s*$/.test(child.value)
+                  ),
+              );
+              node.children.forEach(stripStrayNewlines);
+            }
+          };
+          stripStrayNewlines(rootNode);
+
           if (codeHasFocus) {
             const preNode =
               rootNode.children?.find?.((c: any) => c.tagName === "pre") ||
