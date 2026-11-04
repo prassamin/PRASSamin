@@ -282,7 +282,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
       <div className="layout py-12 md:py-20 flex flex-col items-center">
         {/* Header: "Some good words" */}
         <motion.div variants={titleVariants} className="relative">
-          <h2 className="h3 sm:h2 !font-vectra">Some good words</h2>
+          <h2 className="h3 sm:h2 font-vectra!">Some good words</h2>
           <svg
             className="absolute right-0 z-[-1] bottom-1 stroke-neutral-300 w-[178px] sm:w-[224px] pointer-events-none select-none"
             width="224"

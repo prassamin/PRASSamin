@@ -96,7 +96,7 @@ export const Retro: React.FC<Props> = ({retros}) => {
             >
               <div className="group/retro-card-with-views h-full">
                 <Link
-                  className="block h-full rounded-md default-ring"
+                  className="block h-full rounded-md"
                   href={item.link}
                 >
                   <div className="border border-neutral-900 rounded-xl inset h-full flex flex-col bg-neutral-950/40">

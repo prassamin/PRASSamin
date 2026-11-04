@@ -49,40 +49,6 @@ type Props = {
 };
 
 export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
-  const posts = [
-    {
-      date: "December 17, 2024",
-      title: "List Animation using Motion for React",
-      description:
-        "An in-depth guide on how to animate enter and exit animation for list using Motion for React (previously Framer Motion).",
-      readTime: "6 min read",
-      views: "10,715 views",
-      tags: ["react", "animation"],
-      image: "/images/posts/post-1.jpg",
-      link: "/blogs/list-animation-motion",
-    },
-    {
-      date: "March 03, 2024",
-      title: "Advanced React Patterns",
-      description: "List of react advanced patterns complete with examples.",
-      readTime: "10 min read",
-      views: "10,035 views",
-      tags: ["nextjs", "react"],
-      image: "/images/posts/post-2.jpg",
-      link: "/blogs/advanced-react-patterns",
-    },
-    {
-      date: "March 10, 2023",
-      title: "Next.js Authentication using Higher-Order Components",
-      description: "Solve problems such as colocation, and error-prone code",
-      readTime: "7 min read",
-      views: "15,256 views",
-      tags: ["nextjs"],
-      image: "/images/posts/post-3.jpg",
-      link: "/blogs/nextjs-auth-hoc",
-    },
-  ];
-
   return (
     <motion.section
       id="featured-posts"
