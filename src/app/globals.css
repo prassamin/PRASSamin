@@ -152,15 +152,14 @@
   --neutral-925: #0d0d0d;
   --neutral-950: #0a0a0a;
 
+  --pras-logo: brightness(0) saturate(100%) invert(100%) sepia(0%)
+  saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
+  
   /* --- Accent Colors --- */
   --accent-300: #70ffc3;
   --accent: #4cffb4;
   --accent-dark: #2e996c;
   --accent-deep: #0f3324;
-
-  --pras-logo: brightness(0) saturate(100%) invert(100%) sepia(0%)
-    saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
-
   /* --- Theme Colors --- */
   --theme-primary: #70ffc3;
   --theme-secondary: #4cffb4;

@@ -1,6 +1,5 @@
 import { projectSource, source } from "@/lib/source";
 import { db } from "@/lib/db";
-import type { ThumbnailType } from "@/lib/utils";
 
 type GetProjectsParams = {
   page?: number;
@@ -15,7 +14,7 @@ export interface QueryProjects {
     tools?: string[];
     title: string;
     description?: string;
-    thumbnail?: ThumbnailType;
+    thumbnail?: string;
     createdAt: string;
     updatedAt: string;
     views?: number;

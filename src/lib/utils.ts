@@ -8,17 +8,6 @@ export const toCapitalize = (str: string) => {
   return strObj.join(" ");
 };
 
-export type ThumbnailType = string | { landscape?: string; portrait?: string };
-
-export function getThumbnailUrl(
-  thumbnail?: ThumbnailType,
-  orientation: "landscape" | "portrait" = "landscape",
-): string | undefined {
-  if (!thumbnail) return undefined;
-  if (typeof thumbnail === "string") return thumbnail;
-  return thumbnail[orientation] || thumbnail.landscape || thumbnail.portrait;
-}
-
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return "0 Bytes";
 

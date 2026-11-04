@@ -65,12 +65,12 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      className="overflow-x-hidden dark"
+      className="dark overflow-x-clip"
       lang="en"
       suppressHydrationWarning={true}
     >
       <body
-        className={`${poppins.className} ${rethinkSans.variable} ${inter.variable} antialiased overflow-x-hidden`}
+        className={`${poppins.className} ${rethinkSans.variable} ${inter.variable} antialiased overflow-x-clip`}
       >
         <RootProviders>{children}</RootProviders>
       </body>

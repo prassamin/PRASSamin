@@ -9,11 +9,11 @@ import {
   FieldError,
   cn,
 } from "@heroui/react";
-import { LuCheck, LuChevronDown } from "react-icons/lu";
+import { LuChevronDown } from "react-icons/lu";
 
-export interface SelectOption {
+export interface SelectOption<T extends string | number> {
   id?: string | number;
-  value?: string | number;
+  value?: T;
   label?: React.ReactNode;
   name?: string;
   textValue?: string;
@@ -21,20 +21,25 @@ export interface SelectOption {
   startContent?: React.ReactNode;
 }
 
-export interface SelectProps {
+export interface SelectProps<T extends string | number> {
   label?: React.ReactNode;
   placeholder?: string;
-  value?: any;
-  defaultValue?: any;
-  onChange?: (value: any) => void;
+
+  value?: T;
+  defaultValue?: T;
+
+  onChange?: (value: T | null) => void;
   onValueChange?: (value: string) => void;
-  options?: Array<SelectOption | string>;
+
+  options?: Array<SelectOption<T> | T>;
+
   className?: string;
   triggerClassName?: string;
   popoverClassName?: string;
-  fullWidth?: boolean;
+
   isRequired?: boolean;
   isDisabled?: boolean;
+
   name?: string;
   description?: React.ReactNode;
   errorMessage?: React.ReactNode;
@@ -42,7 +47,7 @@ export interface SelectProps {
   children?: React.ReactNode;
 }
 
-export const Select: React.FC<SelectProps> = ({
+export const Select = <T extends string | number = string>({
   label,
   placeholder = "Select one",
   value,
@@ -53,7 +58,6 @@ export const Select: React.FC<SelectProps> = ({
   className,
   triggerClassName,
   popoverClassName,
-  fullWidth = true,
   isRequired,
   isDisabled,
   name,
@@ -61,45 +65,57 @@ export const Select: React.FC<SelectProps> = ({
   errorMessage,
   startContent,
   children,
-}) => {
+}: SelectProps<T>) => {
   const normalizedOptions = useMemo(() => {
     return options.map((opt) => {
       if (typeof opt === "string" || typeof opt === "number") {
         return {
           id: String(opt),
-          value: String(opt),
+          value: opt,
           label: String(opt),
           textValue: String(opt),
           disabled: false,
           startContent: undefined,
         };
       }
-      const val =
-        opt.value !== undefined ? String(opt.value) : String(opt.id ?? "");
-      const labelText = opt.label ?? opt.name ?? val;
-      const textVal =
-        opt.textValue ?? (typeof labelText === "string" ? labelText : val);
+
+      const optionValue = opt.value !== undefined ? opt.value : (opt.id as T);
+
+      const labelText = opt.label ?? opt.name ?? String(optionValue);
 
       return {
-        id: val,
-        value: val,
+        id: String(optionValue),
+        value: optionValue,
         label: labelText,
-        textValue: textVal,
+        textValue:
+          opt.textValue ??
+          (typeof labelText === "string" ? labelText : String(optionValue)),
         disabled: opt.disabled ?? false,
         startContent: opt.startContent,
       };
     });
   }, [options]);
 
-  const handleChange = (selected: any) => {
-    onChange?.(selected);
-    if (onValueChange && selected !== null && selected !== undefined) {
-      onValueChange(String(selected));
+  const handleChange = (selected: string | number | null) => {
+    if (selected === null || selected === undefined) {
+      onChange?.(null);
+      return;
     }
+
+    const selectedOption = normalizedOptions.find(
+      (opt) => opt.id === String(selected),
+    );
+
+    if (!selectedOption) return;
+
+    onChange?.(selectedOption.value);
+    onValueChange?.(String(selectedOption.value));
   };
 
-  const controlledProps = value !== undefined ? { value } : {};
-  const defaultProps = defaultValue !== undefined ? { defaultValue } : {};
+  const selectedValue = value !== undefined ? String(value) : undefined;
+
+  const selectedDefaultValue =
+    defaultValue !== undefined ? String(defaultValue) : undefined;
 
   return (
     <HeroSelect
@@ -113,8 +129,10 @@ export const Select: React.FC<SelectProps> = ({
       onChange={handleChange}
       isRequired={isRequired}
       isDisabled={isDisabled}
-      {...defaultProps}
-      {...controlledProps}
+      {...(selectedDefaultValue !== undefined
+        ? { defaultValue: selectedDefaultValue }
+        : {})}
+      {...(selectedValue !== undefined ? { value: selectedValue } : {})}
     >
       {label && (
         <Label className="block text-xs font-medium text-neutral-300 font-inter mb-1.5">
@@ -132,8 +150,10 @@ export const Select: React.FC<SelectProps> = ({
           {startContent && (
             <span className="shrink-0 text-neutral-400">{startContent}</span>
           )}
+
           <HeroSelect.Value className="text-xs text-foreground truncate block font-inter" />
         </div>
+
         <HeroSelect.Indicator className="text-neutral-400 shrink-0 ml-2">
           <LuChevronDown className="w-3.5 h-3.5" />
         </HeroSelect.Indicator>
@@ -165,15 +185,17 @@ export const Select: React.FC<SelectProps> = ({
                 id={opt.id}
                 textValue={opt.textValue}
                 isDisabled={opt.disabled}
-                className="px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.08] focus:bg-white/[0.08] focus:text-white data-[selected=true]:bg-accent/15 data-[selected=true]:text-accent font-medium flex items-center justify-between gap-2 cursor-pointer transition-colors outline-none select-none"
+                className="px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.08] focus:bg-white/[0.08] focus:text-white data-[selected=true]:bg-accent/15 data-[selected=true]:text-accent font-medium flex items-center justify-between gap-2 cursor-pointer ring-offset-0"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   {opt.startContent && (
                     <span className="shrink-0">{opt.startContent}</span>
                   )}
+
                   <span className="truncate">{opt.label}</span>
                 </div>
-                <ListBox.ItemIndicator></ListBox.ItemIndicator>
+
+                <ListBox.ItemIndicator />
               </ListBox.Item>
             ))}
         </ListBox>

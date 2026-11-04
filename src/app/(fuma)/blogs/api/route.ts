@@ -1,4 +1,4 @@
-import { getBlogs } from "@/utils/get-blogs";
+import { getBlogs } from "@/lib/get-blogs";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {

@@ -1,483 +1,451 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import axios from "axios";
-import { Link } from "@/components/Link";
-import { motion, Variants } from "motion/react";
-import { Check, Eye, ListFilterPlus, Loader2, SearchIcon } from "lucide-react";
-
+import { AnimatePresence, motion } from "framer-motion";
+import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
-import ExpandableText from "@/components/ExpandableText";
-
+import Link from "next/link";
 import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Command,
-  CommandGroup,
-  CommandItem,
-  CommandList,
-} from "@/components/ui/command";
-
-import { cn } from "@/utils";
-import { formatDate } from "@/utils/format-date";
-import { debounce } from "@/utils/debounce";
+  LuBookText,
+  LuSearch,
+  LuX,
+  LuClock,
+  LuEye,
+  LuCalendar,
+} from "react-icons/lu";
 import Footer from "@/components/Footer";
-import { Keybindy } from "@keybindy/react";
-import { QueryBlogs } from "@/utils/get-blogs";
-import Background from "@/components/Background";
+import Select from "@/components/ui/select";
+import type { QueryBlogs } from "@/lib/get-blogs";
+import { useShortcuts } from "@keybindy/react";
+import { Kbd } from "@heroui/react";
 
-const TAG_PREVIEW_LIMIT = 5;
-const LIMIT = 20;
+interface BlogsViewProps {
+  blogs?: QueryBlogs["blogs"];
+}
 
-const BlogsView = ({
-  initialBlogs,
-  totalPages,
-}: {
-  initialBlogs: QueryBlogs["blogs"];
-  totalPages: number;
-}) => {
+/** Highlight case-insensitive matches of `query` inside `text`. */
+function Highlighted({ text, query }: { text: string; query: string }) {
+  const q = query.trim().toLowerCase();
+  if (!q || !text) return <>{text}</>;
+  const lower = text.toLowerCase();
+  const parts: React.ReactNode[] = [];
+  let i = 0;
+  while (i < text.length) {
+    const idx = lower.indexOf(q, i);
+    if (idx === -1) {
+      parts.push(text.slice(i));
+      break;
+    }
+    if (idx > i) parts.push(text.slice(i, idx));
+    parts.push(
+      <mark key={idx} className="bg-accent/25 text-accent rounded-[3px] px-0.5">
+        {text.slice(idx, idx + q.length)}
+      </mark>,
+    );
+    i = idx + q.length;
+  }
+  return <>{parts}</>;
+}
+
+export default function BlogsView({ blogs }: BlogsViewProps = {}) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [blogs, setBlogs] = useState<QueryBlogs["blogs"]>(initialBlogs);
-  const [filteredBlogs, setFilteredBlogs] = useState<QueryBlogs["blogs"]>([]);
-  const [page, setPage] = useState(1);
-  const [isFetching, setIsFetching] = useState(false);
-  const [total, setTotal] = useState(totalPages);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [sortBy, setSortBy] = useState<"date" | "views">("date");
 
   const searchRef = useRef<HTMLInputElement | null>(null);
-  const [isSearchActive, setIsSearchActive] = useState<boolean>(false);
-  const [showAllTags, setShowAllTags] = useState<boolean>(false);
-  const [sort, setSort] = useState("created_at-desc");
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [mounted, setMounted] = useState(false);
-  const [debouncedSearch, setDebouncedSearch] = useState(searchQuery);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const debounced = debounce((q: string) => {
-      setDebouncedSearch(q);
-    }, 300);
-    debounced(searchQuery);
-    return () => {
-      debounced.cancel();
-    };
-  }, [searchQuery]);
-
-  const fetchBlogs = useCallback(async () => {
-    setIsFetching(true);
-    try {
-      const [sortBy, order] = sort.split("-");
-      const { data } = await axios.get(`${window.location.pathname}/api`, {
-        params: { limit: LIMIT, page, search: debouncedSearch, sortBy, order },
-      });
-
-      setBlogs(data.blogs || initialBlogs);
-      setTotal(data.totalPages);
-    } catch (err) {
-      console.error("Failed to fetch blogs", err);
-    } finally {
-      setIsFetching(false);
-    }
-  }, [page, debouncedSearch, sort]);
-
-  useEffect(() => {
-    fetchBlogs();
-  }, [fetchBlogs]);
-
-  useEffect(() => {
-    let result = blogs;
-
-    if (selectedTag) {
-      result = result.filter(
-        (blog) => blog.tags && blog.tags.includes(selectedTag)
-      );
-    }
-
-    setFilteredBlogs(result);
-  }, [blogs, selectedTag]);
-
-  const tags = useMemo(
-    () => Array.from(new Set(blogs.flatMap((b) => b.tags || []))),
-    [blogs]
-  );
-
-  const containerVariants: Variants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: "easeOut",
+  useShortcuts([
+    {
+      keys: [
+        ["Ctrl", "K"],
+        ["Meta", "K"],
+      ],
+      handler: (e) => {
+        e.preventDefault();
+        searchRef.current?.focus();
+      },
+      options: {
+        ignoreInputs: true,
       },
     },
-  };
-
-  const searchVariants: Variants = {
-    init: { width: 40, opacity: 0 },
-    final: {
-      width: "auto",
-      opacity: 1,
-      transition: { duration: 0.5, ease: "easeOut" },
+    {
+      keys: ["Esc"],
+      handler: (e) => {
+        e.preventDefault();
+        searchRef.current?.blur();
+      },
     },
-  };
+  ]);
 
-  const goToPage = (newPage: number) => {
-    if (!total) return;
-    if (newPage > 0 && newPage <= total) {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-      setPage(newPage);
-    }
-  };
+  // All topics derived from real posts
+  const allTopics = useMemo(() => {
+    const set = new Set<string>();
+    (blogs || []).forEach((post) => {
+      post.tags?.forEach((t) => set.add(t));
+    });
+    return Array.from(set);
+  }, [blogs]);
+
+  // Filter and sort real posts
+  const filteredPosts = useMemo(() => {
+    const list = (blogs || []).filter((post) => {
+      // Topic tag filter — post must contain ALL selected topics
+      if (selectedTopics.length > 0) {
+        const hasAll = selectedTopics.every((topic) =>
+          post.tags?.some((t) => t.toLowerCase() === topic.toLowerCase()),
+        );
+        if (!hasAll) return false;
+      }
+
+      // Search query filter
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase().trim();
+        const inTitle = post.title?.toLowerCase().includes(q);
+        const inDesc = post.description?.toLowerCase().includes(q);
+        const inTags = post.tags?.some((t) => t.toLowerCase().includes(q));
+        if (!inTitle && !inDesc && !inTags) return false;
+      }
+
+      return true;
+    });
+
+    // Sorting
+    return [...list].sort((a, b) => {
+      if (sortBy === "date") {
+        return (
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime()
+        );
+      }
+      if (sortBy === "views") {
+        return (b.views || 0) - (a.views || 0);
+      }
+      return 0;
+    });
+  }, [blogs, searchQuery, selectedTopics, sortBy]);
 
   return (
-    <Keybindy
-      shortcuts={[
-        {
-          keys: ["Ctrl", "K"],
-          handler: () => {
-            searchRef.current?.focus();
-          },
-          options: {
-            preventDefault: true,
-            data: {
-              group: "On this page",
-              description: "Search",
-            },
-          },
-        },
-        {
-          keys: ["Esc"],
-          handler: () => {
-            searchRef.current?.blur();
-          },
-          options: {
-            preventDefault: true,
-            data: {
-              group: "On this page",
-              description: "Close search",
-            },
-          },
-        },
-      ]}
-    >
-      <Background />
-      <motion.div
-        initial="hidden"
-        animate={mounted ? "visible" : "hidden"}
-        variants={containerVariants}
-        className="my-8 overflow-auto mt-24 min-h-[calc(100vh-45px-64px-(32px*2))] max-w-[calc(100vw-1rem)] lg:container mx-auto flex flex-col gap-8 items-center z-20"
+    <div className="relative min-h-screen bg-neutral-950 text-neutral-100 selection:bg-accent/30 selection:text-white">
+      {/* Background Architectural Glow and Wireframe Header */}
+      <div
+        className="absolute overflow-hidden inset-0 h-[450px] bg-neutral-950 pointer-events-none"
+        style={{
+          maskImage:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)",
+        }}
       >
-        <div ref={containerRef} className="flex flex-col gap-2 items-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-6xl font-black leading-normal">
-            My{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-b from-theme-primary to-theme-secondary">
-              Blogs
+        <div
+          aria-hidden="true"
+          className="h-[25px] w-[400px] rounded-r-[50%] bg-gradient-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
+        />
+        <div
+          aria-hidden="true"
+          className="h-[400px] w-[650px] rounded-full bg-gradient-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
+        />
+        <div
+          className="opacity-20 absolute z-[-1] md:w-full bottom-[-5rem] inset-x-0 h-[337px] bg-contain bg-bottom bg-no-repeat pointer-events-none"
+          style={{
+            backgroundImage: "url('/images/blog-header-bg.svg')",
+            maskImage:
+              "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 140%)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0) 140%)",
+          }}
+        />
+      </div>
+
+      {/* Main Header Content */}
+      <div className="relative">
+        <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
+          {/* Glass Icon Squircle Badge with Gradient Border */}
+          <div
+            className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
+          >
+            <LuBookText className="size-[45%] text-neutral-300" />
+          </div>
+
+          {/* Heading: The Blog */}
+          <h1 className="mt-4 h2 sm:h1">
+            The{" "}
+            <span className="transition-colors bg-gradient-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
+              Blog
             </span>
           </h1>
-          <p className="text-muted-foreground text-center text-sm sm:text-base lg:text-lg">
-            Discover a collection of insightful articles and updates on various
-            topics.
+
+          {/* Subtitle */}
+          <p className="b1 mt-3">
+            <span className="transition-colors bg-gradient-to-r from-neutral-300/[35%] via-neutral-300/90 to-neutral-300/[35%] bg-clip-text text-transparent">
+              Thoughts, mental models, and tutorials about front-end
+              development.
+            </span>
           </p>
-        </div>
 
-        <div className="flex items-center gap-2 sm:gap-3">
-          <motion.div
-            initial="init"
-            variants={searchVariants}
-            animate={mounted ? "final" : "init"}
-            className="relative"
-          >
-            <SearchIcon className="absolute top-1/2 left-3 transform -translate-y-1/2 text-muted-foreground z-10" />
-            <Input
-              ref={searchRef}
-              placeholder="Search..."
-              className="w-[calc(100vw-5rem)] sm:w-[500px] border border-border/70 rounded-xl pl-11 py-6 bg-background/50 backdrop-blur-sm focus-visible:ring-0"
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setPage(1);
-              }}
-              onFocus={() => setIsSearchActive(true)}
-              onBlur={() => setIsSearchActive(false)}
-            />
-            {!isSearchActive && (
-              <span className="absolute top-1/2 right-3 transform -translate-y-1/2 text-muted-foreground text-xs font-mono">
-                ⌘ + K
-              </span>
-            )}
-          </motion.div>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                className="h-[48px] rounded-lg p-0 aspect-square [&_svg]:size-5 "
-              >
-                <ListFilterPlus />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="p-0">
-              <Command>
-                <CommandList>
-                  <CommandGroup>
-                    {[...Array(4).keys()].map((i) => {
-                      const order = {
-                        Newest: "created_at-desc",
-                        Oldest: "created_at-asc",
-                        "Most Viewed": "views-desc",
-                        "Least Viewed": "views-asc",
-                      };
-                      return (
-                        <CommandItem
-                          key={i}
-                          value={Object.values(order)[i]}
-                          onSelect={(currentValue) => {
-                            setSort(currentValue === sort ? "" : currentValue);
-                            setPage(1);
-                          }}
-                        >
-                          {Object.keys(order)[i]}
-                          {isFetching ? (
-                            <Loader2
-                              className={cn(
-                                "ml-auto animate-spin",
-                                sort === Object.values(order)[i]
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                          ) : (
-                            <Check
-                              className={cn(
-                                "ml-auto",
-                                sort === Object.values(order)[i]
-                                  ? "opacity-100"
-                                  : "opacity-0"
-                              )}
-                            />
-                          )}
-                        </CommandItem>
-                      );
-                    })}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {tags.length > 0 && (
-          <div className="flex flex-col gap-2 items-center w-full">
-            <h2 className="text-sm text-start sm:text-center w-full">
-              Choose a topic
-            </h2>
-            <div className="flex flex-wrap gap-2 justify-start sm:justify-center w-full">
-              <button
-                className={`px-2.5 py-1 rounded-md text-sm font-semibold transition-all outline-none ${
-                  !selectedTag
-                    ? "bg-theme-accent-1/30 text-theme-accent-1"
-                    : "bg-muted/60 text-muted-foreground"
-                }`}
-                onClick={() => setSelectedTag(null)}
-              >
-                All
-              </button>
-              {tags?.length > 0 &&
-                tags
-                  .slice(0, showAllTags ? tags.length : TAG_PREVIEW_LIMIT)
-                  .map((tag) => (
-                    <button
-                      key={tag}
-                      className={`px-2.5 py-1 rounded-md text-sm font-semibold transition-all duration-300 ease-linear outline-none ${
-                        selectedTag === tag
-                          ? "bg-theme-accent-1/30 text-theme-accent-1"
-                          : "bg-muted/60 text-muted-foreground"
-                      }`}
-                      onClick={() => setSelectedTag(tag)}
-                    >
-                      {tag}
-                    </button>
-                  ))}
-              {tags.length > TAG_PREVIEW_LIMIT && (
-                <button
-                  key="more"
-                  className={`px-2.5 py-1 rounded-md text-sm font-semibold transition-all duration-300 ease-linear outline-none bg-muted/60 text-muted-foreground`}
-                  onClick={() => setShowAllTags(!showAllTags)}
-                >
-                  {(showAllTags ? "-" : "+") +
-                    (tags.length - TAG_PREVIEW_LIMIT)}
-                </button>
-              )}
+          {/* Search Box */}
+          <div className="mt-7 w-full">
+            <div
+              className="relative isolate before:transition-opacity rounded-xl bg-muted/10 backdrop-blur-sm w-full max-w-[500px] mx-auto group gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
+            >
+              <input
+                ref={searchRef}
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search..."
+                className="b2 placeholder:neutral-500 rounded-[inherit] bg-transparent border-0 w-full py-3 px-5 pl-12 focus:outline-none focus:ring-0 text-sm text-neutral-200"
+              />
+              <LuSearch className="lucide lucide-search text-neutral-300 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none size-5" />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center flex-col">
+                {searchQuery ? (
+                  <button
+                    onClick={() => {
+                      setSearchQuery("");
+                      searchRef.current?.focus();
+                    }}
+                    className="text-neutral-400 hover:text-white transition p-0.5"
+                    aria-label="Clear search"
+                  >
+                    <LuX className="size-4" />
+                  </button>
+                ) : (
+                  <Kbd className="text-muted-foreground">
+                    <Kbd.Abbr keyValue="command" />
+                    <Kbd.Content>K</Kbd.Content>
+                  </Kbd>
+                )}
+              </div>
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Blog Cards */}
-        {filteredBlogs.length === 0 ? (
-          isFetching ? (
-            <div className="text-muted-foreground text-lg text-center min-h-[40vh]">
-              <Loader2 className="animate-spin" />
-            </div>
-          ) : (
-            <div className="text-muted-foreground text-lg text-center mt-10 min-h-[40vh]">
-              No blogs found
-            </div>
-          )
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 w-full gap-4">
-            {filteredBlogs.map((blog, i) => (
-              <Link
-                key={blog.slug}
-                href={`/blogs/${blog.slug}`}
-                className="w-full flex items-center justify-center gap-3 relative group"
-              >
-                <div className="absolute inset-0 w-full h-full bg-transparent group-hover:bg-background/60 border border-dashed backdrop-blur-sm rounded-xl"></div>
-
-                <Card className="h-full w-full flex flex-col bg-background/60 backdrop-blur-sm justify-between border-dashed transition-all duration-300 overflow-hidden group-hover:[transform:perspective(1000px)_rotateX(-2deg)_rotateY(3deg)] group-hover:origin-top-left">
-                  <CardHeader className="p-0 h-full">
-                    <div
-                      className="border border-dashed rounded-t-lg overflow-hidden h-36"
-                      style={{
-                        maskImage:
-                          "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.3), rgba(0,0,0,0))",
-                      }}
+      {/* 2-Column Content Layout */}
+      <div className="border-t border-neutral-900">
+        <div className="layout pb-16 md:pb-24">
+          <div className="grid grid-cols-1 md:grid-cols-[1fr_18rem] md:gap-8 min-h-[calc(100vh-28rem)]">
+            {/* BLOG POSTS LIST - Column 1 on desktop, Column 2 on mobile */}
+            <ul className="order-2 md:order-1 md:border-r border-neutral-900 md:pr-8 grid gap-8 py-6">
+              {filteredPosts.length === 0 ? (
+                <div className="py-20 text-center text-neutral-500 text-sm">
+                  No posts found matching your search.
+                </div>
+              ) : (
+                <AnimatePresence mode="popLayout" initial={false}>
+                  {filteredPosts.map((post) => (
+                    <motion.li
+                      key={post.slug}
+                      initial={{ opacity: 0, y: 24 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.96, y: -16 }}
+                      transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                      className="w-full py-6 sm:py-7 group"
                     >
-                      {blog.thumbnail && (
-                        <Image
-                          src={blog.thumbnail}
-                          width={300}
-                          height={300}
-                          className="object-cover w-full h-full"
-                          alt={blog.title}
-                        />
-                      )}
-                    </div>
-                    <CardTitle className="px-4 pb-0 pt-2">
-                      <h2 className="text-white text-xl truncate">
-                        {blog.title}
-                      </h2>
-                      <div className="flex items-center gap-2 mt-1">
-                        {i === 0 &&
-                          new Date(blog.updatedAt || blog.createdAt) >
-                            new Date(
-                              new Date().getTime() - 3 * 24 * 60 * 60 * 1000
-                            ) && (
-                            <span className="bg-muted text-foreground border px-1.5 py-0.5 rounded text-[10px] tracking-wide uppercase">
-                              New
-                            </span>
-                          )}
-                        <span className="text-xs text-muted-foreground">
-                          {formatDate(blog.createdAt, blog.updatedAt)}
-                        </span>
-                      </div>
-                    </CardTitle>
-                    <CardDescription className="text-md pt-3 px-4">
-                      <ExpandableText
-                        text={blog?.description || ""}
-                        maxLength={200}
-                        expandable={false}
-                      />
-                    </CardDescription>
-                    <div className="absolute top-1 left-2 bg-background/50 rounded py-1 px-2 flex items-center gap-1.5 text-foreground/80">
-                      <Eye size={16} />
-                      <span className="text-sm">{blog.views || "0"}</span>
-                    </div>
-                  </CardHeader>
-                  <CardFooter className="flex flex-wrap gap-2 p-4 pt-3">
-                    {blog?.tags &&
-                      blog.tags.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="px-2.5 py-1 bg-theme-accent-1/20 border border-theme-accent-1 rounded-full text-xs text-theme-accent-1 font-semibold capitalize"
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                  </CardFooter>
-                </Card>
-              </Link>
-            ))}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {total > 1 && (
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  disabled={page === 1}
-                  onClick={() => goToPage(page - 1)}
-                />
-              </PaginationItem>
-
-              {[...Array(total)].map((_, index) => {
-                const pageNum = index + 1;
-                const isActive = page === pageNum;
-                if (
-                  pageNum === 1 ||
-                  pageNum === total ||
-                  Math.abs(pageNum - page) <= 1
-                ) {
-                  return (
-                    <PaginationItem key={pageNum}>
-                      <PaginationLink
-                        isActive={isActive}
-                        onClick={() => goToPage(pageNum)}
+                      <Link
+                        className="block rounded-md px-2 -mx-2 transition duration-200"
+                        href={`/blogs/${post.slug}`}
                       >
-                        {pageNum}
-                      </PaginationLink>
-                    </PaginationItem>
+                        <div className="flex flex-col gap-5 lg:flex-row-reverse lg:gap-8 lg:items-center">
+                          {/* Thumbnail */}
+                          <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full lg:w-44 aspect-[5/3] shadow-md transition-colors">
+                            <Image
+                              src={post.thumbnail}
+                              alt={post.title}
+                              fill
+                              className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                              sizes="(max-width: 768px) 100vw, 176px"
+                            />
+                          </figure>
+
+                          {/* Post Content */}
+                          <div className="w-full flex-1">
+                            <div className="flex items-center gap-3">
+                              <p className="b2 text-neutral-300">
+                                {new Date(post.createdAt).toLocaleDateString(
+                                  "en-US",
+                                  {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                  },
+                                )}
+                              </p>
+                            </div>
+
+                            <h3 className="h5 mt-3 relative inline-block">
+                              <span
+                                aria-hidden="true"
+                                className="bg-gradient-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
+                              >
+                                <Highlighted
+                                  text={post.title}
+                                  query={searchQuery}
+                                />
+                              </span>
+                              <span className="absolute left-0 top-0 text-white font-rethink">
+                                <Highlighted
+                                  text={post.title}
+                                  query={searchQuery}
+                                />
+                              </span>
+                            </h3>
+
+                            <p className="b2 text-neutral-300 mt-1 leading-relaxed max-w-2xl line-clamp-2">
+                              <Highlighted
+                                text={post.description || ""}
+                                query={searchQuery}
+                              />
+                            </p>
+
+                            {/* Metadata Footer */}
+                            <div className="flex justify-between mt-5 flex-col gap-4 sm:flex-row sm:items-center">
+                              <div className="flex items-center gap-5">
+                                <div className="flex items-center gap-2">
+                                  <LuClock className="size-3.5 text-accent shrink-0" />
+                                  <p className="c1 text-neutral-400">
+                                    {post.readingTime}
+                                  </p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <LuEye className="size-3.5 text-accent shrink-0" />
+                                  <p className="c1 text-neutral-400">
+                                    {post.views}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap gap-x-2 gap-y-1">
+                                {(post.tags || []).map((tag) => {
+                                  const isTagActive = selectedTopics.some(
+                                    (t) =>
+                                      t.toLowerCase() === tag.toLowerCase(),
+                                  );
+                                  return (
+                                    <button
+                                      key={tag}
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        setSelectedTopics((prev) =>
+                                          prev.some(
+                                            (t) =>
+                                              t.toLowerCase() ===
+                                              tag.toLowerCase(),
+                                          )
+                                            ? prev.filter(
+                                                (t) =>
+                                                  t.toLowerCase() !==
+                                                  tag.toLowerCase(),
+                                              )
+                                            : [...prev, tag],
+                                        );
+                                      }}
+                                      className={`inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-xs ${
+                                        isTagActive
+                                          ? "bg-accent/15 text-accent"
+                                          : "bg-neutral-900 text-neutral-500 hover:text-white"
+                                      }`}
+                                      data-selected={
+                                        isTagActive ? "true" : "false"
+                                      }
+                                    >
+                                      <Highlighted
+                                        text={tag}
+                                        query={searchQuery}
+                                      />
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    </motion.li>
+                  ))}
+                </AnimatePresence>
+              )}
+            </ul>
+
+            {/* ASIDE (Filter Section) - Column 2 on desktop, Column 1 on mobile */}
+            <aside className="isolate order-1 md:order-2 mt-8 md:sticky md:top-24 md:h-fit md:self-start">
+              {/* Sort Dropdown Button */}
+              <Select
+                triggerClassName="py-5"
+                options={[
+                  {
+                    value: "views",
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <LuEye className="size-4 shrink-0" />
+                        <span>Sort by views</span>
+                      </div>
+                    ),
+                  },
+                  {
+                    value: "date",
+                    label: (
+                      <div className="flex items-center gap-2">
+                        <LuCalendar className="size-4 shrink-0" />
+                        <span>Sort by date</span>
+                      </div>
+                    ),
+                  },
+                ]}
+                value={sortBy}
+                onChange={(value) => setSortBy(value as "views" | "date")}
+              />
+              {/* Choose Topics Filter */}
+              <p className="b2 mt-6 md:mt-12 text-neutral-200">Choose topics</p>
+              <div className="mt-6 flex flex-wrap items-baseline justify-start gap-2 text-sm text-gray-600 dark:text-gray-300 c1">
+                {allTopics.map((topic) => {
+                  const isSelected = selectedTopics.some(
+                    (t) => t.toLowerCase() === topic.toLowerCase(),
                   );
-                } else if (pageNum === page - 2 || pageNum === page + 2) {
+
+                  // A tag is disabled only if NO post that already contains ALL
+                  // selected topics also contains this tag (partner co-occurrence).
+                  const isDisabled =
+                    selectedTopics.length > 0 &&
+                    !isSelected &&
+                    !filteredPosts.some((post) =>
+                      (post.tags || []).some(
+                        (t) => t.toLowerCase() === topic.toLowerCase(),
+                      ),
+                    );
+
                   return (
-                    <PaginationItem key={`ellipsis-${pageNum}`}>
-                      <span className="px-2 text-muted-foreground">...</span>
-                    </PaginationItem>
+                    <button
+                      key={topic}
+                      disabled={isDisabled}
+                      onClick={() =>
+                        setSelectedTopics((prev) =>
+                          isSelected
+                            ? prev.filter(
+                                (t) => t.toLowerCase() !== topic.toLowerCase(),
+                              )
+                            : [...prev, topic],
+                        )
+                      }
+                      className={`inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-sm disabled:grayscale disabled:opacity-25 ${
+                        isSelected
+                          ? "bg-accent-deep text-accent"
+                          : "bg-neutral-900 text-neutral-500 not-disabled:hover:text-white"
+                      }`}
+                      data-selected={isSelected ? "true" : "false"}
+                    >
+                      {topic}
+                    </button>
                   );
-                }
-                return null;
-              })}
+                })}
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
 
-              <PaginationItem>
-                <PaginationNext
-                  disabled={page === total}
-                  onClick={() => goToPage(page + 1)}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        )}
-      </motion.div>
+      {/* Footer */}
       <Footer />
-    </Keybindy>
+    </div>
   );
-};
-
-export default BlogsView;
+}

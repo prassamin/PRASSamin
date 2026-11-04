@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative pt-24 w-full z-20 overflow-hidden bg-transparent text-left">
+    <footer className="relative pt-24 not-sm:pt-14 w-full z-20 overflow-hidden bg-transparent text-left">
       {/* Subtle Top Glowing Border Line */}
       <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
@@ -69,7 +69,7 @@ export const Footer: React.FC = () => {
       />
 
       <div className="layout relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 border-b border-neutral-900">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 not-sm:pb-6 border-b border-neutral-900">
           {/* Identity & Live Location (cols 1-4) */}
           <div className="lg:col-span-4 flex flex-col justify-between">
             <div>
@@ -150,9 +150,9 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* ======================================================== */}
-        {/* Tier 3: Elegant Architectural PRAS Signature Logo        */}
+        {/* PRAS Signature Logo        */}
         {/* ======================================================== */}
-        <div className="relative py-14 overflow-hidden select-none pointer-events-none w-full">
+        <div className="relative py-14 overflow-hidden select-none pointer-events-none w-full not-sm:hidden">
           {/* Shared Defs & Global Style */}
           <svg width="0" height="0" className="absolute pointer-events-none">
             <defs>
