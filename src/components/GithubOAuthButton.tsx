@@ -29,6 +29,7 @@ export const GithubOAuthButton: React.FC<
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data.message) {
         toast.danger(error.response?.data.message);
+        return
       }
       toast.danger("Something went wrong");
     } finally {

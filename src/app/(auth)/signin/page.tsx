@@ -1,13 +1,9 @@
 import Image from "next/image";
 import { GithubOAuthButton } from "@/components/GithubOAuthButton";
 import { Info } from "lucide-react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Link } from "@/components/Link";
-import { metatag } from "@/utils/metatag";
+import { metatag } from "@/lib/metatag";
 import { Suspense } from "react";
 
 export default function Page() {
@@ -28,20 +24,19 @@ export default function Page() {
           alt="Anime"
         />
 
-        <HoverCard closeDelay={0} openDelay={0}>
-          <HoverCardTrigger asChild>
-            <Info className="text-foreground/70 absolute top-4 left-4 z-10 cursor-pointer" />
-          </HoverCardTrigger>
-          <HoverCardContent
-            side="right"
-            className="mt-24 px-3 py-2 text-sm text-foreground/80 bg-card/90 border-border/50"
-          >
-            This background image is a custom collage featuring my favorite
-            anime characters. Since this website is a reflection of my
-            personality, I wanted to incorporate elements that resonate with me,
-            creating a unique and personal touch.
-          </HoverCardContent>
-        </HoverCard>
+        <Tooltip
+          noDelay
+          content={
+            <span className="mt-24 px-3 py-2 text-sm text-foreground/80 bg-card/90 border-border/50">
+              This background image is a custom collage featuring my favorite
+              anime characters. Since this website is a reflection of my
+              personality, I wanted to incorporate elements that resonate with
+              me, creating a unique and personal touch.
+            </span>
+          }
+        >
+          <Info className="text-foreground/70 absolute top-4 left-4 z-10 cursor-pointer" />
+        </Tooltip>
       </div>
 
       {/* Right Section (Login Content) */}

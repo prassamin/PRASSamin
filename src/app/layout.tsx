@@ -2,6 +2,7 @@ import "./globals.css";
 import { poppins, rethinkSans, inter } from "@/constants/fonts";
 import { Metadata } from "next";
 import { RootProviders } from "@/providers/RootProviders";
+import { getOwnerCached, toPublicOwner } from "@/lib/github";
 
 export const viewport = {
   width: "device-width",
@@ -58,11 +59,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Resolve the GitHub token owner once (cached in memory) and expose only
+  // its PUBLIC fields to the app (no ids/secrets) for UI visualization.
+  const ownerResult = await getOwnerCached();
+  const owner = toPublicOwner(ownerResult.owner);
+
   return (
     <html
       className="dark overflow-x-clip"
@@ -72,7 +78,7 @@ export default function RootLayout({
       <body
         className={`${poppins.className} ${rethinkSans.variable} ${inter.variable} antialiased overflow-x-clip`}
       >
-        <RootProviders>{children}</RootProviders>
+        <RootProviders initialOwner={owner}>{children}</RootProviders>
       </body>
     </html>
   );

@@ -1,5 +1,4 @@
 import {
-  ADMIN_EMAIL,
   AUTH_PRIVATE_KEY,
   GITHUB_AUTH_CLIENT_ID,
   GITHUB_AUTH_CLIENT_SECRET,
@@ -9,10 +8,10 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
 import { SESSION_COOKIE_NAME } from "@/constants";
 import axios from "axios";
+import { isTokenOwner } from "@/lib/github";
 
 const TOKEN_URL = "https://github.com/login/oauth/access_token";
 const USER_URL = "https://api.github.com/user";
-const EMAILS_URL = "https://api.github.com/user/emails";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -40,20 +39,6 @@ export async function GET(req: NextRequest) {
   }
 
   // Get user info
-  const { data: emails } = await axios.get(EMAILS_URL, {
-    headers: {
-      Authorization: `Bearer ${tbody.access_token}`,
-      Accept: "application/vnd.github+json",
-    },
-  });
-
-  // prepare user info
-  const primaryEmail = emails.find((e: any) => e.primary)?.email;
-
-  if (!primaryEmail || primaryEmail !== ADMIN_EMAIL) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const { data: rawUser } = await axios.get(USER_URL, {
     headers: {
       Authorization: `Bearer ${tbody.access_token}`,
@@ -61,12 +46,17 @@ export async function GET(req: NextRequest) {
     },
   });
 
+  // Gate: only the account that owns this deployment's GitHub token may sign in.
+  if (!rawUser?.id || !(await isTokenOwner(rawUser.id))) {
+    return NextResponse.json({ message: "You are not authorized" }, { status: 401 });
+  }
+
   const user = {
     id: rawUser?.id,
     username: rawUser?.login,
     avatar_url: rawUser?.avatar_url,
     name: rawUser?.name,
-    email: primaryEmail,
+    email: rawUser?.email || "",
     bio: rawUser?.bio,
     role: "ADMIN",
   };
