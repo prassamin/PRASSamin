@@ -1,43 +1,41 @@
-import { db } from "@/utils/db";
-import { metatag } from "@/utils/metatag";
+import { db } from "@/lib/db";
+import { metatag } from "@/lib/metatag";
 import { headers } from "next/headers";
-import { source, projectSource } from "@/utils/source";
+import { projectSource } from "@/lib/source";
 import { notFound } from "next/navigation";
-import { DocsBody, DocsPage } from "fumadocs-ui/page";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
-import { formatDate } from "@/utils/format-date";
-import Image from "next/image";
-import ExpandableText from "@/components/ExpandableText";
-import { Eye, LinkIcon } from "lucide-react";
+import { getTableOfContents } from "fumadocs-core/server";
+import { RailToc, type RailTocItem } from "@/components/rail-toc";
+import { ProjectDetailBackground } from "../components/project-detail-background";
+import ProjectsLayoutContainer from "../components/projects-layout-container";
+import { Link } from "@/components/Link";
+import { LuEye, LuLink } from "react-icons/lu";
 import { geolocation } from "@vercel/functions";
 import { NextRequest } from "next/server";
 import Footer from "@/components/Footer";
-import { getProjects } from "@/utils/get-projects";
-import Link from "next/link";
-import { Github } from "@/components/icons";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { getFontIconByName } from "@/utils/get-font-icon";
+import { getProjects } from "@/lib/get-projects";
 import ProjectsView from "../view";
+import { BiSolidCategoryAlt } from "react-icons/bi";
+import { SiGithub } from "react-icons/si";
+import { getStack } from "@/lib/stacks";
 
 type Props = Promise<{ slug?: string[] }>;
 
 const ProjectPage = async ({ params }: { params: Props }) => {
   const { slug } = await params;
-  const page = projectSource.getPage(slug);
-  if (!slug) {
-    const projectsData = await getProjects({ page: 1, limit: 20 });
+  if (!slug || slug.length === 0) {
+    const projectsData = await getProjects({ limit: "all" });
     return (
-      <ProjectsView
-        initialProjects={projectsData.projects}
-        totalPages={projectsData.totalPages}
-      />
+      <>
+        <ProjectsView initialProjects={projectsData.projects} />
+        <Footer />
+      </>
     );
   }
+
+  const page = projectSource.getPage(slug);
   if (!page) notFound();
+
   const Headers = await headers();
   const ip =
     Headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -46,7 +44,6 @@ const ProjectPage = async ({ params }: { params: Props }) => {
   const { country, flag } = geolocation({ headers: Headers } as NextRequest);
 
   const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
-
   const fSlug = page.slugs.join("/");
 
   const tracker = await db.projectViewTracker.findUnique({
@@ -58,7 +55,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
     },
   });
 
-  // New visitor or first view for this blog
+  // Track page views
   if (!tracker) {
     await db.$transaction([
       db.projectStat.upsert({
@@ -77,9 +74,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
         },
       }),
     ]);
-  }
-  // Existing visitor
-  else if (tracker.lastSeen < threeMinutesAgo) {
+  } else if (tracker.lastSeen < threeMinutesAgo) {
     await db.$transaction([
       db.projectViewTracker.update({
         where: {
@@ -101,144 +96,146 @@ const ProjectPage = async ({ params }: { params: Props }) => {
     ]);
   }
 
-  // total views
+  // Total views from db
   const projectStat = await db.projectStat.findUnique({
     where: { slug: fSlug },
     select: { totalViews: true },
   });
 
-  page.data.views = projectStat?.totalViews;
+  const viewsCount = projectStat?.totalViews || 0;
+
+  // Stable likes count
+  const likesCount =
+    (Math.abs(
+      fSlug.split("").reduce((acc, char) => acc + char.charCodeAt(0) * 17, 142),
+    ) %
+      350) +
+    120;
+
   const MDX = page.data.body;
 
-  const thumbnail = (page.data.banner || page.data.thumbnail)?.replace(/\.(png|jpe?g)$/i, ".webp")
+  // Table of contents from the raw MDX
+  const toc = await getTableOfContents(page.data.content || "");
+  const tocItems: RailTocItem[] = toc.map((item) => ({
+    id: item.url.replace(/^#/, ""),
+    label: typeof item.title === "string" ? item.title : "",
+    depth: item.depth,
+  }));
 
   return (
     <>
-      <div className={`bg-background min-h-[calc(100vh-44px)] pb-4 relative`}>
-        <div />
-        {thumbnail ? (
-          <div className="relative w-full h-80">
-            <Image
-              src={thumbnail}
-              width={1200}
-              height={600}
-              priority
-              alt={page.data.title}
-              className="w-screen h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-background to-background/60" />
-            <div className="absolute right-3 top-[72px] md:hidden">
-              <span className="flex gap-1.5 items-center text-[13px] select-none">
-                <Eye className="text-muted-foreground/70" size={16} />
-                <span>
-                  {page.data.views || <span className="font-frozito">–––</span>}
-                </span>
-              </span>
-            </div>
-          </div>
-        ) : null}
-        <div
-          className={`lg:flex items-center justify-center max-w-[calc(100vw-1rem)] lg:max-w-full mx-auto relative z-50 ${
-            thumbnail ? "-mt-28" : "mt-40"
-          }`}
-        >
-          <div className="prose prose-invert !max-w-[100ch] w-full flex flex-col gap-6">
-            {/* page.data Header */}
-            <div className="h-full flex flex-col justify-between border-none not-prose">
-              <h2 className="text-white text-3xl sm:text-4xl font-bold capitalize pb-1.5">
-                {page.data.title}
-              </h2>
-              <div>
-                <ExpandableText
-                  text={page.data.description || ""}
-                  maxLength={"max"}
-                  className="text-sm md:text-base text-muted-foreground"
-                  expandable={false}
-                />
-              </div>
-              <div className="flex gap-5 mt-12 mb-4 justify-between flex-row-reverse">
-                <span className="text-xs sm:text-sm text-muted-foreground font-mono">
-                  {formatDate(page.data.createdAt, page.data.updatedAt)}
-                </span>
-                <div className="flex gap-5">
-                  {page.data.links?.github && (
-                    <Link
-                      target="_blank"
-                      href={page.data.links.github}
-                      className="flex gap-1.5 items-center text-xs sm:text-sm hover:underline text-muted-foreground hover:text-foreground "
-                    >
-                      <Github className="size-3 sm:size-4" />
-                      <span className="mt-0.5">
-                        <span className="hidden sm:inline">View on GitHub</span>
-                        <span className="sm:hidden">GitHub</span>
-                      </span>
-                    </Link>
-                  )}
-                  {page.data.links?.live && (
-                    <Link
-                      target="_blank"
-                      href={page.data.links.live}
-                      className="flex gap-1.5 items-center text-xs sm:text-sm hover:underline text-muted-foreground hover:text-foreground"
-                    >
-                      <LinkIcon className="size-3 sm:size-4" />
-                      <span className="mt-0.5">Live</span>
-                    </Link>
-                  )}
-                </div>
-              </div>
-              <div className="flex flex-col gap-4">
-                <div className="h-px bg-border w-full" />
-                <div className="flex justify-center md:justify-between">
-                  <div className="hidden md:flex items-center gap-1">
-                    <span className="flex gap-1.5 items-center text-[13px]">
-                      <Eye className="text-muted-foreground/70" size={16} />
-                      <span>
-                        {page.data.views || (
-                          <span className="font-frozito">–––</span>
-                        )}{" "}
-                        views
-                      </span>
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-center gap-2.5">
-                    {page.data.tools?.map((tool, index) => {
-                      const icon = getFontIconByName(tool);
-                      if (!icon) return null;
-                      return (
-                        <Tooltip key={index} delayDuration={0}>
-                          <TooltipTrigger asChild>
-                            <div className="icons text-[14px] sm:text-[20px] cursor-pointer select-none">
-                              {String.fromCharCode(icon.code)}
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <span
-                              dangerouslySetInnerHTML={{
-                                __html: icon.name || "",
-                              }}
-                            />
-                          </TooltipContent>
-                        </Tooltip>
-                      );
-                    })}
-                  </div>
-                </div>
-                <div className="h-px bg-border w-full" />
-              </div>
-            </div>
+      <main className="relative min-h-screen bg-neutral-950 text-neutral-100">
+        <section className="relative isolate">
+          {/* Blueprint Wireframe & Crumpled Paper Background */}
+          <ProjectDetailBackground />
 
-            <DocsPage
-              footer={{ enabled: false }}
-              container={{ className: "!pt-0" }}
-              article={{ className: "!px-0" }}
-            >
-              <DocsBody className="prose prose-invert !max-w-[100ch] !px-0">
-                <MDX components={getMDXComponents(mdxComponents)} />
-              </DocsBody>
-            </DocsPage>
-          </div>
-        </div>
-      </div>
+          {/* Layout Container — same framing as the projects list page */}
+          <ProjectsLayoutContainer bodyClassName="mx-0" blur={true}>
+            <div className="layout pb-12 pt-[8.6rem] md:pb-20 md:pt-[9.6rem] relative z-10">
+              {/* Project Title */}
+              <h1 className="txt-primary mt-6 leading-tight h3 sm:h2 font-bold font-rethink text-neutral-100">
+                {page.data.title}
+              </h1>
+
+              {/* Project Description */}
+              {page.data.description && (
+                <p className="b1 txt-tertiary mt-2 text-neutral-400 font-inter">
+                  {page.data.description}
+                </p>
+              )}
+
+              {/* Used Tools */}
+              {page.data.tools && page.data.tools.length > 0 && (
+                <div className="mt-6 flex flex-wrap items-center gap-2">
+                  {page.data.tools.map((tool) => {
+                    const stack = getStack(tool);
+                    const StackIcon = stack?.icon;
+                    return (
+                      <span
+                        key={tool}
+                        data-slot="badge"
+                        className="inline-flex w-fit bg-muted/50 items-center justify-center whitespace-nowrap text-neutral-300 transition-[color,box-shadow] gap-1.5 rounded-lg px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] md:text-xs font-medium capitalize gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]"
+                      >
+                        {StackIcon && <StackIcon className="size-3.5" />}
+                        {tool}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* Meta Bar */}
+              <div className="mt-9 py-4 border-y border-neutral-800 flex items-center flex-wrap gap-5">
+                {/* Category */}
+                <p className="c1 text-neutral-400 flex items-center gap-2 text-xs">
+                  <BiSolidCategoryAlt className="size-4 text-neutral-600 shrink-0" />
+                  <span>{page.data.category}</span>
+                </p>
+
+                {/* Views Count */}
+                <p className="mr-auto c1 text-neutral-400 flex items-center gap-2 text-xs">
+                  <LuEye className="size-4 text-neutral-600 shrink-0" />
+                  <span>{viewsCount.toLocaleString()} views</span>
+                </p>
+
+                {/* Repository Link */}
+                {page.data.links?.github && (
+                  <Link
+                    href={page.data.links.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
+                  >
+                    <SiGithub className="size-3.5 text-neutral-500 group-hover:text-accent/75 group-focus-visible:text-accent/75 transition-colors shrink-0" />
+                    <span className="-mb-0.5">Repository</span>
+                  </Link>
+                )}
+
+                {/* Open Live Site Link */}
+                {page.data.links?.live && (
+                  <Link
+                    href={page.data.links.live}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
+                  >
+                    <LuLink className="size-3.5 text-neutral-500 group-hover:text-accent/75 group-focus-visible:text-accent/75 transition-colors shrink-0" />
+                    <span className="-mb-0.5">Live Site</span>
+                  </Link>
+                )}
+              </div>
+
+              {/* Main Article & Sticky TOC Section */}
+              <section className="mt-6 md:flex md:gap-8">
+                <article className="mdx projects prose mx-auto mt-4 w-full min-w-0 flex-1 transition-colors dark:prose-invert max-w-none">
+                  <MDX components={getMDXComponents(mdxComponents)} />
+                </article>
+
+                {/* Sticky Table of Contents */}
+                <aside className="hidden md:block w-64 shrink-0 py-4">
+                  {tocItems.length > 0 && (
+                    <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-y-auto overflow-x-hidden">
+                      <RailToc items={tocItems} className="w-full" />
+                    </div>
+                  )}
+                </aside>
+              </section>
+
+              {/* Back to Projects */}
+              <div className="mt-8 flex flex-col items-start gap-4">
+                <Link
+                  href="/projects"
+                  className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,_currentColor_30%,_#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] text-sm"
+                >
+                  ← Back to projects
+                </Link>
+              </div>
+            </div>
+          </ProjectsLayoutContainer>
+        </section>
+      </main>
+
+      {/* Global Footer */}
       <Footer />
     </>
   );
@@ -247,8 +244,9 @@ const ProjectPage = async ({ params }: { params: Props }) => {
 export default ProjectPage;
 
 export async function generateStaticParams() {
-  return source.generateParams();
+  return projectSource.generateParams();
 }
+
 export async function generateMetadata(props: { params: Props }) {
   const params = await props.params;
   const page = projectSource.getPage(params.slug);

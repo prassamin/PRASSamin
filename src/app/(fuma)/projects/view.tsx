@@ -5,12 +5,11 @@ import { motion, type Variants } from "framer-motion";
 import type { QueryProjects } from "@/lib/get-projects";
 import SectionHeader from "./components/section-header";
 import ProjectCard from "./components/project-card";
-import { ProjectsBackgroundIcon } from "./components/projects-background-icon";
+import { ProjectsContourLine } from "./components/projects-contour-line";
 import ProjectsLayoutContainer from "./components/projects-layout-container";
 
 interface ProjectsViewProps {
   initialProjects?: QueryProjects["projects"];
-  totalPages?: number;
 }
 
 const containerVariants: Variants = {
@@ -49,7 +48,7 @@ const ProjectsView = ({ initialProjects = [] }: ProjectsViewProps) => {
               "linear-gradient(rgb(0, 0, 0) 30%, rgba(0, 0, 0, 0) 100%)",
           }}
         >
-          <ProjectsBackgroundIcon className="opacity-60 md:w-full" />
+          <ProjectsContourLine className="opacity-60 md:w-full" />
         </div>
 
         {/* Header and Project Showcase Section */}

@@ -1,9 +1,10 @@
 import { cn } from "@heroui/styles";
 import React from "react";
 
-export const ProjectsBackgroundIcon: React.FC<
-  React.SVGProps<SVGSVGElement>
-> = ({ className, ...props }) => {
+export const ProjectsContourLine: React.FC<React.SVGProps<SVGSVGElement>> = ({
+  className,
+  ...props
+}) => {
   return (
     <svg
       className={cn("opacity-60 md:w-full", className)}
