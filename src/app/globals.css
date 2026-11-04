@@ -153,8 +153,8 @@
   --neutral-950: #0a0a0a;
 
   --pras-logo: brightness(0) saturate(100%) invert(100%) sepia(0%)
-  saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
-  
+    saturate(7454%) hue-rotate(22deg) brightness(101%) contrast(86%);
+
   /* --- Accent Colors --- */
   --accent-300: #70ffc3;
   --accent: #4cffb4;
@@ -468,6 +468,11 @@
   }
 }
 
-.animate-aurora {
-  animation: aurora 10s ease-in-out infinite alternate;
+/* Prevent nested scrollables from leaking native scroll into Lenis root */
+pre,
+[data-lenis-prevent],
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-auto {
+  overscroll-behavior: contain;
 }

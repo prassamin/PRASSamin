@@ -12,7 +12,7 @@ import { OwnerProvider } from "./OwnerProvider";
 import {
   useLenisSmartScroll,
   shouldPreventLenisScroll,
-} from "@/hooks/useLenisSmartScroll";
+} from "@/hooks/use-lenis-smartscroll";
 import type { GithubOwnerPublic } from "@/lib/github";
 
 export function RootProviders({
