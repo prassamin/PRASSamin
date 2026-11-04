@@ -1,14 +1,23 @@
 import { NextResponse, NextRequest } from "next/server";
 import { maintenanceNotice } from "./config/maintenance";
-import { createRouteMatcher } from "./utils/router-matcher";
+import { createRouteMatcher } from "./lib/router-matcher";
 import axios from "axios";
+import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "./constants";
 
 const isAdminRoute = createRouteMatcher(["/admin.*", "/api/admin.*"]);
 
 export default async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
-  headers.set("x-current-url", request.nextUrl.href);
   const { pathname } = request.nextUrl;
+    const hostHeader =
+    request.headers.get("x-forwarded-host") ?? request.headers.get("host");
+  const proto =
+    request.headers.get("x-forwarded-proto") ??
+    (process.env.NODE_ENV === "production" ? "https" : "http");
+  const fullUrl = `${proto}://${hostHeader}${pathname}${request.nextUrl.search}`;
+  const origin = `${proto}://${hostHeader}`;
+  headers.set(ORIGIN_HEADER, origin);
+  headers.set(CURRENT_URL_HEADER, fullUrl);
 
   // Maintenance mode check (redirects all non-static requests)
   const staticMediaRegex =
@@ -19,7 +28,7 @@ export default async function middleware(request: NextRequest) {
     !staticMediaRegex.test(pathname)
   ) {
     return NextResponse.rewrite(new URL("/maintenance", request.url), {
-      headers,
+      request: { headers },
     });
   }
 
@@ -27,7 +36,7 @@ export default async function middleware(request: NextRequest) {
   if (pathname.startsWith("/wa")) {
     const message = pathname.split("/wa/").at(-1);
     return NextResponse.redirect(
-      `https://api.whatsapp.com/send?phone=8801322122109&text=${message}`
+      `https://api.whatsapp.com/send?phone=8801322122109&text=${message}`,
     );
   }
 
@@ -37,7 +46,7 @@ export default async function middleware(request: NextRequest) {
 
     if (!token)
       return NextResponse.rewrite(new URL("/unauthorized", request.url), {
-        headers,
+        request: { headers },
       });
 
     try {
@@ -48,16 +57,16 @@ export default async function middleware(request: NextRequest) {
           headers: {
             cookie: request.headers.get("cookie"),
           },
-        }
+        },
       );
     } catch (error) {
       return NextResponse.rewrite(new URL("/unauthorized", request.url), {
-        headers,
+        request: { headers },
       });
     }
   }
 
-  return NextResponse.next({ headers });
+  return NextResponse.next({ request: { headers } });
 }
 
 // Match only necessary routes (skip static assets, _next, and public files)
