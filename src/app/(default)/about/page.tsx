@@ -1,4 +1,5 @@
 import React from "react";
+import { unstable_cache } from "next/cache";
 import { metatag } from "@/lib/metatag";
 import { HeroSection } from "./components/hero";
 import { AboutRetro } from "./components/retro";
@@ -9,25 +10,45 @@ import { db } from "@/lib/db";
 import { EXPERIENCESERIALIZER, EDUCATIONSERIALIZER } from "@/lib/serializers";
 import Image from "next/image";
 
-const AboutPage = async () => {
-  const blogs = await getBlogs({ limit: "all", sortBy: "created_at" });
+const getExperiences = unstable_cache(
+  async () => {
+    const records = await db.experience.findMany({
+      orderBy: [{ start: "desc" }],
+    });
+    return EXPERIENCESERIALIZER(records) || [];
+  },
+  ["about-experiences"],
+  { revalidate: 300 },
+);
 
-  // Same retro derivation as the home page: "retro" tag + a year tag.
+const getEducations = unstable_cache(
+  async () => {
+    const records = await db.education.findMany({
+      orderBy: [{ start: "desc" }],
+    });
+    return EDUCATIONSERIALIZER(records) || [];
+  },
+  ["about-educations"],
+  { revalidate: 300 },
+);
+
+const getBlogsForAbout = unstable_cache(
+  async () => getBlogs({ limit: "all", sortBy: "created_at" }),
+  ["about-blogs"],
+  { revalidate: 300 },
+);
+
+const AboutPage = async () => {
+  const blogs = await getBlogsForAbout();
+
   const retros = blogs.blogs.flatMap((blog) => {
     const tags = blog.tags?.map((tag) => tag.toLowerCase()) ?? [];
     const year = tags.find((tag) => /^\d{4}$/.test(tag));
     return tags.includes("retro") && year ? [{ ...blog, year }] : [];
   });
 
-  const experienceRecords = await db.experience.findMany({
-    orderBy: [{ start: "desc" }],
-  });
-  const experiences = EXPERIENCESERIALIZER(experienceRecords) || [];
-
-  const educationRecords = await db.education.findMany({
-    orderBy: [{ start: "desc" }],
-  });
-  const educations = EDUCATIONSERIALIZER(educationRecords) || [];
+  const experiences = await getExperiences();
+  const educations = await getEducations();
 
   return (
     <main className="fade-in-start relative min-h-screen flex flex-col items-center">
