@@ -4,12 +4,12 @@ import React from "react";
 import { ExperienceType } from "@/types";
 import { LuBriefcase, LuPlus } from "react-icons/lu";
 import { Button, Card, toast } from "@heroui/react";
-import { ExperienceCard } from "./components/ExperienceCard";
+import { ExperienceCard } from "./components/experience-card";
 import { useMdxStudio } from "@/mdx-studio";
 import {
   ExperienceForm,
   ExperienceFormData,
-} from "./components/ExperienceForm";
+} from "./components/experience-form";
 import { useRouter } from "@/hooks/useRouter";
 import { Keybindy } from "@keybindy/react";
 import { useConfirm } from "@/providers/ConfirmProvider";
@@ -69,6 +69,9 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
       start: new Date(meta.start),
       end: endDate,
       description: mdx?.trim() || "",
+      companyUrl: meta.companyUrl?.trim() || null,
+      companyLogo: meta.companyLogo?.trim() || null,
+      location: meta.location?.trim() || null,
     };
 
     if (id) {
@@ -89,6 +92,9 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
       start: "",
       end: "",
       isCurrent: false,
+      companyUrl: "",
+      companyLogo: "",
+      location: "",
     };
 
     openStudio({
@@ -120,6 +126,9 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
         String(exp.end).toLowerCase() === "present" ||
         (!isNaN(new Date(exp.end).getTime()) &&
           new Date(exp.end).getTime() === 0),
+      companyUrl: exp.companyUrl || "",
+      companyLogo: exp.companyLogo || "",
+      location: exp.location || "",
     };
 
     openStudio({

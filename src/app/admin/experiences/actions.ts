@@ -9,6 +9,9 @@ export interface ExperienceActionInput {
   start: Date | string;
   end?: Date | string | null;
   description?: string | null;
+  companyUrl?: string | null;
+  companyLogo?: string | null;
+  location?: string | null;
 }
 
 export async function createExperienceAction(data: ExperienceActionInput) {
@@ -39,6 +42,9 @@ export async function createExperienceAction(data: ExperienceActionInput) {
       start: startDate,
       end: endDate,
       description: data.description?.trim() || "",
+      companyUrl: data.companyUrl?.trim() || null,
+      companyLogo: data.companyLogo?.trim() || null,
+      location: data.location?.trim() || null,
     },
   });
 
@@ -84,6 +90,9 @@ export async function updateExperienceAction(
       start: startDate,
       end: endDate,
       description: data.description?.trim() || "",
+      companyUrl: data.companyUrl?.trim() || null,
+      companyLogo: data.companyLogo?.trim() || null,
+      location: data.location?.trim() || null,
     },
   });
 
