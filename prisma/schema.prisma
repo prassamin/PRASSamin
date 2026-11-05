@@ -60,6 +60,9 @@ model Experience {
   company     String
   role        String
   description String?
+  companyUrl  String?
+  companyLogo String?
+  location    String?
   start       DateTime
   end         DateTime?
   created_at  DateTime @default(now()) 

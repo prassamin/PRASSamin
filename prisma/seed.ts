@@ -1,5 +1,4 @@
 import { db } from "@/lib/db";
-import { faker } from "@faker-js/faker";
 
 async function main() {
   // await db.education.createMany({

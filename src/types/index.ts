@@ -13,6 +13,9 @@ export type ExperienceType = {
   company: string;
   role: string;
   description?: string;
+  companyUrl?: string;
+  companyLogo?: string;
+  location?: string;
   period: string;
   start: Date;
   end?: Date;

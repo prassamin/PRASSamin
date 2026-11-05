@@ -6,7 +6,7 @@ const formatStartDate = (startDate: any): string => {
     const d =
       typeof startDate === "string" ? parseISO(startDate) : new Date(startDate);
     if (isNaN(d.getTime())) return "";
-    return format(d, "MMMM yyyy");
+    return format(d, "MMM yyyy");
   } catch {
     return "";
   }
@@ -24,7 +24,7 @@ const formatEndDate = (endDate: any): string => {
     const d =
       typeof endDate === "string" ? parseISO(endDate) : new Date(endDate);
     if (isNaN(d.getTime()) || d.getTime() === 0) return "Present";
-    return format(d, "MMMM yyyy");
+    return format(d, "MMM yyyy");
   } catch {
     return "Present";
   }
@@ -94,6 +94,9 @@ export const EXPERIENCESERIALIZER = (experiences: any) => {
       company: experience.company,
       role: experience.role,
       description: experience?.description,
+      companyUrl: experience?.companyUrl,
+      companyLogo: experience?.companyLogo,
+      location: experience?.location,
       period,
       start: experience?.start,
       end:

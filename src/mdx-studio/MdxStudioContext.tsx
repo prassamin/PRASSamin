@@ -80,7 +80,6 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsSaving(true);
     try {
       await onSaveRef.current(mdx);
-      toast.success("Saved successfully!");
       closeStudio();
     } catch (err: any) {
       console.error("Studio save error:", err);
