@@ -133,13 +133,13 @@ const ProjectPage = async ({ params }: { params: Props }) => {
           <ProjectsLayoutContainer bodyClassName="mx-0" blur={true}>
             <div className="layout pb-12 pt-[8.6rem] md:pb-20 md:pt-[9.6rem] relative z-10">
               {/* Project Title */}
-              <h1 className="txt-primary mt-6 leading-tight h3 sm:h2 font-bold font-rethink text-neutral-100">
+              <h1 className="mt-6 leading-tight h3 sm:h2 font-bold font-rethink text-neutral-100">
                 {page.data.title}
               </h1>
 
               {/* Project Description */}
               {page.data.description && (
-                <p className="b1 txt-tertiary mt-2 text-neutral-400 font-inter">
+                <p className="b1 mt-2 text-neutral-400 font-inter">
                   {page.data.description}
                 </p>
               )}
