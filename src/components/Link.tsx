@@ -8,6 +8,7 @@ export type LinkProps = {
   href: string;
   children: React.ReactNode;
   className?: string;
+  underline?: "always" | "external" | "none";
 } & Omit<React.ComponentPropsWithRef<"a">, "href" | "children" | "className">;
 
 const INTERNAL_PROTOCOLS = new Set(["http:", "https:"]);
@@ -42,7 +43,10 @@ function isExternalUrl(href: string): boolean {
 }
 
 export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
-  ({ children, href, className, target, rel, ...rest }, ref) => {
+  (
+    { children, href, className, target, rel, underline = "external", ...rest },
+    ref,
+  ) => {
     const external = isExternalUrl(href);
 
     // Respect explicit target preferences.
@@ -61,6 +65,13 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
 
     const classes = cn(opensNewTab && "cursor-newtab", className);
 
+    const styles = cn(
+      "inline-block text-neutral-500 transition-colors",
+      (underline === "external" && opensNewTab) || underline === "always"
+        ? "underline decoration-neutral-600 hover:decoration-current focus:decoration-current active:decoration-current"
+        : null,
+    );
+
     // External websites use a regular anchor.
     if (external) {
       return (
@@ -70,7 +81,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
           href={href}
           target={resolvedTarget}
           rel={resolvedRel}
-          className={classes}
+          className={cn(styles, classes)}
         >
           {children}
         </a>
@@ -85,7 +96,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
         href={href}
         target={target}
         rel={rel}
-        className={className}
+        className={cn(styles, className)}
       >
         {children}
       </NextLink>

@@ -51,6 +51,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       <TooltipPrimitive.Trigger>{children}</TooltipPrimitive.Trigger>
       <TooltipPrimitive.Content
         {...contentProps}
+        data-slot="tooltip-content"
         className={cn(
           "bg-neutral-700/50 backdrop-blur-lg gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent",
           contentProps?.className,
