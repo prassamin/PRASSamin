@@ -3,9 +3,10 @@ import { metatag } from "@/lib/metatag";
 import { HeroSection } from "./components/hero";
 import { AboutRetro } from "./components/retro";
 import { AboutExperience } from "./components/experience";
+import { AboutEducation } from "./components/education";
 import { getBlogs } from "@/lib/get-blogs";
 import { db } from "@/lib/db";
-import { EXPERIENCESERIALIZER } from "@/lib/serializers";
+import { EXPERIENCESERIALIZER, EDUCATIONSERIALIZER } from "@/lib/serializers";
 import Image from "next/image";
 
 const AboutPage = async () => {
@@ -22,6 +23,11 @@ const AboutPage = async () => {
     orderBy: [{ start: "desc" }],
   });
   const experiences = EXPERIENCESERIALIZER(experienceRecords) || [];
+
+  const educationRecords = await db.education.findMany({
+    orderBy: [{ start: "desc" }],
+  });
+  const educations = EDUCATIONSERIALIZER(educationRecords) || [];
 
   return (
     <main className="fade-in-start relative min-h-screen flex flex-col items-center">
@@ -48,6 +54,7 @@ const AboutPage = async () => {
       <HeroSection />
       <AboutRetro retros={retros} />
       <AboutExperience experiences={experiences} />
+      <AboutEducation educations={educations} />
     </main>
   );
 };
