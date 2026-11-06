@@ -127,7 +127,7 @@ export const TechStack: React.FC = () => {
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,_currentColor_30%,_#171717)] hover:decoration-current focus:decoration-current default-ring b1 font-semibold cursor-newtab"
+                      className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,currentColor_30%,#171717)] hover:decoration-current focus:decoration-current default-ring b1 font-semibold cursor-newtab"
                     >
                       {name}
                     </Link>

@@ -28,7 +28,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.15 }}
+      viewport={{ once: true, amount: 0.5 }}
     >
       <div
         className="absolute inset-0 -z-10 h-full w-full"

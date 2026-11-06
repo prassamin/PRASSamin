@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { LuEye } from "react-icons/lu";
 import type { QueryBlogs } from "@/lib/get-blogs";
+import { Reveal } from "./reveal";
 
 type RetroItem = QueryBlogs["blogs"][number] & { year: string };
 
@@ -26,10 +27,11 @@ export const AboutRetro: React.FC<Props> = ({ retros }) => {
         }}
       />
 
-      <div className="layout relative py-20 flex flex-col lg:flex-row lg:gap-24 gap-12">
+      <Reveal>
+        <div className="layout relative py-20 flex flex-col lg:flex-row lg:gap-24 gap-12">
         {/* Left column */}
         <div>
-          <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm -rotate-5 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+          <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm -rotate-5 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
             {/* Trend Up Icon */}
             <svg
               className="size-[45%] text-neutral-300"
@@ -58,7 +60,7 @@ export const AboutRetro: React.FC<Props> = ({ retros }) => {
         <div className="flex flex-col gap-6 relative">
           {/* Vertical timeline line */}
           <div
-            className="shrink-0 h-full w-[1px] absolute top-0 left-8 bg-neutral-900 pointer-events-none"
+            className="shrink-0 h-full w-px absolute top-0 left-8 bg-neutral-900 pointer-events-none"
             data-orientation="vertical"
             role="none"
           />
@@ -95,7 +97,7 @@ export const AboutRetro: React.FC<Props> = ({ retros }) => {
                   <h3 className="h5 mt-3 relative">
                     <span
                       aria-hidden="true"
-                      className="bg-gradient-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-40 opacity-0 transition duration-300 text-transparent"
+                      className="bg-linear-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-40 opacity-0 transition duration-300 text-transparent"
                     >
                       {item.title}
                     </span>
@@ -113,7 +115,8 @@ export const AboutRetro: React.FC<Props> = ({ retros }) => {
             </div>
           ))}
         </div>
-      </div>
+        </div>
+      </Reveal>
     </section>
   );
 };

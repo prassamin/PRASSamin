@@ -6,6 +6,7 @@ import { Link } from "@/components/Link";
 import { BriefcaseBusiness } from "lucide-react";
 import MDXContent from "@/components/mdx/MDXContent";
 import { ExperiencesWatermark } from "./watermark";
+import { Reveal } from "../reveal";
 import type { ExperienceType } from "@/types";
 
 interface Props {
@@ -73,19 +74,22 @@ export const AboutExperience: React.FC<Props> = ({ experiences }) => {
 
       <div className="layout relative pb-12 pt-24 md:pb-20 md:pt-32">
         {/* Section Header */}
-        <div className="flex items-center justify-center flex-col gap-2">
-          <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
-            <BriefcaseBusiness
-              className="size-[45%] text-neutral-300"
-              strokeWidth={1.3}
-              aria-hidden="true"
-            />
+        <Reveal>
+          <div className="flex items-center justify-center flex-col gap-2">
+            <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
+              <BriefcaseBusiness
+                className="size-[45%] text-neutral-300"
+                strokeWidth={1.3}
+                aria-hidden="true"
+              />
+            </div>
+            <h2 className="h4 text-center">Experiences</h2>
           </div>
-          <h2 className="h4 text-center">Experiences</h2>
-        </div>
+        </Reveal>
 
         {/* Timeline Entries */}
-        <div className="flex flex-col gap-20 mt-16">
+        <Reveal delay={0.1}>
+          <div className="flex flex-col gap-20 mt-16">
           {experiences.map((exp) => {
             const periodParts = (exp.period || "")
               .split("•")
@@ -148,6 +152,7 @@ export const AboutExperience: React.FC<Props> = ({ experiences }) => {
             );
           })}
         </div>
+        </Reveal>
       </div>
     </section>
   );

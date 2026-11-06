@@ -1,14 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useRef } from "react";
 import Image from "next/image";
+import { useInView } from "motion/react";
 import { useOwner } from "@/providers/OwnerProvider";
 import { Tape } from "./tape";
+import { AnimatedSignature } from "./signature";
 
 export const PolaroidCard: React.FC = () => {
   const { owner } = useOwner();
+  const cardRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(cardRef, { once: true, amount: 0.1 });
+
   return (
-    <div className="w-full md:ml-14 max-w-[21rem] shrink-0">
+    <div className="w-full md:ml-14 max-w-84 shrink-0" ref={cardRef}>
       <div className="relative p-8 select-none">
         <Tape />
 
@@ -18,10 +23,10 @@ export const PolaroidCard: React.FC = () => {
           style={{ zIndex: 2, transform: "rotate(-5deg)" }}
         >
           {/* Subtle gradient border */}
-          <div className="isolate before:transition-opacity absolute inset-0 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent pointer-events-none" />
+          <div className="isolate before:transition-opacity absolute inset-0 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent pointer-events-none" />
 
           {/* Photo frame */}
-          <figure className="isolate z-[1] overflow-hidden select-none object-cover rounded-sm">
+          <figure className="isolate z-1 overflow-hidden select-none object-cover rounded-sm">
             <div className="relative w-full aspect-square overflow-hidden bg-neutral-900">
               {owner?.avatar_url && (
                 <Image
@@ -36,18 +41,9 @@ export const PolaroidCard: React.FC = () => {
             </div>
           </figure>
 
-          {/* Signature */}
-          <div
-            className="absolute bottom-6 right-5 pointer-events-none"
-            style={{ clipPath: "polygon(0% 0%, 105% 0%, 105% 100%, 0% 100%)" }}
-          >
-            <Image
-              src="/assets/signature.svg"
-              alt="Signature"
-              width={114}
-              height={39}
-              className="w-[114px] h-[39px]"
-            />
+          {/* Signature — animated handwriting reveal */}
+          <div className="absolute bottom-6 right-5 pointer-events-none select-none">
+            <AnimatedSignature inView={inView} />
           </div>
         </div>
 
