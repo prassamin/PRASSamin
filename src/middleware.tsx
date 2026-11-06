@@ -3,17 +3,18 @@ import { maintenanceNotice } from "./config/maintenance";
 import { createRouteMatcher } from "./lib/router-matcher";
 import axios from "axios";
 import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "./constants";
+import { NODE_ENV } from "./constants/env";
 
 const isAdminRoute = createRouteMatcher(["/admin.*", "/api/admin.*"]);
 
 export default async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
   const { pathname } = request.nextUrl;
-    const hostHeader =
+  const hostHeader =
     request.headers.get("x-forwarded-host") ?? request.headers.get("host");
   const proto =
     request.headers.get("x-forwarded-proto") ??
-    (process.env.NODE_ENV === "production" ? "https" : "http");
+    (NODE_ENV === "production" ? "https" : "http");
   const fullUrl = `${proto}://${hostHeader}${pathname}${request.nextUrl.search}`;
   const origin = `${proto}://${hostHeader}`;
   headers.set(ORIGIN_HEADER, origin);

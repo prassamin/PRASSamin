@@ -29,6 +29,7 @@ import { MdxAccordion, MdxAccordionItem } from "./MdxAccordion";
 import { MdxCard, MdxCards } from "./MdxCard";
 import { MdxCodeBlock } from "./MdxCodeBlock";
 import { cn } from "@heroui/react";
+import { NODE_ENV } from "@/constants/env";
 
 // Map to deduplicate compilation promises for React with LRU eviction
 const MAX_MDX_CACHE = 50;
@@ -47,7 +48,7 @@ export function clearMDXPromiseCache() {
 }
 
 // Ensure dev hot-reloads invalidate stale compiled closures
-if (typeof window !== "undefined" && process.env.NODE_ENV !== "production") {
+if (typeof window !== "undefined" && NODE_ENV !== "production") {
   promiseMap.clear();
   resolvedCache.clear();
 }

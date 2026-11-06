@@ -1,34 +1,35 @@
-import { BASE_URL } from "@/constants/env";
-import { source, projectSource } from "@/utils/source";
+import { source, projectSource } from "@/lib/source";
+import { getOrigin } from "@/lib/url";
 import { MetadataRoute } from "next";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const blogs = source.getPages();
   const projects = projectSource.getPages();
+  const origin = await getOrigin();
 
   return [
     {
-      url: BASE_URL,
+      url: origin,
       lastModified: new Date(),
       priority: 1,
     },
     {
-      url: `${BASE_URL}/about`,
+      url: `${origin}/about`,
       lastModified: new Date(),
       priority: 0.9,
     },
     {
-      url: `${BASE_URL}/contact`,
+      url: `${origin}/contact`,
       lastModified: new Date(),
       priority: 0.9,
     },
     ...blogs.map((blog) => ({
-      url: `${BASE_URL}${blog.url}`,
+      url: `${origin}${blog.url}`,
       lastModified: blog.data.updatedAt,
       priority: 0.8,
     })),
     ...projects.map((project) => ({
-      url: `${BASE_URL}${project.url}`,
+      url: `${origin}${project.url}`,
       lastModified: project.data.updatedAt,
       priority: 0.8,
     })),

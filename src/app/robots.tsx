@@ -1,14 +1,15 @@
-import { BASE_URL } from "@/constants/env";
+import { getOrigin } from "@/lib/url";
 import type { MetadataRoute } from "next";
 
-export default function robots(): MetadataRoute.Robots {
+export default async function robots(): Promise<MetadataRoute.Robots> {
+  const origin = await getOrigin();
   return {
     rules: {
       userAgent: "*",
       allow: "/",
       disallow: ["/admin/", "/api/"],
     },
-    host: BASE_URL,
-    sitemap: `${BASE_URL}/sitemap.xml`,
+    host: origin,
+    sitemap: `${origin}/sitemap.xml`,
   };
 }

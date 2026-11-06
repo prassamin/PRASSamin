@@ -1,20 +1,22 @@
 import { NextResponse } from "next/server";
 import { polar } from "@/lib/polar";
+import { getOrigin } from "@/lib/url";
+import { POLAR_DONATION_PRODUCT_ID } from "@/constants/env";
 
 export async function POST(req: Request) {
   try {
     const { amount, email, name, message } = await req.json();
     
-    if (!process.env.NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID) {
+    if (!POLAR_DONATION_PRODUCT_ID) {
       return NextResponse.json({ error: "Donation product ID not configured" }, { status: 500 });
     }
 
     // Convert dollars to cents for Polar API
     const amountInCents = Math.round(parseFloat(amount) * 100);
-    const origin = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const origin = await getOrigin();
 
     const checkoutPayload: any = {
-      products: [process.env.NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID],
+      products: [POLAR_DONATION_PRODUCT_ID],
       successUrl: `${origin}/donate/success?checkout_id={CHECKOUT_ID}`,
       amount: amountInCents,
     };
