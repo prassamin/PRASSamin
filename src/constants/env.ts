@@ -10,8 +10,10 @@ const envSchema = z.object({
   NEXT_GITHUB_AUTH_CLIENT_ID: z.string().min(1),
   NEXT_GITHUB_AUTH_CLIENT_SECRET: z.string().min(1),
   NEXT_GITHUB_API_KEY: z.string().min(1),
-  POLAR_ACCESS_TOKEN: z.string().min(1),
-  NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID: z.string().min(1),
+  POLAR_ACCESS_TOKEN: z.string().optional(),
+  POLAR_WEBHOOK_SECRET: z.string().optional(),
+  NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID: z.string().optional(),
+  NEXT_PUBLIC_POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID: z.string().optional(),
   NODE_ENV: z.string().min(1),
 });
 
@@ -41,8 +43,33 @@ export const GITHUB_AUTH_CLIENT_SECRET =
 export const GITHUB_API_KEY = process.env.NEXT_GITHUB_API_KEY!;
 
 // Polar
-export const POLAR_ACCESS_TOKEN = process.env.POLAR_ACCESS_TOKEN!;
+export const POLAR_ACCESS_TOKEN = process.env.POLAR_ACCESS_TOKEN;
+export const POLAR_WEBHOOK_SECRET = process.env.POLAR_WEBHOOK_SECRET;
 export const POLAR_DONATION_PRODUCT_ID =
-  process.env.NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID!;
+  process.env.NEXT_PUBLIC_POLAR_DONATION_PRODUCT_ID;
+export const POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID =
+  process.env.NEXT_PUBLIC_POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID;
+
+/**
+ * Donations are enabled only when the Polar access token AND at least one
+ * product ID (one-time or subscription) are configured. Missing any of them
+ * disables the whole donation flow.
+ */
+export function isDonationEnabled(): boolean {
+  return Boolean(
+    POLAR_ACCESS_TOKEN &&
+      (POLAR_DONATION_PRODUCT_ID ||
+        POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID),
+  );
+}
+
+/**
+ * Which donation modes are available, based on configured product IDs.
+ * Both vars are public (product IDs), so this is safe on the client.
+ */
+export const DONATION_MODES = {
+  once: Boolean(POLAR_DONATION_PRODUCT_ID),
+  monthly: Boolean(POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID),
+} as const;
 
 export const NODE_ENV = process.env.NODE_ENV!;

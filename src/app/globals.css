@@ -449,24 +449,6 @@
   display: none !important;
 }
 
-@keyframes aurora {
-  0% {
-    background-position: 0% 50%;
-  }
-  25% {
-    background-position: 50% 100%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  75% {
-    background-position: 50% 0%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
 /* Prevent nested scrollables from leaking native scroll into Lenis root */
 pre,
 [data-lenis-prevent],
@@ -474,4 +456,17 @@ pre,
 .overflow-x-auto,
 .overflow-auto {
   overscroll-behavior: contain;
+}
+
+@keyframe rotate {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+}
+
+.animate-rotate {
+  animation: rotate 1s linear infinite;
 }

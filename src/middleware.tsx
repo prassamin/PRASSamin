@@ -3,7 +3,13 @@ import { maintenanceNotice } from "./config/maintenance";
 import { createRouteMatcher } from "./lib/router-matcher";
 import axios from "axios";
 import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "./constants";
-import { NODE_ENV } from "./constants/env";
+import {
+  isDonationEnabled,
+  NODE_ENV,
+  POLAR_ACCESS_TOKEN,
+  POLAR_DONATION_PRODUCT_ID,
+  POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID,
+} from "./constants/env";
 
 const isAdminRoute = createRouteMatcher(["/admin.*", "/api/admin.*"]);
 
@@ -41,12 +47,18 @@ export default async function middleware(request: NextRequest) {
     );
   }
 
+  if (!isDonationEnabled()) {
+    return NextResponse.rewrite(new URL("/not-found", request.url), {
+      request: { headers },
+    });
+  }
+
   // Admin Protection
   if (isAdminRoute(request)) {
     const token = request.cookies.get("_auth_data");
 
     if (!token)
-      return NextResponse.rewrite(new URL("/unauthorized", request.url), {
+      return NextResponse.rewrite(new URL("/not-found", request.url), {
         request: { headers },
       });
 
@@ -61,7 +73,7 @@ export default async function middleware(request: NextRequest) {
         },
       );
     } catch (error) {
-      return NextResponse.rewrite(new URL("/unauthorized", request.url), {
+      return NextResponse.rewrite(new URL("/not-found", request.url), {
         request: { headers },
       });
     }
