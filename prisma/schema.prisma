@@ -1,17 +1,15 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Get a free hosted Postgres database in seconds: `npx create-db`
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
-  directUrl = env("DATABASE_URL")
 }
 
 model ProjectStat {
@@ -67,6 +65,31 @@ model Experience {
   end         DateTime?
   created_at  DateTime @default(now()) 
   updated_at  DateTime @updatedAt
+}
+
+model Donor {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  socialUrl String?
+  metadata  Json?
+  createdAt  DateTime @default(now())
+  donations  Donation[]
+}
+
+model Donation {
+  id                Int      @id @default(autoincrement())
+  donorId           Int
+  donor             Donor    @relation(fields: [donorId], references: [id], onDelete: Cascade)
+  checkoutId        String   @unique
+  amount            Int
+  currency          String   @default("usd")
+  frequency         String   @default("once") // "once" | "month"
+  subscriptionId    String?
+  subscriptionStatus String? // "active" | "cancelled" | "past_due" | "revoked"
+  message           String?
+  status            String   @default("completed") // "completed" | "refunded"
+  createdAt         DateTime @default(now())
 }
 
 model Education {

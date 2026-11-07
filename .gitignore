@@ -48,3 +48,5 @@ seed.ts
 # fumadocs
 .source
 demo.mdx
+
+/generated/prisma

@@ -11,18 +11,12 @@
   "description": "My Portfolio v2.",
   "homepage": "https://pras.me/",
   "scripts": {
-    "predev": "bun run prisma:dev",
-    "dev": "next dev --turbopack",
-    "build": "prisma generate --no-engine && next build",
-    "build:dev": "prisma generate && next build",
+    "dev": "prisma generate && next dev --turbopack",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "cli": "./content-manager",
-    "postinstall": "fumadocs-mdx",
-    "prepare": "husky",
-    "prisma:dev": "sed -i 's|from \"@prisma/client/edge\";|from \"@prisma/client\";|' src/lib/db.ts",
-    "prisma:edge": "sed -i 's|from \"@prisma/client\";|from \"@prisma/client/edge\";|' src/lib/db.ts && git add src/lib/db.ts",
-    "preinstall": "husky && chmod +x .husky/*"
+    "postinstall": "fumadocs-mdx"
   },
   "prisma": {
     "seed": "bun prisma/seed.ts"
@@ -41,9 +35,11 @@
     "@next/third-parties": "^15.5.0",
     "@polar-sh/sdk": "^0.48.1",
     "@pras-ui/slot": "^1.0.2",
-    "@prisma/client": "^6.13.0",
+    "@prisma/adapter-pg": "7",
+    "@prisma/client": "7",
     "@prisma/extension-accelerate": "^2.0.2",
-    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/typography": "^0.5.20",
+    "@types/pg": "^8.23.1",
     "@vercel/analytics": "^1.5.0",
     "@vercel/functions": "^2.2.7",
     "axios": "^1.7.9",
@@ -51,6 +47,7 @@
     "class-variance-authority": "^0.7.1",
     "cloudinary": "^2.7.0",
     "date-fns": "^4.1.0",
+    "dotenv": "^18.0.9",
     "embla-carousel-react": "^8.5.1",
     "file-type": "^22.3.0",
     "framer-motion": "^14.9.0",
@@ -63,7 +60,8 @@
     "mime-types": "^2.1.35",
     "motion": "^12.4.10",
     "next": "15.3.8",
-    "prisma": "^6.13.0",
+    "pg": "^8.23.1",
+    "prisma": "7",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.7.0",
@@ -76,6 +74,7 @@
     "remark-gfm": "^4.0.1",
     "server-only": "^0.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "tsx": "^4.23.15",
     "unist-util-visit": "^5.2.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
@@ -83,7 +82,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@prisma/config": "^6.13.0",
-    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/postcss": "^4.3.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mdx": "^2.0.13",
     "@types/mime-types": "^3.0.1",
@@ -94,9 +93,8 @@
     "eslint-config-next": "^15.1.5",
     "glob": "^11.0.3",
     "gray-matter": "^4.0.3",
-    "husky": "^9.1.7",
     "postcss": "^8",
-    "tailwindcss": "^4.1.11",
+    "tailwindcss": "^4.3.4",
     "typescript": "^5.9.2"
   },
   "packageManager": "bun@1.2.19"
