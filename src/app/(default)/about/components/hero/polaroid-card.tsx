@@ -4,7 +4,7 @@ import React, { useRef } from "react";
 import Image from "next/image";
 import { useInView } from "motion/react";
 import { useOwner } from "@/providers/OwnerProvider";
-import { Tape } from "./tape";
+import { Tape } from "@/components/tape";
 import { AnimatedSignature } from "./signature";
 
 export const PolaroidCard: React.FC = () => {

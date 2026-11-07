@@ -643,7 +643,7 @@ export const HeroGrid: React.FC = () => {
             <div className="absolute inset-0 transition-all duration-700 ease-in-out delay-200 origin-center group-hover:scale-[0.6] group-hover:rotate-[360deg] group-hover:translate-[12%]">
               {/* PostgreSQL */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[70%] top-[50%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[70%] top-[50%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
                     boxShadow:
@@ -657,7 +657,7 @@ export const HeroGrid: React.FC = () => {
 
               {/* TypeScript */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[45%] top-[65%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[45%] top-[65%] rotate-[-16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
                     transition: "transform 0.7s ease-in-out",
@@ -671,7 +671,7 @@ export const HeroGrid: React.FC = () => {
 
               {/* Go */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[46%] top-[36%] rotate-[16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[20px] size-14 absolute translate-x-[-50%] translate-y-[-50%] left-[46%] top-[36%] rotate-[16deg] gradient-border gb-width-[1.5px] gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-[1.5px] border-transparent"
                 style={
                   {
                     transition: "transform 0.7s ease-in-out",
@@ -684,7 +684,7 @@ export const HeroGrid: React.FC = () => {
               </div>
               {/* Tailwind */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[29%] top-[48%] rotate-[-33deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[29%] top-[48%] rotate-[-33deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
                     transition: "transform 0.7s ease-in-out",
@@ -698,7 +698,7 @@ export const HeroGrid: React.FC = () => {
 
               {/* Next.js */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-8 absolute translate-x-[-50%] translate-y-[-50%] left-[64%] top-[68%] rotate-[20deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-8 absolute translate-x-[-50%] translate-y-[-50%] left-[64%] top-[68%] rotate-[20deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
                     transition: "transform 0.7s ease-in-out",
@@ -743,7 +743,7 @@ export const HeroGrid: React.FC = () => {
               ></div>
               {/* Redis */}
               <div
-                className="isolate before:transition-opacity glass-icon flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[68%] top-[28%] rotate-[-21deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
+                className="isolate before:transition-opacity flex items-center justify-center bg-white/5 backdrop-blur-sm rounded-[11px] size-7 absolute translate-x-[-50%] translate-y-[-50%] left-[68%] top-[28%] rotate-[-21deg] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
                 style={
                   {
                     transition: "transform 0.7s ease-in-out",

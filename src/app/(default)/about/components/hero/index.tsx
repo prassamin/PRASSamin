@@ -6,7 +6,7 @@ import { PolaroidCard } from "./polaroid-card";
 import { TechStack } from "./tech-stack";
 import { useOwner } from "@/providers/OwnerProvider";
 import { Link } from "@/components/Link";
-import { Reveal } from "../reveal";
+import { Reveal } from "@/components/reveal";
 
 export const HeroSection: React.FC = () => {
   const { owner } = useOwner();
@@ -16,7 +16,7 @@ export const HeroSection: React.FC = () => {
       <Reveal>
         <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
           {/* Squircle Badge */}
-          <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
+          <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
             <CircleUserRound
               className="size-[45%] text-neutral-300"
               strokeWidth={1.3}
@@ -64,24 +64,26 @@ export const HeroSection: React.FC = () => {
               <p className="b1 text-neutral-400 mt-8 leading-relaxed">
                 Hi, I&apos;m <span className="text-foreground">PRAS</span>. a
                 developer who builds the kind of tools I wish already existed.
-                CLIs that feel instant, libraries that just work, and open-source
-                projects I genuinely use every day. I care about the details most
-                people never notice, because those are the ones that make software{" "}
+                CLIs that feel instant, libraries that just work, and
+                open-source projects I genuinely use every day. I care about the
+                details most people never notice, because those are the ones
+                that make software{" "}
                 <em className="text-foreground not-italic">feel</em> good.
               </p>
 
               <p className="b1 text-neutral-400 mt-4 leading-relaxed">
                 I&apos;ve always been the person who takes the long way around a
-                problem just to understand why it works. That curiosity pulled me
-                from tinkering into building and it&apos;s the same reason
-                I&apos;ll happily spend a weekend automating something that takes
-                five minutes to do by hand.
+                problem just to understand why it works. That curiosity pulled
+                me from tinkering into building and it&apos;s the same reason
+                I&apos;ll happily spend a weekend automating something that
+                takes five minutes to do by hand.
               </p>
 
               <p className="b1 text-neutral-400 mt-4 leading-relaxed">
                 This site is where I write it all down, what I&apos;m building,
-                what I&apos;m learning, and the mistakes worth remembering. If one
-                article saves you the hour it cost me, it&apos;s done its job.
+                what I&apos;m learning, and the mistakes worth remembering. If
+                one article saves you the hour it cost me, it&apos;s done its
+                job.
               </p>
 
               {/* Favorite Tech Stack */}

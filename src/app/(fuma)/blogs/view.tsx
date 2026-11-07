@@ -151,9 +151,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
       <motion.div variants={itemVariants} className="relative">
         <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
           {/* Glass Icon Squircle Badge with Gradient Border */}
-          <div
-            className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
-          >
+          <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
             <LuBookText className="size-[45%] text-neutral-300" />
           </div>
 
@@ -175,9 +173,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
 
           {/* Search Box */}
           <div className="mt-7 w-full">
-            <div
-              className="relative isolate before:transition-opacity rounded-xl bg-muted/50 backdrop-blur-sm w-full max-w-[500px] mx-auto group gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
-            >
+            <div className="relative isolate before:transition-opacity rounded-xl bg-muted/50 backdrop-blur-sm w-full max-w-[500px] mx-auto group gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
               <input
                 ref={searchRef}
                 type="text"
@@ -212,7 +208,10 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
       </motion.div>
 
       {/* 2-Column Content Layout */}
-      <motion.div variants={itemVariants} className="border-t border-neutral-900">
+      <motion.div
+        variants={itemVariants}
+        className="border-t border-neutral-900"
+      >
         <div className="layout pb-16 md:pb-24">
           <div className="grid grid-cols-1 md:grid-cols-[1fr_18rem] md:gap-8 min-h-[calc(100vh-28rem)]">
             {/* BLOG POSTS LIST - Column 1 on desktop, Column 2 on mobile */}

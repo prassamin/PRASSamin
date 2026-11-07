@@ -141,7 +141,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
                 variants={textVariants}
                 className="pointer-events-auto transition-transform duration-500 hover:scale-110"
               >
-                <div className="isolate before:transition-opacity glass-icon flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+                <div className="isolate before:transition-opacity flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
                   <svg
                     className="size-[50%]"
                     fill="none"

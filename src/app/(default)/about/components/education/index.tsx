@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { LuGraduationCap, LuSchool } from "react-icons/lu";
 import MDXContent from "@/components/mdx/MDXContent";
 import { EducationWatermark } from "./watermark";
-import { Reveal } from "../reveal";
+import { Reveal } from "@/components/reveal";
 import type { EducationType } from "@/types";
 
 interface Props {
@@ -104,7 +104,7 @@ export const AboutEducation: React.FC<Props> = ({ educations }) => {
         {/* Section Header */}
         <Reveal>
           <div className="flex items-center justify-center flex-col gap-2">
-            <div className="isolate before:transition-opacity glass-icon size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
+            <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
               <LuGraduationCap className="size-[45%] text-neutral-300" />
             </div>
             <h2 className="h4 text-center">Education</h2>
@@ -114,39 +114,39 @@ export const AboutEducation: React.FC<Props> = ({ educations }) => {
         {/* Timeline Entries */}
         <Reveal delay={0.1}>
           <div className="flex flex-col gap-20 mt-16">
-          {educations.map((edu) => {
-            const periodParts = (edu.period || "")
-              .split("-")
-              .map((p) => p.trim());
-            const startDate = periodParts[0] || "";
-            const endDate = periodParts[1] || "";
+            {educations.map((edu) => {
+              const periodParts = (edu.period || "")
+                .split("-")
+                .map((p) => p.trim());
+              const startDate = periodParts[0] || "";
+              const endDate = periodParts[1] || "";
 
-            return (
-              <div
-                key={edu.id}
-                id={`education-${edu.id}`}
-                className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
-              >
-                <DateDurationPill startDate={startDate} endDate={endDate} />
+              return (
+                <div
+                  key={edu.id}
+                  id={`education-${edu.id}`}
+                  className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
+                >
+                  <DateDurationPill startDate={startDate} endDate={endDate} />
 
-                <div>
-                  <h3 className="h5">{edu.degree}</h3>
+                  <div>
+                    <h3 className="h5">{edu.degree}</h3>
 
-                  <EducationSchoolField
-                    school={edu.school}
-                    field={edu.field}
-                  />
+                    <EducationSchoolField
+                      school={edu.school}
+                      field={edu.field}
+                    />
 
-                  {edu.description && (
-                    <div className="mt-4 b2 text-neutral-400 space-y-3 leading-relaxed [&>ul]:list-disc [&>ul]:list-outside [&>ul]:space-y-1.5 [&>ul]:pl-3">
-                      <MDXContent content={edu.description} />
-                    </div>
-                  )}
+                    {edu.description && (
+                      <div className="mt-4 b2 text-neutral-400 space-y-3 leading-relaxed [&>ul]:list-disc [&>ul]:list-outside [&>ul]:space-y-1.5 [&>ul]:pl-3">
+                        <MDXContent content={edu.description} />
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
         </Reveal>
       </div>
     </section>

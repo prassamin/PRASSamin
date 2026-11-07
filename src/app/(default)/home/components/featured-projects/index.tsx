@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "@/components/Link";
 import { motion, type Variants } from "motion/react";
 import { Scribble } from "./scribble";
-import { PenSwoopUnderline } from "./pen-swoop-underline";
+import { PenSwoopUnderline } from "@/components/pen-swoop-underline";
 import ProjectCard from "@/app/(fuma)/projects/components/project-card";
 import { QueryProjects } from "@/lib/get-projects";
 import { LuChevronRight } from "react-icons/lu";
@@ -97,9 +97,7 @@ export const FeaturedProjects: React.FC<Props> = ({ projects = [] }) => {
             className="flex items-center gap-2 hover:text-neutral-100 transition-colors text-neutral-300 text-sm sm:text-base group"
           >
             <span>See more projects</span>
-            <div
-              className="isolate before:transition-opacity glass-icon size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] group-hover:scale-105 transition-transform"
-            >
+            <div className="isolate before:transition-opacity size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] group-hover:scale-105 transition-transform">
               <LuChevronRight
                 className="size-[70%] text-neutral-300 group-hover:text-neutral-100 transition-colors"
                 strokeWidth={1.3}

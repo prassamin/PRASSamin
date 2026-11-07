@@ -15,7 +15,7 @@ export default function SectionHeader({
       className={`text-center flex flex-col items-center gap-1 ${className}`}
     >
       {/* Top squircle icon badge */}
-      <div className="isolate before:transition-opacity glass-icon size-10.5 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]">
+      <div className="isolate before:transition-opacity size-10.5 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]">
         <LuFolderOpen className="size-[45%] text-foreground/75" />
       </div>
 

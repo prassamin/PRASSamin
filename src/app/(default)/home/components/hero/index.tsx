@@ -6,6 +6,7 @@ import { HeroGrid } from "./hero-grid";
 import { FaGithub, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { LuArrowDown } from "react-icons/lu";
 import { motion, type Variants } from "motion/react";
+import { useOwner } from "@/providers/OwnerProvider";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -44,6 +45,7 @@ const gridVariants: Variants = {
 const HeroSection: React.FC = () => {
   const btnRef = useRef<HTMLAnchorElement>(null);
   const [cursorPos, setCursorPos] = useState({ x: 50, y: 50 });
+  const { owner } = useOwner();
 
   const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!btnRef.current) return;
@@ -97,7 +99,7 @@ const HeroSection: React.FC = () => {
                 />
                 {/* Tactile Torn Paper Cutout */}
                 <span className="torn-paper bg-gradient-to-br from-[#faf8f5] via-[#f4f1ea] to-[#e8e4d8] text-neutral-950 font-extrabold px-3 py-1 sm:px-5 sm:py-1.5 inline-block shadow-[0_12px_28px_rgba(0,0,0,0.85),_0_2px_4px_rgba(0,0,0,0.4)] relative z-10 selection:bg-neutral-900 selection:text-white">
-                  PRAS Samin
+                  {owner?.name}
                 </span>
               </span>
             </motion.h1>
@@ -164,9 +166,7 @@ const HeroSection: React.FC = () => {
               <span>Resume</span>
 
               {/* Glass Icon with Down Arrow */}
-              <div
-                className="isolate before:transition-opacity glass-icon size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
-              >
+              <div className="isolate before:transition-opacity size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
                 <LuArrowDown className="text-accent-300 group-hover:translate-y-0.5 transition-transform duration-200" />
               </div>
             </Link>
@@ -176,9 +176,7 @@ const HeroSection: React.FC = () => {
               href="/about"
               className="flex items-center px-4 py-3 relative rounded-xl transition-colors hover:bg-neutral-600/10 focus:bg-neutral-600/10 backdrop-blur-sm text-neutral-300 hover:text-white font-rethink text-sm font-medium"
             >
-              <div
-                className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent"
-              />
+              <div className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent" />
               <span className="relative z-10">More about me</span>
             </Link>
           </motion.div>
