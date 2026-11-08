@@ -153,6 +153,9 @@ export async function deleteTestimonialAction(id: number) {
     return { success: true, data: deleted };
   } catch (error: any) {
     console.error("[Testimonials:Action] Failed to delete testimonial:", error);
+    if (error?.code === "P2025") {
+      throw new Error("Testimonial not found.");
+    }
     throw new Error(error?.message || "Failed to delete testimonial.");
   }
 }

@@ -1,25 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Keybindy, KeybindyShortcut, useKeybindy } from "@keybindy/react";
+import { useShortcuts } from "@keybindy/react";
 import axios from "axios";
-import { toast } from "@heroui/react";
-import { Loader2 } from "lucide-react";
+import { Spinner, toast } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "next/navigation";
 import { useRouter as useRouterWithProgress } from "@/hooks/useRouter";
-import { usePathname } from "next/navigation";
-import { Banner } from "fumadocs-ui/components/banner";
-
-export const isTypingInFormElement = () => {
-  if (typeof document === "undefined") return false;
-  const activeElement = document.activeElement;
-  const tagName = activeElement?.tagName?.toLowerCase();
-  const isInput =
-    tagName === "input" || tagName === "textarea" || tagName === "select";
-  const isContentEditable =
-    activeElement?.getAttribute("contenteditable") === "true";
-  return isInput || isContentEditable;
-};
+import { useOwner } from "./OwnerProvider";
 
 const GlobalKeyBinderProvider = ({
   children,
@@ -29,98 +16,74 @@ const GlobalKeyBinderProvider = ({
   const [isSignOutProcessing, setIsSignOutProcessing] = useState(false);
   const router = useRouter();
   const routerWithProgress = useRouterWithProgress();
-  const [mounted, setMounted] = useState(false);
-  const pathname = usePathname();
+  const { owner } = useOwner();
 
   useEffect(() => {
-    setMounted(true);
+    const guard = (e: KeyboardEvent) => {
+      if (typeof e.code === "undefined") {
+        e.stopImmediatePropagation();
+      }
+    };
+    window.addEventListener("keydown", guard, true);
+    window.addEventListener("keyup", guard, true);
+    return () => {
+      window.removeEventListener("keydown", guard, true);
+      window.removeEventListener("keyup", guard, true);
+    };
   }, []);
 
-  const shortcuts: KeybindyShortcut[] = [
-    {
-      keys: ["Ctrl", "Shift", "Q"],
-      handler: async () => {
-        setIsSignOutProcessing(true);
-        try {
-          await axios.post("/api/auth/signout", {
-            redirect: "/",
-          });
-          router.push("/");
-        } catch (e) {
-          toast.danger("Failed to sign out");
-        } finally {
-          setIsSignOutProcessing(false);
-        }
-      },
-      options: {
-        data: {
-          description: "Sign out",
+  useShortcuts(
+    [
+      {
+        keys: ["Ctrl", "Q"],
+        handler: async () => {
+          setIsSignOutProcessing(true);
+          try {
+            await axios.post("/api/auth/signout", {
+              redirect: "/",
+            });
+            router.push("/");
+          } catch (e) {
+            toast.danger("Failed to sign out");
+          } finally {
+            setIsSignOutProcessing(false);
+          }
         },
       },
-    },
-    {
-      keys: ["Ctrl", "Shift", "S"],
-      handler: async () => {
-        routerWithProgress.push("/signin");
-      },
-      options: {
-        data: {
-          description: "Navigate to sign in page",
+      {
+        keys: ["Ctrl", "S"],
+        handler: async () => {
+          routerWithProgress.push("/signin");
         },
       },
-    },
-    {
-      keys: ["G"],
-      handler: async () => {
-        if (isTypingInFormElement()) return;
-        routerWithProgress.push("https://github.com/prassamin");
-      },
-      options: {
-        data: {
-          description: "Open PRAS GitHub",
+      {
+        keys: ["G"],
+        handler: async () => {
+          routerWithProgress.push(`https://github.com/${owner?.username}`);
+        },
+        options: {
+          ignoreInputs: true,
         },
       },
-    },
-    {
-      keys: [["Ctrl", "Shift", "A"]],
-      handler: () => {
-        routerWithProgress.push("/admin");
-      },
-      options: {
-        preventDefault: true,
-        data: {
-          description: "Navigate to admin panel",
-          hidden: mounted && !pathname.startsWith("/admin") ? true : false,
+      {
+        keys: [["Ctrl", "A"]],
+        handler: () => {
+          routerWithProgress.push("/admin");
         },
       },
+    ],
+    {
+      beforeEach: (_, e) => {
+        e.preventDefault();
+      },
+      onShortcutFired(info) {
+        console.log(info);
+      },
     },
-  ];
-
-  const formatKey = (key: string) => {
-    const isMac =
-      typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent);
-    switch (key.toLowerCase()) {
-      case "meta":
-        return isMac ? "⌘" : "Win";
-      case "ctrl":
-        return "Ctrl";
-      case "shift":
-        return "⇧";
-      case "alt":
-        return isMac ? "⌥" : "Alt";
-      case "enter":
-        return "↵";
-      case "arrow right":
-        return "↬";
-      case "arrow left":
-        return "↫";
-      default:
-        return key.toUpperCase();
-    }
-  };
+  );
 
   return (
-    <Keybindy shortcuts={shortcuts}>
+    <>
       {children}
       <AnimatePresence>
         {isSignOutProcessing && (
@@ -129,10 +92,10 @@ const GlobalKeyBinderProvider = ({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
-            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[51]"
+            className="fixed bottom-6 left-1/2 -translate-x-1/2 z-51"
           >
-            <div className="px-4 py-2.5 bg-background/95 backdrop-blur-sm border border-border/50 shadow-lg rounded-xl flex items-center gap-2.5 transition-all duration-300 hover:shadow-xl hover:bg-background/100 group">
-              <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+            <div className="px-4 py-2.5 bg-muted/50 backdrop-blur-sm border border-transparent gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] shadow-lg rounded-xl flex items-center gap-2.5 group">
+              <Spinner size="sm" />
               <span className="text-sm font-medium text-foreground/90">
                 Signing out...
               </span>
@@ -140,7 +103,7 @@ const GlobalKeyBinderProvider = ({
           </motion.div>
         )}
       </AnimatePresence>
-    </Keybindy>
+    </>
   );
 };
 

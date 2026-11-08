@@ -23,7 +23,6 @@ import { toast } from "@heroui/react";
 import { useRouter } from "@/hooks/useRouter";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import { useMdxStudio } from "@/mdx-studio";
-import { Keybindy } from "@keybindy/react";
 import { TestimonialCategoryType, TestimonialType } from "@/types";
 import { TestimonialKanbanCard } from "./components/TestimonialKanbanCard";
 import { TestimonialCard } from "./components/TestimonialCard";
@@ -120,10 +119,10 @@ const KanbanColumn = React.memo(function KanbanColumn({
     <div
       ref={setNodeRef}
       className={cn(
-        "flex w-[320px] sm:w-[350px] shrink-0 flex-col rounded-2xl bg-muted/50 border border-white/4 p-3 transition-colors duration-200",
+        "flex w-[320px] sm:w-87.5 shrink-0 flex-col rounded-2xl bg-muted/50 border border-white/4 p-3 transition-colors duration-200",
         // Backdrop blur is expensive while dragging — drop it during an active drag
         !isDraggingAny && "backdrop-blur-xl",
-        isOver && "border-accent/40 bg-accent/[0.04]",
+        isOver && "border-accent/40 bg-accent/4",
       )}
     >
       {/* Column header: Icon + Label + Count + Add */}
@@ -148,7 +147,7 @@ const KanbanColumn = React.memo(function KanbanColumn({
       </div>
 
       {/* Column body: List of cards */}
-      <div className="flex flex-1 flex-col gap-3 min-h-[320px]">
+      <div className="flex flex-1 flex-col gap-3 min-h-80">
         <SortableContext
           items={items.map((i) => String(i.id))}
           strategy={verticalListSortingStrategy}
@@ -467,70 +466,57 @@ export function TestimonialsView({ testimonials = [] }: TestimonialsViewProps) {
   );
 
   return (
-    <Keybindy
-      shortcuts={[
-        {
-          keys: ["Alt", "N"],
-          handler: async () => {
-            handleOpenCreate();
-          },
-        },
-      ]}
-    >
-      <div className="space-y-6 sm:space-y-8 w-full">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-rethink text-white tracking-tight">
-              Testimonials
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 leading-relaxed">
-              Organize reviews by category.
-            </p>
-          </div>
+    <div className="space-y-6 sm:space-y-8 w-full">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold font-rethink text-white tracking-tight">
+            Testimonials
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 leading-relaxed">
+            Organize reviews by category.
+          </p>
+        </div>
+      </div>
+
+      {/* Kanban Board — adding happens via each column's button */}
+      <DndContext
+        sensors={sensors}
+        collisionDetection={collisionDetection}
+        onDragStart={onDragStart}
+        onDragEnd={onDragEnd}
+      >
+        <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-6 -mx-2 px-2 scrollbar-none items-start">
+          {COLUMNS.map((column) => {
+            const columnItems = items.filter((i) => i.category === column.key);
+            return (
+              <KanbanColumn
+                key={column.key}
+                column={column}
+                items={columnItems}
+                isDraggingAny={activeId !== null}
+                onAdd={() => handleOpenCreate(column.key)}
+                onEdit={handleOpenEdit}
+                onDelete={handleDelete}
+              />
+            );
+          })}
         </div>
 
-        {/* Kanban Board — adding happens via each column's button */}
-        <DndContext
-          sensors={sensors}
-          collisionDetection={collisionDetection}
-          onDragStart={onDragStart}
-          onDragEnd={onDragEnd}
-        >
-          <div className="flex gap-4 sm:gap-5 overflow-x-auto pb-6 -mx-2 px-2 scrollbar-none items-start">
-            {COLUMNS.map((column) => {
-              const columnItems = items.filter(
-                (i) => i.category === column.key,
-              );
-              return (
-                <KanbanColumn
-                  key={column.key}
-                  column={column}
-                  items={columnItems}
-                  isDraggingAny={activeId !== null}
-                  onAdd={() => handleOpenCreate(column.key)}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleDelete}
-                />
-              );
-            })}
-          </div>
-
-          {/* Only the lifted card renders here — cheap per-frame drag */}
-          <DragOverlay>
-            {activeItem ? (
-              <div className="pointer-events-none rotate-2 scale-[1.02] cursor-grabbing">
-                <TestimonialCard
-                  testimonial={activeItem}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleDelete}
-                />
-              </div>
-            ) : null}
-          </DragOverlay>
-        </DndContext>
-      </div>
-    </Keybindy>
+        {/* Only the lifted card renders here — cheap per-frame drag */}
+        <DragOverlay>
+          {activeItem ? (
+            <div className="pointer-events-none rotate-2 scale-[1.02] cursor-grabbing">
+              <TestimonialCard
+                testimonial={activeItem}
+                onEdit={handleOpenEdit}
+                onDelete={handleDelete}
+              />
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
+    </div>
   );
 }
 

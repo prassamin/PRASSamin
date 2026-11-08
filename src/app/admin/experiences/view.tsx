@@ -11,7 +11,6 @@ import {
   ExperienceFormData,
 } from "./components/experience-form";
 import { useRouter } from "@/hooks/useRouter";
-import { Keybindy } from "@keybindy/react";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import {
   createExperienceAction,
@@ -162,22 +161,6 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
   };
 
   return (
-    <Keybindy
-      shortcuts={[
-        {
-          keys: ["Alt", "N"],
-          handler: async () => {
-            handleOpenCreate();
-          },
-          options: {
-            data: {
-              description: "Add New Experience",
-              group: "On this page",
-            },
-          },
-        },
-      ]}
-    >
       <div className="space-y-6 sm:space-y-8 w-full">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
@@ -207,7 +190,7 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
         {/* Experience Cards List */}
         {experiences.length === 0 ? (
           /* Empty State */
-          <Card className="bg-muted/30 border border-white/[0.08] rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
+          <Card className="bg-muted/30 border border-white/8 rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
             <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
               <LuBriefcase className="w-7 h-7" />
             </div>
@@ -250,7 +233,6 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
           </div>
         )}
       </div>
-    </Keybindy>
   );
 };
 

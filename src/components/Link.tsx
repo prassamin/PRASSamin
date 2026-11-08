@@ -67,7 +67,7 @@ export const Link = React.forwardRef<HTMLAnchorElement, LinkProps>(
 
     const styles = cn(
       "inline-block text-neutral-500 transition-colors",
-      (underline === "external" && opensNewTab) || underline === "always"
+      (underline === "external" && external && opensNewTab) || underline === "always"
         ? "underline decoration-neutral-600 hover:decoration-current focus:decoration-current active:decoration-current"
         : null,
     );
