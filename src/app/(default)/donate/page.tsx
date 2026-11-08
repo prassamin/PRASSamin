@@ -18,6 +18,59 @@ const DEFAULT_MODE: DonationMode = DONATION_MODES.monthly
   ? "monthly"
   : "once";
 
+interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  required?: boolean;
+  error?: string;
+}
+
+function Input({
+  label,
+  required,
+  error,
+  className,
+  value,
+  onChange,
+  ...props
+}: InputProps) {
+  const hasValue = Boolean(value && String(value).length > 0);
+
+  return (
+    <div className="space-y-1.5">
+      <div className="relative">
+        <input
+          {...props}
+          value={value}
+          onChange={onChange}
+          className={cn(
+            "peer w-full h-12 rounded-xl bg-white/3 border border-white/6 px-4 text-sm text-foreground outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/30",
+            "placeholder:text-transparent",
+            error && "border-red-500/60 focus:border-red-500 focus:ring-red-500/30",
+            className,
+          )}
+        />
+        {/* Label sits in the placeholder position — hidden once typing starts */}
+        <label
+          className={cn(
+            "pointer-events-none absolute left-[17.5px] top-1/2 -translate-y-1/2 text-sm text-neutral-500",
+            hasValue ? "opacity-0" : "opacity-100",
+            error && !hasValue && "text-red-400",
+          )}
+        >
+          {label}
+          {required && <span className="text-accent"> *</span>}
+        </label>
+      </div>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Page                                                                */
+/* ------------------------------------------------------------------ */
+
 export default function DonatePage() {
   const [mode, setMode] = useState<DonationMode>(DEFAULT_MODE);
   const [amount, setAmount] = useState<number | "">(10);
@@ -27,6 +80,7 @@ export default function DonatePage() {
   const [message, setMessage] = useState("");
   const [socialUrl, setSocialUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
   const [cursorPos, setCursorPos] = useState({ x: 50, y: 50 });
   const btnRef = useRef<HTMLButtonElement>(null);
 
@@ -41,8 +95,26 @@ export default function DonatePage() {
 
   const displayAmount = amount === "" ? customAmount : String(amount);
 
+  const validate = () => {
+    const next: { name?: string; email?: string } = {};
+
+    if (!name.trim()) {
+      next.name = "Please enter your name.";
+    }
+    if (!email.trim()) {
+      next.email = "Email is required to keep donations linked.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      next.email = "Please enter a valid email address.";
+    }
+
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  };
+
   const handleDonate = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validate()) return;
 
     const finalAmount = amount === "" ? parseFloat(customAmount) : amount;
     if (!finalAmount || isNaN(finalAmount) || finalAmount <= 0) {
@@ -230,24 +302,29 @@ export default function DonatePage() {
 
                 {/* Details */}
                 <div className="space-y-3">
-                  <span className="block text-xs font-medium text-neutral-300 uppercase tracking-wider">
-                    Your details{" "}
-                    <span className="text-neutral-500">(optional)</span>
-                  </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <input
-                      type="text"
-                      placeholder="Name"
+                    <Input
+                      label="Name"
+                      required
                       value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className={inputClass}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errors.name)
+                          setErrors((p) => ({ ...p, name: undefined }));
+                      }}
+                      error={errors.name}
                     />
-                    <input
+                    <Input
+                      label="Email"
+                      required
                       type="email"
-                      placeholder="Email"
                       value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className={inputClass}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errors.email)
+                          setErrors((p) => ({ ...p, email: undefined }));
+                      }}
+                      error={errors.email}
                     />
                   </div>
                   <textarea
@@ -257,12 +334,11 @@ export default function DonatePage() {
                     rows={3}
                     className={cn(inputClass, "h-auto py-3 resize-none")}
                   />
-                  <input
+                  <Input
+                    label="Social URL"
                     type="url"
-                    placeholder="Social / profile URL"
                     value={socialUrl}
                     onChange={(e) => setSocialUrl(e.target.value)}
-                    className={inputClass}
                   />
                 </div>
 

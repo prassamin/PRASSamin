@@ -117,13 +117,13 @@ model Donation {
   donorEmail     String @map("donor_email")
   donor          Donor @relation(fields: [donorEmail], references: [email], onDelete: Cascade)
   subscriptionId String? @map("subscription_id")
-  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
   checkoutId     String @unique @map("checkout_id")
   amount         Int
   currency       String @default("usd")
   frequency      String @default("once") // "once" | "month"
   message        String?
-  status         String @default("completed") // "active" (current cycle) | "completed" | "refunded"
+  status         String @default("completed") // "pending" (cycle started, unconfirmed) | "active" (current cycle, paid) | "completed" | "refunded" | "failed"
   createdAt      DateTime @default(now()) @map("created_at")
 
   @@map("donations")
