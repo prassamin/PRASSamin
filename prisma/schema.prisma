@@ -15,93 +15,132 @@ datasource db {
 model ProjectStat {
   slug       String           @id
   views      ProjectViewTracker[]
-  totalViews Int              @default(0)
+  totalViews Int              @default(0) @map("total_views")
 
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
+
+  @@map("project_stats")
 }
 
 model ProjectViewTracker {
   id         Int      @id @default(autoincrement())
   slug       String
-  visitorId  String
-  lastSeen   DateTime @updatedAt
+  visitorId  String   @map("visitor_id")
+  lastSeen   DateTime @updatedAt @map("last_seen")
   count      Int      @default(1)
   country    String
   projectStat   ProjectStat @relation(fields: [slug], references: [slug])
+
   @@unique([slug, visitorId])
+  @@map("project_view_trackers")
 }
 
 model BlogStat {
   slug       String           @id
   views      BlogViewTracker[]
-  totalViews Int              @default(0)
+  totalViews Int              @default(0) @map("total_views")
 
-  createdAt  DateTime         @default(now())
-  updatedAt  DateTime         @updatedAt
+  createdAt  DateTime         @default(now()) @map("created_at")
+  updatedAt  DateTime         @updatedAt @map("updated_at")
+
+  @@map("blog_stats")
 }
 
 model BlogViewTracker {
   id         Int      @id @default(autoincrement())
   slug       String
-  visitorId  String
-  lastSeen   DateTime @updatedAt
+  visitorId  String   @map("visitor_id")
+  lastSeen   DateTime @updatedAt @map("last_seen")
   count      Int      @default(1)
   country    String
   blogStat   BlogStat @relation(fields: [slug], references: [slug])
+
   @@unique([slug, visitorId])
+  @@map("blog_view_trackers")
 }
 
-
 model Experience {
-  id          Int      @id @default(autoincrement()) 
+  id          Int      @id @default(autoincrement())
   company     String
   role        String
   description String?
-  companyUrl  String?
-  companyLogo String?
+  companyUrl  String? @map("company_url")
+  companyLogo String? @map("company_logo")
   location    String?
   start       DateTime
   end         DateTime?
-  created_at  DateTime @default(now()) 
+  created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+
+  @@map("experiences")
 }
 
 model Donor {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
+  email     String   @id
   name      String?
-  socialUrl String?
+  socialUrl String? @map("social_url")
   metadata  Json?
-  createdAt  DateTime @default(now())
-  donations  Donation[]
+  createdAt  DateTime @default(now()) @map("created_at")
+  donations    Donation[]
+  subscriptions Subscription[]
+
+  @@map("donors")
+}
+
+model Subscription {
+  id        String @id // Polar's subscription_id
+  donorEmail String @map("donor_email")
+  donor      Donor @relation(fields: [donorEmail], references: [email], onDelete: Cascade)
+
+  productId String? @map("product_id")
+  amount    Int // per-period amount (cents)
+  currency  String @default("usd")
+  interval  String @default("month") // day | week | month | year
+
+  status    String @default("active") // active | past_due | canceled | unpaid | paused
+  currentPeriodStart DateTime? @map("current_period_start")
+  currentPeriodEnd   DateTime? @map("current_period_end") // = next billing date
+  cancelAtPeriodEnd  Boolean @default(false) @map("cancel_at_period_end")
+  endsAt    DateTime? @map("ends_at") // when access actually stops (null = running)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  donations Donation[]
+
+  @@map("subscriptions")
 }
 
 model Donation {
-  id                Int      @id @default(autoincrement())
-  donorId           Int
-  donor             Donor    @relation(fields: [donorId], references: [id], onDelete: Cascade)
-  checkoutId        String   @unique
-  amount            Int
-  currency          String   @default("usd")
-  frequency         String   @default("once") // "once" | "month"
-  subscriptionId    String?
-  subscriptionStatus String? // "active" | "cancelled" | "past_due" | "revoked"
-  message           String?
-  status            String   @default("completed") // "completed" | "refunded"
-  createdAt         DateTime @default(now())
+  id             Int @id @default(autoincrement())
+  donorEmail     String @map("donor_email")
+  donor          Donor @relation(fields: [donorEmail], references: [email], onDelete: Cascade)
+  subscriptionId String? @map("subscription_id")
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+  checkoutId     String @unique @map("checkout_id")
+  amount         Int
+  currency       String @default("usd")
+  frequency      String @default("once") // "once" | "month"
+  message        String?
+  status         String @default("completed") // "active" (current cycle) | "completed" | "refunded"
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("donations")
 }
 
 model Education {
-  id          Int      @id @default(autoincrement()) 
+  id          Int      @id @default(autoincrement())
   school      String
   degree      String
   field       String
   description String?
   start       DateTime
   end         DateTime?
-  created_at  DateTime @default(now()) 
+  created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
+
+  @@map("education")
 }
 
 enum TestimonialCategory {
@@ -118,6 +157,8 @@ model Testimonial {
   avatar    String
   category  TestimonialCategory
   order     Int                 @default(0)
-  createdAt DateTime            @default(now())
-  updatedAt DateTime            @updatedAt
+  createdAt DateTime            @default(now()) @map("created_at")
+  updatedAt DateTime            @updatedAt @map("updated_at")
+
+  @@map("testimonials")
 }
