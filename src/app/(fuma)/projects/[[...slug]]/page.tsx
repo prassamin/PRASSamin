@@ -1,17 +1,15 @@
 import { db } from "@/lib/db";
 import { metatag } from "@/lib/metatag";
-import { headers } from "next/headers";
 import { projectSource } from "@/lib/source";
 import { notFound } from "next/navigation";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
 import { getTableOfContents } from "fumadocs-core/server";
 import { RailToc, type RailTocItem } from "@/components/rail-toc";
+import { TrackView } from "@/components/track-view";
 import { ProjectDetailBackground } from "../components/project-detail-background";
 import ProjectsLayoutContainer from "../components/projects-layout-container";
 import { Link } from "@/components/Link";
 import { LuEye, LuLink } from "react-icons/lu";
-import { geolocation } from "@vercel/functions";
-import { NextRequest } from "next/server";
 import Footer from "@/components/Footer";
 import { getProjects } from "@/lib/get-projects";
 import ProjectsView from "../view";
@@ -36,65 +34,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
   const page = projectSource.getPage(slug);
   if (!page) notFound();
 
-  const Headers = await headers();
-  const ip =
-    Headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    Headers.get("x-real-ip") ||
-    "unknown";
-  const { country, flag } = geolocation({ headers: Headers } as NextRequest);
-
-  const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
   const fSlug = page.slugs.join("/");
-
-  const tracker = await db.projectViewTracker.findUnique({
-    where: {
-      slug_visitorId: {
-        slug: fSlug,
-        visitorId: ip,
-      },
-    },
-  });
-
-  // Track page views
-  if (!tracker) {
-    await db.$transaction([
-      db.projectStat.upsert({
-        where: { slug: fSlug },
-        create: { slug: fSlug, totalViews: 1 },
-        update: { totalViews: { increment: 1 } },
-      }),
-
-      db.projectViewTracker.create({
-        data: {
-          slug: fSlug,
-          visitorId: ip,
-          count: 1,
-          country: `${country} ${flag}`,
-          lastSeen: new Date(),
-        },
-      }),
-    ]);
-  } else if (tracker.lastSeen < threeMinutesAgo) {
-    await db.$transaction([
-      db.projectViewTracker.update({
-        where: {
-          slug_visitorId: {
-            slug: fSlug,
-            visitorId: ip,
-          },
-        },
-        data: {
-          lastSeen: new Date(),
-          count: { increment: 1 },
-        },
-      }),
-
-      db.projectStat.update({
-        where: { slug: fSlug },
-        data: { totalViews: { increment: 1 } },
-      }),
-    ]);
-  }
 
   // Total views from db
   const projectStat = await db.projectStat.findUnique({
@@ -104,18 +44,10 @@ const ProjectPage = async ({ params }: { params: Props }) => {
 
   const viewsCount = projectStat?.totalViews || 0;
 
-  // Stable likes count
-  const likesCount =
-    (Math.abs(
-      fSlug.split("").reduce((acc, char) => acc + char.charCodeAt(0) * 17, 142),
-    ) %
-      350) +
-    120;
-
   const MDX = page.data.body;
 
   // Table of contents from the raw MDX
-  const toc = await getTableOfContents(page.data.content || "");
+  const toc = getTableOfContents(page.data.content || "");
   const tocItems: RailTocItem[] = toc.map((item) => ({
     id: item.url.replace(/^#/, ""),
     label: typeof item.title === "string" ? item.title : "",
@@ -154,7 +86,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                       <span
                         key={tool}
                         data-slot="badge"
-                        className="inline-flex w-fit bg-muted/50 items-center justify-center whitespace-nowrap text-neutral-300 transition-[color,box-shadow] gap-1.5 rounded-lg px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] md:text-xs font-medium capitalize gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]"
+                        className="inline-flex w-fit bg-muted/50 items-center justify-center whitespace-nowrap text-neutral-300 transition-[color,box-shadow] gap-1.5 rounded-lg px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] md:text-xs font-medium capitalize gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)]"
                       >
                         {StackIcon && <StackIcon className="size-3.5" />}
                         {tool}
@@ -184,7 +116,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                     href={page.data.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
+                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
                   >
                     <SiGithub className="size-3.5 text-neutral-500 group-hover:text-accent/75 group-focus-visible:text-accent/75 transition-colors shrink-0" />
                     <span className="-mb-0.5">Repository</span>
@@ -197,7 +129,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                     href={page.data.links.live}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
+                    className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
                   >
                     <LuLink className="size-3.5 text-neutral-500 group-hover:text-accent/75 group-focus-visible:text-accent/75 transition-colors shrink-0" />
                     <span className="-mb-0.5">Live Site</span>
@@ -225,7 +157,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
               <div className="mt-8 flex flex-col items-start gap-4">
                 <Link
                   href="/projects"
-                  className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,_currentColor_30%,_#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] text-sm"
+                  className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,currentColor_30%,#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] text-sm"
                 >
                   ← Back to projects
                 </Link>
@@ -233,6 +165,8 @@ const ProjectPage = async ({ params }: { params: Props }) => {
             </div>
           </ProjectsLayoutContainer>
         </section>
+
+        <TrackView type="project" slug={fSlug} />
       </main>
 
       {/* Global Footer */}

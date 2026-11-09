@@ -1,17 +1,15 @@
 import { db } from "@/lib/db";
 import { metatag } from "@/lib/metatag";
-import { headers } from "next/headers";
 import { source } from "@/lib/source";
 import { notFound } from "next/navigation";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
 import { getTableOfContents } from "fumadocs-core/server";
 import { RailToc, type RailTocItem } from "@/components/rail-toc";
 import { BlogCard } from "@/components/blog-card";
+import { TrackView } from "@/components/track-view";
 import Image from "next/image";
 import Link from "next/link";
-import { LuBookOpen, LuEye, LuHeart } from "react-icons/lu";
-import { geolocation } from "@vercel/functions";
-import { NextRequest } from "next/server";
+import { LuBookOpen, LuEye } from "react-icons/lu";
 import Footer from "@/components/Footer";
 import BlogsView from "../view";
 import { getBlogs } from "@/lib/get-blogs";
@@ -34,66 +32,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
 
   const page = source.getPage(slug);
   if (!page) notFound();
-
-  const Headers = await headers();
-  const ip =
-    Headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-    Headers.get("x-real-ip") ||
-    "unknown";
-  const { country, flag } = geolocation({ headers: Headers } as NextRequest);
-
-  const threeMinutesAgo = new Date(Date.now() - 3 * 60 * 1000);
   const fSlug = page.slugs.join("/");
-
-  const tracker = await db.blogViewTracker.findUnique({
-    where: {
-      slug_visitorId: {
-        slug: fSlug,
-        visitorId: ip,
-      },
-    },
-  });
-
-  // New visitor or first view for this blog
-  if (!tracker) {
-    await db.$transaction([
-      db.blogStat.upsert({
-        where: { slug: fSlug },
-        create: { slug: fSlug, totalViews: 1 },
-        update: { totalViews: { increment: 1 } },
-      }),
-
-      db.blogViewTracker.create({
-        data: {
-          slug: fSlug,
-          visitorId: ip,
-          count: 1,
-          country: `${country} ${flag}`,
-          lastSeen: new Date(),
-        },
-      }),
-    ]);
-  } else if (tracker.lastSeen < threeMinutesAgo) {
-    await db.$transaction([
-      db.blogViewTracker.update({
-        where: {
-          slug_visitorId: {
-            slug: fSlug,
-            visitorId: ip,
-          },
-        },
-        data: {
-          lastSeen: new Date(),
-          count: { increment: 1 },
-        },
-      }),
-
-      db.blogStat.update({
-        where: { slug: fSlug },
-        data: { totalViews: { increment: 1 } },
-      }),
-    ]);
-  }
 
   // Total views
   const blogStat = await db.blogStat.findUnique({
@@ -147,7 +86,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
         <section className="relative isolate">
           {/* Ambient Banner Cover Image */}
           {page.data.banner || !page.data.thumbnail ? (
-            <div className="absolute inset-x-0 top-0 h-[18rem] md:h-[24rem] overflow-hidden pointer-events-none -z-10">
+            <div className="absolute inset-x-0 top-0 h-72 md:h-96 overflow-hidden pointer-events-none -z-10">
               <figure className="relative w-full h-full">
                 <Image
                   src={page.data.banner || page.data.thumbnail}
@@ -156,18 +95,18 @@ const BlogPage = async ({ params }: { params: Props }) => {
                   priority
                   className="object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-neutral-950/30 via-5% via-neutral-950/65 to-neutral-950" />
+                <div className="absolute inset-0 bg-linear-to-b from-neutral-950/30 via-5% via-neutral-950/65 to-neutral-950" />
               </figure>
             </div>
           ) : (
             <div>
               <div
                 aria-hidden="true"
-                className="h-[25px] w-[400px] rounded-r-[50%] bg-gradient-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
+                className="h-6.25 w-100 rounded-r-[50%] bg-linear-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
               />
               <div
                 aria-hidden="true"
-                className="h-[400px] w-[650px] rounded-full bg-gradient-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
+                className="h-100 w-162.5 rounded-full bg-linear-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
               />
             </div>
           )}
@@ -260,7 +199,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
             {/* CHILD 3: Share on Twitter / X Button */}
             <div className="flex items-center">
               <a
-                className="relative group px-5 py-3 rounded-xl backdrop-blur-sm border border-transparent inline-flex items-center gap-2 mt-4 cursor-pointer bg-neutral-900/40 hover:bg-neutral-900/70 transition text-sm text-neutral-300 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]"
+                className="relative group px-5 py-3 rounded-xl backdrop-blur-sm border border-transparent inline-flex items-center gap-2 mt-4 cursor-pointer bg-neutral-900/40 hover:bg-neutral-900/70 transition text-sm text-neutral-300 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)]"
                 href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(`${origin}/blog/${fSlug}`)}&text=${encodeURIComponent(`I just read an article about ${page.data.title}${TWITTER_USERNAME && ` by @${TWITTER_USERNAME}`}.\n\n`)}`}
                 rel="noopener noreferrer"
                 target="_blank"
@@ -315,7 +254,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
             {/* CHILD 8: Back to Blog Link */}
             <div className="mt-12 flex flex-col items-start gap-4">
               <Link
-                className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,_currentColor_30%,_#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,_currentColor_65%,_#171717)] text-sm"
+                className="inline-block underline text-neutral-300 transition-colors decoration-[color-mix(in_srgb,currentColor_30%,#171717)] hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] text-sm"
                 href="/blog"
               >
                 ← Back to blog
@@ -323,6 +262,8 @@ const BlogPage = async ({ params }: { params: Props }) => {
             </div>
           </div>
         </section>
+
+        <TrackView type="blog" slug={fSlug} />
       </main>
       <Footer />
     </>
