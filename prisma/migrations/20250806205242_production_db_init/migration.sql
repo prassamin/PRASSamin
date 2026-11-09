@@ -1,63 +1,66 @@
 -- CreateTable
-CREATE TABLE "public"."ProjectStat" (
+CREATE TABLE "project_stats" (
     "slug" TEXT NOT NULL,
-    "totalViews" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "total_views" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "ProjectStat_pkey" PRIMARY KEY ("slug")
+    CONSTRAINT "project_stats_pkey" PRIMARY KEY ("slug")
 );
 
 -- CreateTable
-CREATE TABLE "public"."ProjectViewTracker" (
+CREATE TABLE "project_view_trackers" (
     "id" SERIAL NOT NULL,
     "slug" TEXT NOT NULL,
-    "visitorId" TEXT NOT NULL,
-    "lastSeen" TIMESTAMP(3) NOT NULL,
+    "visitor_id" TEXT NOT NULL,
+    "last_seen" TIMESTAMP(3) NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 1,
     "country" TEXT NOT NULL,
 
-    CONSTRAINT "ProjectViewTracker_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "project_view_trackers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."BlogStat" (
+CREATE TABLE "blog_stats" (
     "slug" TEXT NOT NULL,
-    "totalViews" INTEGER NOT NULL DEFAULT 0,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "total_views" INTEGER NOT NULL DEFAULT 0,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "BlogStat_pkey" PRIMARY KEY ("slug")
+    CONSTRAINT "blog_stats_pkey" PRIMARY KEY ("slug")
 );
 
 -- CreateTable
-CREATE TABLE "public"."BlogViewTracker" (
+CREATE TABLE "blog_view_trackers" (
     "id" SERIAL NOT NULL,
     "slug" TEXT NOT NULL,
-    "visitorId" TEXT NOT NULL,
-    "lastSeen" TIMESTAMP(3) NOT NULL,
+    "visitor_id" TEXT NOT NULL,
+    "last_seen" TIMESTAMP(3) NOT NULL,
     "count" INTEGER NOT NULL DEFAULT 1,
     "country" TEXT NOT NULL,
 
-    CONSTRAINT "BlogViewTracker_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "blog_view_trackers_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."Experience" (
+CREATE TABLE "experiences" (
     "id" SERIAL NOT NULL,
     "company" TEXT NOT NULL,
     "role" TEXT NOT NULL,
     "description" TEXT,
+    "company_url" TEXT,
+    "company_logo" TEXT,
+    "location" TEXT,
     "start" TIMESTAMP(3) NOT NULL,
     "end" TIMESTAMP(3),
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Experience_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "experiences_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "public"."Education" (
+CREATE TABLE "education" (
     "id" SERIAL NOT NULL,
     "school" TEXT NOT NULL,
     "degree" TEXT NOT NULL,
@@ -68,17 +71,17 @@ CREATE TABLE "public"."Education" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "Education_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "education_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
-CREATE UNIQUE INDEX "ProjectViewTracker_slug_visitorId_key" ON "public"."ProjectViewTracker"("slug", "visitorId");
+CREATE UNIQUE INDEX "project_view_trackers_slug_visitor_id_key" ON "project_view_trackers"("slug", "visitor_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "BlogViewTracker_slug_visitorId_key" ON "public"."BlogViewTracker"("slug", "visitorId");
+CREATE UNIQUE INDEX "blog_view_trackers_slug_visitor_id_key" ON "blog_view_trackers"("slug", "visitor_id");
 
 -- AddForeignKey
-ALTER TABLE "public"."ProjectViewTracker" ADD CONSTRAINT "ProjectViewTracker_slug_fkey" FOREIGN KEY ("slug") REFERENCES "public"."ProjectStat"("slug") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "project_view_trackers" ADD CONSTRAINT "project_view_trackers_slug_fkey" FOREIGN KEY ("slug") REFERENCES "project_stats"("slug") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "public"."BlogViewTracker" ADD CONSTRAINT "BlogViewTracker_slug_fkey" FOREIGN KEY ("slug") REFERENCES "public"."BlogStat"("slug") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "blog_view_trackers" ADD CONSTRAINT "blog_view_trackers_slug_fkey" FOREIGN KEY ("slug") REFERENCES "blog_stats"("slug") ON DELETE RESTRICT ON UPDATE CASCADE;
