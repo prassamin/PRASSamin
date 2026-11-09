@@ -7,7 +7,9 @@ import React, {
   useCallback,
   useRef,
   useEffect,
+  useMemo,
 } from "react";
+import { stringify } from "yaml";
 import { OpenStudioOptions, MdxStudioContextValue, StudioTab } from "./types";
 import { MdxBlockType } from "./builder/types";
 import { toast } from "@heroui/react";
@@ -27,16 +29,32 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     | ((controller: MdxStudioContextValue) => React.ReactNode)
     | null
   >(null);
+  const [saveButton, setSaveButton] = useState<
+    | React.ReactNode
+    | ((controller: MdxStudioContextValue) => React.ReactNode)
+    | null
+  >(null);
   const [mdx, setMdx] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   const onSaveRef = useRef<((mdx: string) => Promise<void> | void) | null>(null);
   const onCloseRef = useRef<(() => void) | null>(null);
+  const includeMetadataRef = useRef(false);
+  const getMetadataRef = useRef<(() => Record<string, any>) | null>(null);
   const insertBlockListenerRef = useRef<
     ((type: MdxBlockType, props?: Record<string, any>) => void) | null
   >(null);
 
   const hasInformationTab = Boolean(informationSlot);
+
+  // Pre-serialized frontmatter block when includeMetadata is enabled.
+  const frontmatter = useMemo(() => {
+    if (!includeMetadataRef.current || !getMetadataRef.current) return "";
+    const meta = getMetadataRef.current();
+    if (!meta || Object.keys(meta).length === 0) return "";
+    return `---\n${stringify(meta, { lineWidth: 80 })}---`;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mdx, activeTab]);
 
   const openStudio = useCallback((options: OpenStudioOptions) => {
     setTitle(options.title || "MDX Studio");
@@ -45,8 +63,15 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     setInformationSlot(
       options.informationSlot ? () => options.informationSlot : null,
     );
+    setSaveButton(
+      typeof options.saveButton === "function" || options.saveButton
+        ? options.saveButton
+        : null,
+    );
     onSaveRef.current = options.onSave;
     onCloseRef.current = options.onClose || null;
+    includeMetadataRef.current = Boolean(options.includeMetadata);
+    getMetadataRef.current = options.getMetadata || null;
     setIsSaving(false);
     // If informationSlot is provided, open to "details" first; otherwise directly to "builder"
     setActiveTab(options.informationSlot ? "details" : "builder");
@@ -57,8 +82,11 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     setIsOpen(false);
     onCloseRef.current?.();
     setInformationSlot(null);
+    setSaveButton(null);
     onSaveRef.current = null;
     onCloseRef.current = null;
+    includeMetadataRef.current = false;
+    getMetadataRef.current = null;
     insertBlockListenerRef.current = null;
   }, []);
 
@@ -79,7 +107,14 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!onSaveRef.current) return;
     setIsSaving(true);
     try {
-      await onSaveRef.current(mdx);
+      let compiled = mdx;
+
+      // Optional: prepend YAML frontmatter from the info form metadata.
+      if (frontmatter) {
+        compiled = `${frontmatter}\n\n${mdx}`;
+      }
+
+      await onSaveRef.current(compiled);
       closeStudio();
     } catch (err: any) {
       console.error("Studio save error:", err);
@@ -87,7 +122,7 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [mdx, closeStudio]);
+  }, [mdx, frontmatter, closeStudio]);
 
   const value: MdxStudioContextValue = {
     isOpen,
@@ -103,6 +138,8 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     save,
     closeStudio,
     openStudio,
+    saveButton,
+    frontmatter,
   };
 
   return (

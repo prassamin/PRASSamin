@@ -43,6 +43,11 @@ export interface MdxBuilderProps {
   minHeight?: string;
   title?: string;
   documentName?: string;
+  /**
+   * Pre-serialized YAML frontmatter block (`---…---`) to display above the
+   * MDX code editor and include when copying. Empty string to disable.
+   */
+  frontmatter?: string;
   onRegisterInsertBlock?: (
     fn: (type: MdxBlockType, props?: Record<string, any>) => void,
   ) => void;
@@ -57,6 +62,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   minHeight = "520px",
   title = "Mdx Builder",
   documentName,
+  frontmatter = "",
   onRegisterInsertBlock,
 }) => {
   const { blocks, setBlocks, resetBlocks, undo, redo, canUndo, canRedo } =
@@ -279,9 +285,22 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
 
   const handleEditorChange = (val: string | undefined) => {
     const nextVal = val ?? "";
-    setCodeValue(nextVal);
-    onChange?.(nextVal);
+
+    // Strip the known frontmatter prefix so only the body is stored/parsed.
+    let body = nextVal;
+    if (frontmatter && nextVal.startsWith(frontmatter + "\n\n")) {
+      body = nextVal.slice((frontmatter + "\n\n").length);
+    }
+
+    setCodeValue(body);
+    onChange?.(body);
   };
+
+  // Single unified document shown inside Monaco: frontmatter + body.
+  const visibleCodeValue = useMemo(
+    () => (frontmatter ? `${frontmatter}\n\n${codeValue}` : codeValue),
+    [frontmatter, codeValue],
+  );
 
   // Synchronize Monaco Editor scrolling and cursor changes with Live Preview
   const handleMonacoMount = (editor: any) => {
@@ -511,10 +530,13 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     });
   };
 
-  // Copy compiled MDX
+  // Copy compiled MDX (includes frontmatter when present)
   const handleCopyCode = async () => {
     try {
-      const textToCopy = mode === "code" ? codeValue : compiledMdx;
+      const body = mode === "code" ? codeValue : compiledMdx;
+      const textToCopy = frontmatter
+        ? `${frontmatter}\n\n${body}`
+        : body;
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast.success("MDX code copied to clipboard!");
@@ -773,7 +795,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                   height="100%"
                   language="markdown"
                   theme="vs-dark"
-                  value={codeValue}
+                  value={visibleCodeValue}
                   onChange={handleEditorChange}
                   onMount={handleMonacoMount}
                   options={{

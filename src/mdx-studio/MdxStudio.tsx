@@ -22,6 +22,7 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
     setMdx,
     save,
     closeStudio,
+    frontmatter,
   } = studio;
 
   // Keyboard shortcuts: Cmd+S / Ctrl+S to save, Esc to close
@@ -88,6 +89,7 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
               documentName={currentDocLabel}
               value={mdx}
               onChange={setMdx}
+              frontmatter={frontmatter}
               className="rounded-none border-none shadow-none h-full"
               minHeight="100%"
               onRegisterInsertBlock={(fn) => {
