@@ -41,6 +41,51 @@ interface ImagePickerProps {
 }
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_IMAGE_DIMENSION = 1920; // longest edge
+const WEBP_QUALITY = 0.82;
+
+/**
+ * Since images to optimized WebP: downscale the longest edge to
+ * `MAX_IMAGE_DIMENSION` and re-encode with `WEBP_QUALITY`. Returns the
+ * original file when conversion isn't possible (unsupported browser, non-
+ * image, or encode failure) so uploads never break.
+ */
+async function fileToOptimizedWebp(file: File): Promise<File> {
+  if (!file.type.startsWith("image/")) return file;
+
+  try {
+    const bitmap = await createImageBitmap(file);
+
+    let { width, height } = bitmap;
+    const longest = Math.max(width, height);
+    if (longest > MAX_IMAGE_DIMENSION) {
+      const scale = MAX_IMAGE_DIMENSION / longest;
+      width = Math.round(width * scale);
+      height = Math.round(height * scale);
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) {
+      bitmap.close();
+      return file;
+    }
+    ctx.drawImage(bitmap, 0, 0, width, height);
+    bitmap.close();
+
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/webp", WEBP_QUALITY),
+    );
+    if (!blob) return file;
+
+    const baseName = file.name.replace(/\.[^/.]+$/, "") || "image";
+    return new File([blob], `${baseName}.webp`, { type: "image/webp" });
+  } catch {
+    return file;
+  }
+}
 
 /** Map a direct client upload result to the project's CloudinaryFile shape. */
 function mapUploadResultToCloudinaryFile(
@@ -209,12 +254,14 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
         updateQueueItem(next.id, { status: "uploading", percent: 10 });
 
         try {
+          // Auto-optimize: downscale + WebP encode before upload.
+          const uploadFile = await fileToOptimizedWebp(next.file);
           const baseName =
-            next.file.name
+            uploadFile.name
               .replace(/\.[^/.]+$/, "")
               .replace(/[^a-zA-Z0-9_-]/g, "_") || `img_${Date.now()}`;
 
-          const result = await storageClient.upload.file(next.file, {
+          const result = await storageClient.upload.file(uploadFile, {
             folder: uploadLocation,
             resourceType: "image",
             allowedCategories: ["image"],
@@ -395,7 +442,7 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                       clipboard.
                     </p>
                     <p className="text-[12px] font-semibold text-muted-foreground/70 mt-1">
-                      Max file size: {formatBytes(MAX_FILE_SIZE, 0)}
+                      Max file size: {formatBytes(MAX_FILE_SIZE, 0)} · auto-optimized to WebP
                     </p>
                   </div>
 
