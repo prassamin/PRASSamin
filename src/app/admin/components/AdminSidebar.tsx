@@ -9,6 +9,7 @@ import {
   Briefcase,
   FolderKanban,
   MessageSquareQuote,
+  BookOpen,
   LogOut,
   X,
 } from "lucide-react";
@@ -46,6 +47,11 @@ const mainNavItems: {
     title: "Experiences",
     href: "/admin/experiences",
     icon: Briefcase,
+  },
+  {
+    title: "Blogs",
+    href: "/admin/blogs",
+    icon: BookOpen,
   },
   {
     title: "Storage",
@@ -172,12 +178,25 @@ const SidebarInner: React.FC<SidebarInnerProps> = ({
       {/* Bottom Item: Log out */}
       <div className="pt-4">
         {(() => {
-          const logOutLink = (
-            <Link
-              href="/api/auth/signout"
-              onClick={onItemClick}
+          const logOutButton = (
+            <button
+              type="button"
+              onClick={async () => {
+                onItemClick?.();
+                try {
+                  await fetch("/api/auth/signout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ redirect: "/" }),
+                    credentials: "include",
+                  });
+                  window.location.href = "/";
+                } catch {
+                  window.location.href = "/";
+                }
+              }}
               className={cn(
-                "group flex items-center rounded-xl text-sm font-medium transition-colors",
+                "group flex items-center rounded-xl text-sm font-medium transition-colors cursor-pointer",
                 isCollapsed
                   ? "size-11 justify-center p-0 mx-auto text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                   : "gap-3 px-3.5 py-2.5 w-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
@@ -185,18 +204,18 @@ const SidebarInner: React.FC<SidebarInnerProps> = ({
             >
               <LogOut className="size-5 shrink-0" />
               {!isCollapsed && <span>Log out</span>}
-            </Link>
+            </button>
           );
 
           if (isCollapsed) {
             return (
               <Tooltip content="Log out" placement="right">
-                <div>{logOutLink}</div>
+                <div>{logOutButton}</div>
               </Tooltip>
             );
           }
 
-          return logOutLink;
+          return logOutButton;
         })()}
       </div>
     </div>

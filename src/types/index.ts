@@ -8,6 +8,20 @@ export interface UserType {
   role: string;
 }
 
+/**
+ * Blog frontmatter model — mirrors the blog collection schema in
+ * `.source/source.config.mjs` (content/blogs/*.mdx).
+ */
+export type BlogMeta = {
+  title: string;
+  description?: string;
+  tags?: string[];
+  thumbnail?: string;
+  banner?: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type ExperienceType = {
   id: number;
   company: string;
