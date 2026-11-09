@@ -15,6 +15,7 @@ import {
   LuBookUser,
   LuChevronDown,
   LuX,
+  LuHeart,
 } from "react-icons/lu";
 
 const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
@@ -113,6 +114,12 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
       description: "Leave me a message",
       icon: LuBookUser,
     },
+    {
+      href: "/donate",
+      label: "Donate",
+      description: "Support my work",
+      icon: LuHeart,
+    },
   ];
 
   return (
@@ -170,13 +177,13 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -6, scale: 0.96 }}
                 transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute top-full right-4 mt-2 z-50 rounded-xl bg-neutral-900/90 shadow-2xl outline-none backdrop-blur-md border border-neutral-800 p-3 grid gap-2 w-fit grid-cols-1 [&>*]:w-[300px] pointer-events-auto max-h-[80vh] overflow-y-auto"
+                className="absolute top-full right-4 mt-2 z-50 rounded-xl bg-neutral-900/90 shadow-2xl outline-none backdrop-blur-md border border-neutral-800 p-3 grid gap-2 w-fit grid-cols-1 *:w-75 pointer-events-auto max-h-[80vh] overflow-y-auto"
               >
                 <div className="flex flex-col gap-2">
                   {mobileLinks.map((link, i) => (
                     <Link
                       key={i}
-                      className="group/header-link p-3 rounded-xl bg-neutral-925/70 w-full flex items-start gap-3 transition-colors hover:bg-neutral-925/100"
+                      className="group/header-link p-3 rounded-xl bg-neutral-925/70 w-full flex items-start gap-3 transition-colors hover:bg-neutral-925"
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
@@ -224,7 +231,7 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
               })}
 
               {/* Divider */}
-              <div className="w-px bg-neutral-500 h-[18px]" />
+              <div className="w-px bg-neutral-500 h-4.5" />
 
               {/* More Menu Dropdown Trigger */}
               <li>
@@ -264,7 +271,7 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
               >
                 {/* Column 1: Bucket List */}
                 <Link
-                  className="group/header-link w-[240px] h-[214px] flex flex-col justify-end p-5 rounded-xl relative overflow-hidden"
+                  className="group/header-link w-60 flex flex-col justify-end p-5 rounded-xl relative overflow-hidden"
                   href="/bucket-list"
                   onClick={() => setIsMoreOpen(false)}
                 >
@@ -274,11 +281,11 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                         alt="Stedium"
                         mode="progressive"
                         className="h-full w-full object-cover"
-                        src="/assets/stadium.webp"
+                        src="/assets/bucket-list-thumbnail.webp"
                       />
                     </figure>
                   </div>
-                  <div className="rounded-[11px] bg-gradient-to-b from-neutral-925/25 to-neutral-925/50 absolute inset-0 z-[-1] group-hover/header-link:opacity-65 opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="rounded-[11px] bg-linear-to-b from-neutral-925/25 to-neutral-925/50 absolute inset-0 z-[-1] group-hover/header-link:opacity-65 opacity-100 transition-opacity duration-300 pointer-events-none" />
                   <p className="b1 font-rethink font-semibold text-white underline decoration-transparent group-hover/header-link:decoration-neutral-200 transition-colors">
                     Bucket List
                   </p>
@@ -288,7 +295,7 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                 </Link>
 
                 {/* Column 2: Stacked Quick Links (Shorts, Guest Book) */}
-                <div className="w-[240px] h-[214px] flex flex-col gap-2">
+                <div className="w-60 flex flex-col gap-2">
                   {[
                     {
                       label: "Shorts",
@@ -302,6 +309,12 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                       description: "Leave me a message",
                       icon: LuBookUser,
                     },
+                    {
+                      label: "Donate",
+                      href: "/donate",
+                      description: "Support my work",
+                      icon: LuHeart,
+                    },
                   ].map((link, index) => (
                     <Link
                       key={index}
@@ -314,11 +327,11 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                       </div>
                       <div className="grow">
                         <div className="flex items-center gap-2 justify-between">
-                          <p className="b1 font-rethink underline decoration-transparent group-hover/header-link:decoration-neutral-200 transition-colors">
+                          <p className="b1 text-neutral-300 font-rethink underline decoration-transparent group-hover/header-link:decoration-neutral-200 transition-colors">
                             {link.label}
                           </p>
                         </div>
-                        <p className="c1 text-neutral-400 mt-0.5">
+                        <p className="c1 text-neutral-500 mt-0.5">
                           {link.description}
                         </p>
                       </div>
