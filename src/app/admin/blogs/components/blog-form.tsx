@@ -230,8 +230,8 @@ export const BlogForm: React.FC<BlogFormProps> = ({
   };
 
   return (
-    <div className="flex-1 w-full h-full overflow-y-auto px-4 py-8 sm:py-12 flex items-center justify-center relative">
-      <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
+    <div className="w-full min-h-full px-4 py-8 sm:py-12 flex flex-col items-center justify-start relative">
+      <div className="w-full max-w-2xl mx-auto my-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">

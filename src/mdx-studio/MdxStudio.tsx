@@ -58,7 +58,7 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
       <StudioHeader />
 
       {/* Main Work Area (Tabs preserved in memory across switches) */}
-      <div className="flex-1 rounded-t-3xl border-t border-white/[0.06] flex overflow-hidden relative bg-muted/35">
+      <div className="flex-1 min-h-0 rounded-t-3xl border-t border-white/[0.06] flex overflow-hidden relative bg-muted/35">
         {hasInformationTab && (
           <div
             className={cn(

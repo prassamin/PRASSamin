@@ -26,7 +26,7 @@ export const StudioHeader: React.FC = () => {
   const isContinue = hasInformationTab && activeTab === "details";
 
   return (
-    <header className="h-16 px-4 sm:px-6 flex items-center justify-between gap-4 z-40 select-none">
+    <header className="h-16 shrink-0 px-4 sm:px-6 flex items-center justify-between gap-4 z-40 select-none">
       {/* Left: Back button */}
       <div className="flex items-center gap-3 min-w-0">
         <button

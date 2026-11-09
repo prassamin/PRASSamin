@@ -45,11 +45,9 @@ export function RootProviders({
           theme={{ defaultTheme: "dark", forcedTheme: "dark" }}
         >
           <Toast.Provider placement="top" width={360} />
-          <GlobalKeyBinderProvider>
-            <OwnerProvider initialOwner={initialOwner ?? null}>
-              {children}
-            </OwnerProvider>
-          </GlobalKeyBinderProvider>
+          <OwnerProvider initialOwner={initialOwner ?? null}>
+            <GlobalKeyBinderProvider>{children}</GlobalKeyBinderProvider>
+          </OwnerProvider>
         </RootProvider>
         <AnalyticsProvider />
       </ProgressProvider>
