@@ -13,7 +13,7 @@ export interface ProjectFormData {
   title: string;
   description: string;
   category: string;
-  tools: string; // comma-separated string in the model
+  tools: string;
   github: string;
   live: string;
   thumbnail: string;
@@ -78,7 +78,7 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
 
   return (
     <div className="w-full my-auto flex flex-col items-center justify-start relative">
-      <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
+      <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-5 sm:p-7 flex flex-col gap-6 shadow-2xl">
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
@@ -171,9 +171,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
               value={form.tools}
               onChange={(tools) => updateField("tools", tools)}
             />
-            <p className="text-[10px] text-neutral-500 font-inter">
-              Click a tool to toggle it — search or type a custom one + Enter
-            </p>
           </div>
 
           {/* Links */}

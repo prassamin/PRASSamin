@@ -10,6 +10,7 @@ import {
   FolderKanban,
   MessageSquareQuote,
   BookOpen,
+  FolderOpen,
   LogOut,
   X,
 } from "lucide-react";
@@ -52,6 +53,11 @@ const mainNavItems: {
     title: "Blogs",
     href: "/admin/blogs",
     icon: BookOpen,
+  },
+  {
+    title: "Projects",
+    href: "/admin/projects",
+    icon: FolderOpen,
   },
   {
     title: "Storage",

@@ -3625,7 +3625,7 @@ export const Swift = {
 };
 
 export const Tailwindcss = {
-  name: "Tailwind CSS",
+  name: "Tailwind",
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
