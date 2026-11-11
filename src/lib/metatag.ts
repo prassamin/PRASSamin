@@ -1,6 +1,5 @@
-import { BASE_URL } from "@/constants/env";
 import { Metadata } from "next";
-import { headers } from "next/headers";
+import { getCurrentUrl } from "./url";
 
 export const metatag = async ({
   title,
@@ -15,9 +14,8 @@ export const metatag = async ({
   image?: string;
   description?: string;
 }) => {
-  const headersList = await headers();
-  const url = headersList.get("x-current-url");
-  const fav = image || `${BASE_URL}/favicons/favicon-512x512-maskable.png`;
+  const url = new URL(await getCurrentUrl());
+  const thumbnail = image || `${url.origin}/favicons/favicon-512x512-maskable.png`;
 
   const fixedKeywords = [
     "pras",
@@ -26,28 +24,28 @@ export const metatag = async ({
     "portfolio",
   ];
 
-  const margedkeywords = fixedKeywords.concat(keywords);
+  const margedkeywords: string[] = fixedKeywords.concat(keywords);
 
   const m: Metadata = {
     title: title,
     keywords: margedkeywords,
     openGraph: {
       title: title,
-      url: url!,
+      url: url,
       siteName: title,
       images: [
         {
-          url: fav,
+          url: thumbnail,
+          width: 1200,
+          height: 630,
         },
       ],
-      locale: "en-US",
+      locale: "en_US",
       type: "website",
     },
     twitter: {
       title: title,
-      creator: "@prassamin78",
-      images: fav,
-      card: "summary_large_image",
+      images: [thumbnail],
     },
     alternates: {
       canonical: url,
