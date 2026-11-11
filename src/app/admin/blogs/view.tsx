@@ -151,7 +151,12 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
     setPendingOpen({ kind: "new" });
   };
 
-  const handleEditBlog = async (blog: QueryBlogs["blogs"][number]) => {
+  const handleEditBlog = async (
+    blog: QueryBlogs["blogs"][number],
+    onLoading?: (loading: boolean) => void,
+  ) => {
+    onLoading?.(true);
+
     const file = blog.slug ? `${blog.slug}.mdx` : "";
     if (!file) {
       toast.danger("Could not determine blog file.");
@@ -175,6 +180,7 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
       banner: typeof data.banner === "string" ? data.banner : "",
     };
 
+    onLoading?.(false);
     setPendingOpen({ kind: "edit", file, meta: editMeta, body: parsed.content });
   };
 
@@ -199,7 +205,7 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
             className="bg-accent text-neutral-950 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer"
           >
             <LuPlus className="w-4 h-4" />
-            <span>Write Blog</span>
+            <span>Write</span>
           </Button>
         </div>
       </div>
@@ -218,7 +224,7 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
           </p>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="space-y-4">
           {blogs.map((blog) => (
             <BlogCard
               key={blog.slug || blog.title}
