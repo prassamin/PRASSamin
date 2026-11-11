@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import { useInView } from "motion/react";
+import { useInView } from "framer-motion";
 import { useOwner } from "@/providers/owner-provider";
 import { Tape } from "@/components/tape";
 import { AnimatedSignature } from "./signature";

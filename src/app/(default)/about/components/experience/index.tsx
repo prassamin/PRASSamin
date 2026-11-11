@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/components/link";
-import { BriefcaseBusiness } from "lucide-react";
+import { LuBriefcaseBusiness } from "react-icons/lu";
 import MDXContent from "@/components/mdx/mdx-content";
 import { ExperiencesWatermark } from "./watermark";
 import { Reveal } from "@/components/reveal";
@@ -77,7 +77,7 @@ export const AboutExperience: React.FC<Props> = ({ experiences }) => {
         <Reveal>
           <div className="flex items-center justify-center flex-col gap-2">
             <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
-              <BriefcaseBusiness
+              <LuBriefcaseBusiness
                 className="size-[45%] text-neutral-300"
                 strokeWidth={1.3}
                 aria-hidden="true"

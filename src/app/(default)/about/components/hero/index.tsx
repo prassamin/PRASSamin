@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CircleUserRound } from "lucide-react";
+import { LuCircleUserRound } from "react-icons/lu";
 import { PolaroidCard } from "./polaroid-card";
 import { TechStack } from "./tech-stack";
 import { useOwner } from "@/providers/owner-provider";
@@ -17,7 +17,7 @@ export const HeroSection: React.FC = () => {
         <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
           {/* Squircle Badge */}
           <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
-            <CircleUserRound
+            <LuCircleUserRound
               className="size-[45%] text-neutral-300"
               strokeWidth={1.3}
               aria-hidden="true"
