@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { LuX, LuRefreshCw, LuSearch, LuCheck } from "react-icons/lu";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker } from "@/components/image-picker";
 import { stacks, getStack } from "@/lib/stacks";
 import { cn } from "@heroui/react";
 

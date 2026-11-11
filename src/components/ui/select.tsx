@@ -123,7 +123,7 @@ export const Select = <T extends string | number = string>({
       placeholder={placeholder}
       className={cn(
         "w-full",
-        isRequired && "[&_[data-slot=label]]:after:text-accent!",
+        isRequired && "**:data-[slot=label]:after:text-accent!",
         className,
       )}
       onChange={handleChange}
@@ -185,7 +185,7 @@ export const Select = <T extends string | number = string>({
                 id={opt.id}
                 textValue={opt.textValue}
                 isDisabled={opt.disabled}
-                className="px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/[0.08] focus:bg-white/[0.08] focus:text-white data-[selected=true]:bg-accent/15 data-[selected=true]:text-accent font-medium flex items-center justify-between gap-2 cursor-pointer ring-offset-0"
+                className="px-3 py-2 text-xs text-neutral-300 hover:text-white hover:bg-white/8 focus:bg-white/8 focus:text-white data-[selected=true]:bg-accent/15 data-[selected=true]:text-accent font-medium flex items-center justify-between gap-2 cursor-pointer ring-offset-0"
               >
                 <div className="flex items-center gap-2 min-w-0">
                   {opt.startContent && (

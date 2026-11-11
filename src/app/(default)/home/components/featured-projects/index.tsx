@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { motion, type Variants } from "motion/react";
 import { Scribble } from "./scribble";
 import { PenSwoopUnderline } from "@/components/pen-swoop-underline";

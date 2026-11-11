@@ -14,7 +14,7 @@ import {
 import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@heroui/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker } from "@/components/image-picker";
 
 export interface ExperienceFormData {
   company: string;

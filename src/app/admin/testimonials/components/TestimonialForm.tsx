@@ -3,7 +3,7 @@
 import React, { useState, useRef } from "react";
 import Image from "next/image";
 import { useMdxStudio } from "@/mdx-studio";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker } from "@/components/image-picker";
 import {
   LuUser,
   LuBriefcase,

@@ -60,7 +60,7 @@ import { LuList, LuListOrdered, LuListTodo, LuCheck } from "react-icons/lu";
 import { createBlock } from "../compiler";
 import { cn } from "@heroui/react";
 import { DropIndicator } from "./drop-indicator";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker } from "@/components/image-picker";
 import { InlineTooltipField } from "./inline-tooltip-field";
 import { Input } from "@heroui/react";
 import { MdxChip } from "@/mdx-components";

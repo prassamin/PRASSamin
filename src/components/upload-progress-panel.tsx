@@ -46,10 +46,10 @@ export function UploadProgressPanel({
           }}
           transition={{ type: "spring", damping: 26, stiffness: 320 }}
           style={{ zIndex: 999999 }}
-          className="fixed bottom-6 right-6 w-84 max-w-[calc(100vw-32px)] rounded-2xl border border-white/[0.08] bg-neutral-900/90 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden pointer-events-auto"
+          className="fixed bottom-6 right-6 w-84 max-w-[calc(100vw-32px)] rounded-2xl border border-white/8 bg-neutral-900/90 backdrop-blur-2xl shadow-2xl shadow-black/60 overflow-hidden pointer-events-auto"
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] bg-white/[0.03]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-white/5 bg-white/3">
             <div className="flex flex-col">
               <span className="text-xs font-semibold text-white">
                 {isFinished
@@ -65,7 +65,7 @@ export function UploadProgressPanel({
             <button
               type="button"
               onClick={onClear}
-              className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="inline-flex items-center justify-center w-7 h-7 rounded-lg text-neutral-400 hover:text-white hover:bg-white/8 transition-colors cursor-pointer"
               title="Dismiss"
             >
               <LuX className="w-4 h-4" />
@@ -99,7 +99,7 @@ export function UploadProgressPanel({
                     </span>
                   </div>
 
-                  <div className="h-1.5 w-full rounded-full bg-white/[0.08] overflow-hidden">
+                  <div className="h-1.5 w-full rounded-full bg-white/8 overflow-hidden">
                     <motion.div
                       className={`h-full rounded-full ${
                         item.status === "done"

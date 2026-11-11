@@ -1,6 +1,6 @@
 "use client";
 
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { cardItemVariants } from "./motion";
 import { motion, Variants } from "framer-motion";
 

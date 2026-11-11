@@ -22,7 +22,7 @@ export function Highlighted({ text, query }: { text: string; query: string }) {
     }
     if (idx > i) parts.push(text.slice(i, idx));
     parts.push(
-      <mark key={idx} className="bg-accent/25 text-accent rounded-[3px] px-0.5">
+      <mark key={idx} className="bg-accent/25 text-accent rounded-md px-0.5">
         {text.slice(idx, idx + q.length)}
       </mark>,
     );
@@ -56,9 +56,11 @@ export function BlogCard({
     <Link
       href={href}
       className="group block rounded-md px-2 -mx-2 transition duration-200"
-    >      <div className="flex flex-col gap-5 lg:flex-row-reverse lg:gap-8 lg:items-center">
+    >
+      {" "}
+      <div className="flex flex-col gap-5 lg:flex-row-reverse lg:gap-8 lg:items-center">
         {/* Thumbnail */}
-        <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full lg:w-44 aspect-[5/3] shadow-md transition-colors">
+        <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full lg:w-44 aspect-5/3 shadow-md transition-colors">
           <Image
             src={post.thumbnail}
             alt={post.title}
@@ -83,7 +85,7 @@ export function BlogCard({
           <h3 className="h5 mt-3 relative inline-block">
             <span
               aria-hidden="true"
-              className="bg-gradient-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
+              className="bg-linear-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
             >
               <Highlighted text={post.title} query={q} />
             </span>

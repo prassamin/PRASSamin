@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useMdxStudio } from "@/mdx-studio";
 import { LuFileText, LuArrowRight, LuX, LuRefreshCw } from "react-icons/lu";
 import { Label } from "@heroui/react";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker } from "@/components/image-picker";
 import { cn } from "@heroui/react";
 
 export interface BlogFormData {
@@ -235,13 +235,13 @@ export const BlogForm: React.FC<BlogFormProps> = ({
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div className="flex flex-col">
-              <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight">
-                Blog Metadata
-              </h2>
-              <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1 leading-relaxed">
-                Step 1 of 2 — set up the post before writing the content
-              </p>
-            </div>
+            <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight">
+              Blog Metadata
+            </h2>
+            <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1 leading-relaxed">
+              Step 1 of 2 — set up the post before writing the content
+            </p>
+          </div>
         </div>
 
         {/* Section: Basics */}

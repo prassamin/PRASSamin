@@ -15,7 +15,7 @@ import * as StepsComponents from "fumadocs-ui/components/steps";
 import type { MDXComponents } from "mdx/types";
 import * as luIcons from "react-icons/lu";
 import * as siIcons from "react-icons/si";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { Banner } from "fumadocs-ui/components/banner";
 import {
   MdxTypeTable,

@@ -12,7 +12,7 @@ import { ContentTree } from "./components/content-tree";
 import { ContentGrid } from "./components/content-grid";
 import { CreateFolderModal } from "./components/create-folder-modal";
 import { MediaViewer } from "./components/media-viewer";
-import { UploadProgressPanel } from "@/components/UploadProgressPanel";
+import { UploadProgressPanel } from "@/components/upload-progress-panel";
 
 function ContentManagerViewInner() {
   const {

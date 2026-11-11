@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { LuEye } from "react-icons/lu";
 import { motion, type Variants } from "motion/react";
 import { QueryBlogs } from "@/lib/get-blogs";
@@ -45,7 +45,7 @@ interface Props {
   retros: (QueryBlogs["blogs"][number] & { year: string })[];
 }
 
-export const Retro: React.FC<Props> = ({retros}) => {
+export const Retro: React.FC<Props> = ({ retros }) => {
   const [hoveredYear, setHoveredYear] = React.useState<string | null>(null);
 
   return (
@@ -95,10 +95,7 @@ export const Retro: React.FC<Props> = ({retros}) => {
               onMouseLeave={() => setHoveredYear(null)}
             >
               <div className="group/retro-card-with-views h-full">
-                <Link
-                  className="block h-full rounded-md"
-                  href={item.link}
-                >
+                <Link className="block h-full rounded-md" href={item.link}>
                   <div className="border border-neutral-900 rounded-xl inset h-full flex flex-col bg-neutral-950/40">
                     {/* Top Views Header */}
                     <div className="px-6 py-4 relative">

@@ -1,5 +1,5 @@
 "use client";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { cardItemVariants } from "./motion";

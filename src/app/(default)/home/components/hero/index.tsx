@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { HeroGrid } from "./hero-grid";
 import { FaGithub, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { LuArrowDown } from "react-icons/lu";

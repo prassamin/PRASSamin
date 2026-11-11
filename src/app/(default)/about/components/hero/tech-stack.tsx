@@ -2,10 +2,14 @@
 
 import React from "react";
 import { DiRedis, DiNodejsSmall } from "react-icons/di";
-import { BiLogoTypescript, BiLogoGoLang, BiLogoPostgresql } from "react-icons/bi";
+import {
+  BiLogoTypescript,
+  BiLogoGoLang,
+  BiLogoPostgresql,
+} from "react-icons/bi";
 import { SiTailwindcss, SiNextdotjs } from "react-icons/si";
 import { Tooltip } from "@/components/ui/tooltip";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { cn } from "@heroui/styles";
 
 type IconType = React.SVGProps<SVGSVGElement>;
@@ -72,9 +76,9 @@ const STACKS = [
     ),
     description: (
       <>
-        My language for backend services and fast, single-binary CLI tools.
-        It just feels honest: simple, compiled, and quick to ship. Static
-        typing without the ceremony.
+        My language for backend services and fast, single-binary CLI tools. It
+        just feels honest: simple, compiled, and quick to ship. Static typing
+        without the ceremony.
       </>
     ),
     href: "https://go.dev",
@@ -100,8 +104,8 @@ const STACKS = [
     description: (
       <>
         My database of choice for anything that needs to live forever:
-        relational integrity, rich queries, and extensions that keep up
-        with whatever I throw at it.
+        relational integrity, rich queries, and extensions that keep up with
+        whatever I throw at it.
       </>
     ),
     href: "https://www.postgresql.org",
@@ -120,7 +124,9 @@ export const TechStack: React.FC = () => {
           content={
             <div className="max-w-xs p-1.5 break-normal">
               <div className="flex items-center gap-2">
-                <span className="shrink-0 text-neutral-300">{<Icon className="size-5"/>}</span>
+                <span className="shrink-0 text-neutral-300">
+                  {<Icon className="size-5" />}
+                </span>
                 <div className="flex items-center gap-0.5">
                   {href ? (
                     <Link
@@ -148,7 +154,7 @@ export const TechStack: React.FC = () => {
             className="default-ring rounded-lg text-neutral-400 hover:text-white transition-colors duration-200 focus:outline-none"
             aria-label={name}
           >
-            {<Icon/>}
+            {<Icon />}
           </button>
         </Tooltip>
       ))}

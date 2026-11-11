@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { BriefcaseBusiness } from "lucide-react";
 import MDXContent from "@/components/mdx/mdx-content";
 import { ExperiencesWatermark } from "./watermark";

@@ -1,4 +1,4 @@
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { LuArrowRight, LuHeart } from "react-icons/lu";
 
 export default function DonateSuccessPage() {

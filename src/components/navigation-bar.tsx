@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef, FC } from "react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
-import { Image } from "./Image";
+import { ProgressiveImage } from "./progressive-image";
 import { RiHome9Line } from "react-icons/ri";
 import {
   LuBookText,
@@ -14,7 +14,6 @@ import {
   LuListTodo,
   LuBookUser,
   LuChevronDown,
-  LuX,
   LuHeart,
 } from "react-icons/lu";
 
@@ -277,8 +276,8 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                 >
                   <div className="absolute inset-0 z-[-1] rounded-xl overflow-hidden pointer-events-none">
                     <figure className="isolate absolute inset-0 z-[-1] overflow-hidden select-none pointer-events-none group-hover/header-link:scale-110 transition-transform duration-300 ease-in-out">
-                      <Image
-                        alt="Stedium"
+                      <ProgressiveImage
+                        alt="bucket list thumbnail"
                         mode="progressive"
                         className="h-full w-full object-cover"
                         src="/assets/bucket-list-thumbnail.webp"

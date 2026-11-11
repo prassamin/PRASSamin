@@ -2,7 +2,7 @@
 import { LuSignpost } from "react-icons/lu";
 import { motion } from "framer-motion";
 import { cn } from "@heroui/styles";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 
 export default function NotFound() {
   return (

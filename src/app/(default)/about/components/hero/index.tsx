@@ -5,7 +5,7 @@ import { CircleUserRound } from "lucide-react";
 import { PolaroidCard } from "./polaroid-card";
 import { TechStack } from "./tech-stack";
 import { useOwner } from "@/providers/owner-provider";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { Reveal } from "@/components/reveal";
 
 export const HeroSection: React.FC = () => {

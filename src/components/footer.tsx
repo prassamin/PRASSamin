@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { ArrowUpRight } from "lucide-react";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import Image from "next/image";
@@ -49,13 +49,13 @@ export const Footer: React.FC = () => {
   return (
     <footer className="relative pt-24 not-sm:pt-14 w-full z-20 overflow-hidden bg-transparent text-left">
       {/* Subtle Top Glowing Border Line */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-neutral-800 to-transparent" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent" />
+      <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-neutral-800 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-px bg-linear-to-r from-transparent via-accent/50 to-transparent" />
 
       {/* Ambient Background Glow matching Hero */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-[500px] h-[300px] rounded-full bg-[#2E996C]/10 blur-[140px] select-none"
+        className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-125 h-75 rounded-full bg-[#2E996C]/10 blur-[140px] select-none"
       />
 
       {/* Subtle Background Dot Grid */}

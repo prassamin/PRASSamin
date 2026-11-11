@@ -1,6 +1,6 @@
 import "../globals.css";
-import NavigationBar from "@/components/NavigationBar";
-import Footer from "@/components/Footer";
+import NavigationBar from "@/components/navigation-bar";
+import Footer from "@/components/footer";
 
 export default async function RootLayout({
   children,

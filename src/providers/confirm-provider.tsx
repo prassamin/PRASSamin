@@ -7,7 +7,7 @@ import React, {
   useCallback,
   type ReactNode,
 } from "react";
-import ConfirmModal from "@/components/ConfirmModal";
+import ConfirmModal from "@/components/confirm-modal";
 
 export interface ConfirmOptions {
   /** Modal dialog title */

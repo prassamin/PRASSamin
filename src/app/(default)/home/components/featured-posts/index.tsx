@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import { LuClock, LuEye, LuChevronRight } from "react-icons/lu";
 import { motion, type Variants } from "motion/react";
 import { Scribble } from "./scribble";

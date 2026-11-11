@@ -35,7 +35,7 @@ function getSrcKey(src: ImageSrc): string {
   return "";
 }
 
-export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
+export const ProgressiveImage = React.forwardRef<HTMLImageElement, ImageProps>(
   function Image(
     {
       src,
@@ -189,6 +189,3 @@ export const Image = React.forwardRef<HTMLImageElement, ImageProps>(
     return imageElement;
   },
 );
-
-export const ProgressiveImage = Image;
-export default Image;

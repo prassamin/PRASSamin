@@ -55,7 +55,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         {...contentProps}
         data-slot="tooltip-content"
         className={cn(
-          "bg-neutral-700/50 backdrop-blur-lg gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent",
+          "bg-neutral-700/50 backdrop-blur-lg gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent",
           contentProps?.className,
         )}
         placement={placement}

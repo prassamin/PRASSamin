@@ -21,7 +21,7 @@ import {
   type ClientUploadResult,
   type UploadFileItem,
 } from "@/lib/storage";
-import { UploadProgressPanel } from "@/components/UploadProgressPanel";
+import { UploadProgressPanel } from "@/components/upload-progress-panel";
 
 interface ImagePickerProps {
   isOpen: boolean;
@@ -442,7 +442,8 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
                       clipboard.
                     </p>
                     <p className="text-[12px] font-semibold text-muted-foreground/70 mt-1">
-                      Max file size: {formatBytes(MAX_FILE_SIZE, 0)} · auto-optimized to WebP
+                      Max file size: {formatBytes(MAX_FILE_SIZE, 0)} ·
+                      auto-optimized to WebP
                     </p>
                   </div>
 

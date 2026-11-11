@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Link } from "@/components/Link";
+import { Link } from "@/components/link";
 import {
   Laptop,
   PencilLine,

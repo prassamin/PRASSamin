@@ -10,9 +10,9 @@ import {
   LuEye,
   LuCalendar,
 } from "react-icons/lu";
-import Footer from "@/components/Footer";
+import Footer from "@/components/footer";
 import Select from "@/components/ui/select";
-import { BlogCard } from "@/components/blog-card";
+import { BlogCard } from "@/app/(fuma)/blogs/components/blog-card";
 import type { QueryBlogs } from "@/lib/get-blogs";
 import { useShortcuts } from "@keybindy/react";
 import { Kbd } from "@heroui/react";

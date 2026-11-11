@@ -357,7 +357,7 @@ export function SegmentedControl<
         className={cn(
           "inline-flex min-w-0 items-center",
           "overflow-x-auto overscroll-x-contain [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden",
-          "border border-white/2 bg-white/[0.04]",
+          "border border-white/2 bg-white/4",
           sizes.root,
           fullWidth && "flex w-full",
           disabled && "cursor-not-allowed opacity-50",
@@ -430,7 +430,7 @@ export function SegmentedControl<
                     }
                     className={cn(
                       "absolute inset-0 -z-10 rounded-[inherit]",
-                      "bg-white/[0.12] shadow-[0_1px_2px_rgba(0,0,0,0.18)]",
+                      "bg-white/12 shadow-[0_1px_2px_rgba(0,0,0,0.18)]",
                       classNames?.indicator,
                     )}
                   />
