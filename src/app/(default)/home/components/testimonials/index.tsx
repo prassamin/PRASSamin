@@ -4,13 +4,13 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Link } from "@/components/link";
 import {
-  Laptop,
-  PencilLine,
-  GraduationCap,
-  ArrowLeft,
-  ArrowRight,
-} from "lucide-react";
-import { motion, type Variants } from "motion/react";
+  LuLaptop as Laptop,
+  LuPencilLine as PencilLine,
+  LuGraduationCap as GraduationCap,
+  LuArrowLeft as ArrowLeft,
+  LuArrowRight as ArrowRight,
+} from "react-icons/lu";
+import { motion, type Variants } from "framer-motion";
 import { BackgroundText } from "./background-text";
 import { Arrow } from "./arrow";
 import { cn } from "@heroui/react";
@@ -129,7 +129,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       className={cn(
-        "relative flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-900 bg-neutral-925 min-h-[350px] sm:min-h-[370px] h-full",
+        "relative flex flex-col justify-between overflow-hidden rounded-xl border border-neutral-900 bg-neutral-925 min-h-87.5 sm:min-h-92.5 h-full",
         className,
       )}
     >
@@ -143,12 +143,12 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
 
       {/* Prev / Next Carousel Controls */}
       {hasMultiple && (
-        <div className="absolute top-[21px] right-[22px] z-10 flex items-center gap-0.5 bg-white/5 backdrop-blur-sm p-0.5 rounded-md border border-white/5">
+        <div className="absolute top-5.25 right-5.5 z-10 flex items-center gap-0.5 bg-white/5 backdrop-blur-sm p-0.5 rounded-md border border-white/5">
           <button
             type="button"
             onClick={handlePrev}
             aria-label="Previous slide"
-            className="transition-colors p-1 rounded hover:bg-white/[0.08] text-neutral-400 hover:text-white cursor-pointer"
+            className="transition-colors p-1 rounded hover:bg-white/8 text-neutral-400 hover:text-white cursor-pointer"
           >
             <ArrowLeft className="size-3.5" strokeWidth={2} />
           </button>
@@ -156,7 +156,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
             type="button"
             onClick={handleNext}
             aria-label="Next slide"
-            className="transition-colors p-1 rounded hover:bg-white/[0.08] text-neutral-400 hover:text-white cursor-pointer"
+            className="transition-colors p-1 rounded hover:bg-white/8 text-neutral-400 hover:text-white cursor-pointer"
           >
             <ArrowRight className="size-3.5" strokeWidth={2} />
           </button>
@@ -164,8 +164,8 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
       )}
 
       {/* Edge gradient masks */}
-      <div className="absolute inset-y-0 left-0 w-5 rounded-l-xl bg-gradient-to-r from-neutral-925 to-neutral-925/20 pointer-events-none z-10" />
-      <div className="absolute inset-y-0 right-0 w-5 rounded-r-xl bg-gradient-to-l from-neutral-925 to-neutral-925/20 pointer-events-none z-10" />
+      <div className="absolute inset-y-0 left-0 w-5 rounded-l-xl bg-linear-to-r from-neutral-925 to-neutral-925/20 pointer-events-none z-10" />
+      <div className="absolute inset-y-0 right-0 w-5 rounded-r-xl bg-linear-to-l from-neutral-925 to-neutral-925/20 pointer-events-none z-10" />
 
       {/* Carousel Track with all testimonials placed side-by-side */}
       <div className="flex flex-1 min-h-0 w-full overflow-hidden">
@@ -182,7 +182,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
               <div className="flex-1">
                 <MDXContent
                   content={t.quote}
-                  className="b2 text-neutral-300 text-sm leading-[1.625] mt-2 [&_p]:my-0"
+                  className="b2 text-neutral-300 text-sm leading-relaxed mt-2 [&_p]:my-0"
                 />
               </div>
               {/* Author Footer */}
@@ -284,7 +284,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
         <motion.div variants={titleVariants} className="relative">
           <h2 className="h3 sm:h2 font-vectra!">Some good words</h2>
           <svg
-            className="absolute right-0 z-[-1] bottom-1 stroke-neutral-300 w-[178px] sm:w-[224px] pointer-events-none select-none"
+            className="absolute right-0 z-[-1] bottom-1 stroke-neutral-300 w-44.5 sm:w-56 pointer-events-none select-none"
             width="224"
             height="3"
             viewBox="0 0 224 3"
@@ -317,7 +317,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
                 testimonials={softwareEngineerTestimonials}
                 initialIndex={1} // Shows latest (matches Image 1)
                 autoPlayInterval={5000}
-                className="lg:-rotate-[2deg] lg:mt-1.5"
+                className="lg:-rotate-2 lg:mt-1.5"
               />
             </motion.div>
           )}
@@ -344,7 +344,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
                 icon={<GraduationCap className="size-4" strokeWidth={1} />}
                 testimonials={mentorTestimonials}
                 initialIndex={0}
-                className="lg:rotate-[2deg] lg:mt-1.5"
+                className="lg:rotate-2 lg:mt-1.5"
               />
             </motion.div>
           )}

@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Link } from "@/components/link";
 import { LuClock, LuEye, LuChevronRight } from "react-icons/lu";
-import { motion, type Variants } from "motion/react";
+import { motion, type Variants } from "framer-motion";
 import { Scribble } from "./scribble";
 import { QueryBlogs } from "@/lib/get-blogs";
 import { formatDate } from "@/lib/utils";
@@ -124,7 +124,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
               >
                 <div className="flex flex-col gap-5 md:flex-row-reverse md:gap-8 md:items-center">
                   {/* Thumbnail Image */}
-                  <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full md:w-56 aspect-[5/3] shadow-md transition-colors">
+                  <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full md:w-56 aspect-5/3 shadow-md transition-colors">
                     <Image
                       src={blog.thumbnail}
                       alt={blog.title}
@@ -144,7 +144,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
 
                     <h3 className="h5 mt-3 relative inline-block">
                       <span
-                        className="bg-gradient-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
+                        className="bg-linear-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
                         style={{
                           backgroundImage:
                             "linear-gradient(to right, rgba(76, 255, 180, 0.3), rgba(76, 255, 180, 0.9), rgba(76, 255, 180, 0.3))",
@@ -205,7 +205,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
             className="flex items-center gap-2 hover:text-neutral-100 transition-colors text-neutral-300 text-sm sm:text-base group"
           >
             <span>See more posts</span>
-            <div className="isolate before:transition-opacity size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] group-hover:scale-105 transition-transform">
+            <div className="isolate before:transition-opacity size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] group-hover:scale-105 transition-transform">
               <LuChevronRight
                 className="size-[70%] text-neutral-300 group-hover:text-neutral-100 transition-colors"
                 strokeWidth={1.3}

@@ -5,7 +5,7 @@ import { Link } from "@/components/link";
 import { HeroGrid } from "./hero-grid";
 import { FaGithub, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { LuArrowDown } from "react-icons/lu";
-import { motion, type Variants } from "motion/react";
+import { motion, type Variants } from "framer-motion";
 import { useOwner } from "@/providers/owner-provider";
 
 const containerVariants: Variants = {
@@ -62,7 +62,7 @@ const HeroSection: React.FC = () => {
       <div className="absolute overflow-hidden inset-0 select-none pointer-events-none">
         <div
           aria-hidden="true"
-          className="h-[100px] w-[850px] rounded-full bg-gradient-to-r from-[#2E996C]/30 to-[#0F3324]/20 blur-[130px] absolute top-[12%] left-[85%] -translate-y-1/2 -translate-x-1/2 rotate-45 origin-left z-0"
+          className="h-25 w-212.5 rounded-full bg-linear-to-r from-[#2E996C]/30 to-[#0F3324]/20 blur-[130px] absolute top-[12%] left-[85%] -translate-y-1/2 -translate-x-1/2 rotate-45 origin-left z-0"
         />
       </div>
 
@@ -85,7 +85,7 @@ const HeroSection: React.FC = () => {
           className="pointer-events-auto flex flex-col items-start"
         >
           {/* Main Title & Subtitle */}
-          <div className="max-w-[40rem]">
+          <div className="max-w-160">
             <motion.h1
               variants={textVariants}
               className="h1 text-4xl sm:text-6xl md:text-7xl font-bold font-rethink text-white tracking-tight leading-[1.15] flex flex-wrap items-center gap-x-3.5 gap-y-2"
@@ -95,10 +95,10 @@ const HeroSection: React.FC = () => {
                 {/* Frosted Tape Accent */}
                 <span
                   aria-hidden="true"
-                  className="absolute -top-3 left-4 w-9 sm:w-11 h-3.5 sm:h-4 bg-white/20 backdrop-blur-[2px] -rotate-6 border-t border-b border-white/30 z-20 pointer-events-none rounded-[1px] shadow-xs"
+                  className="absolute -top-3 left-4 w-9 sm:w-11 h-3.5 sm:h-4 bg-white/20 backdrop-blur-[2px] -rotate-6 border-t border-b border-white/30 z-20 pointer-events-none rounded-xs shadow-xs"
                 />
                 {/* Tactile Torn Paper Cutout */}
-                <span className="torn-paper bg-gradient-to-br from-[#faf8f5] via-[#f4f1ea] to-[#e8e4d8] text-neutral-950 font-extrabold px-3 py-1 sm:px-5 sm:py-1.5 inline-block shadow-[0_12px_28px_rgba(0,0,0,0.85),_0_2px_4px_rgba(0,0,0,0.4)] relative z-10 selection:bg-neutral-900 selection:text-white">
+                <span className="torn-paper bg-linear-to-br from-[#faf8f5] via-[#f4f1ea] to-[#e8e4d8] text-neutral-950 font-extrabold px-3 py-1 sm:px-5 sm:py-1.5 inline-block shadow-[0_12px_28px_rgba(0,0,0,0.85),0_2px_4px_rgba(0,0,0,0.4)] relative z-10 selection:bg-neutral-900 selection:text-white">
                   {owner?.name}
                 </span>
               </span>
@@ -149,11 +149,11 @@ const HeroSection: React.FC = () => {
 
               {/* Gradient border rotating with cursor */}
               <div
-                className="pointer-events-none select-none absolute inset-[-1px] p-px composite-exclude group-active:opacity-80 transition-opacity overflow-hidden"
+                className="pointer-events-none select-none absolute -inset-px p-px composite-exclude group-active:opacity-80 transition-opacity overflow-hidden"
                 style={{ borderRadius: "13px" }}
               >
                 <div
-                  className="w-[250px] h-[650px]"
+                  className="w-62.5 h-162.5"
                   style={{
                     transform:
                       "translate(calc(var(--cursorX) - 50%), calc(var(--cursorY) - 50%)) rotate(80deg)",
@@ -166,7 +166,7 @@ const HeroSection: React.FC = () => {
               <span>Resume</span>
 
               {/* Glass Icon with Down Arrow */}
-              <div className="isolate before:transition-opacity size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+              <div className="isolate before:transition-opacity size-6 rounded-lg flex items-center justify-center relative bg-white/5 backdrop-blur-sm z-10 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
                 <LuArrowDown className="text-accent-300 group-hover:translate-y-0.5 transition-transform duration-200" />
               </div>
             </Link>
@@ -176,7 +176,7 @@ const HeroSection: React.FC = () => {
               href="/about"
               className="flex items-center px-4 py-3 relative rounded-xl transition-colors hover:bg-neutral-600/10 focus:bg-neutral-600/10 backdrop-blur-sm text-neutral-300 hover:text-white font-rethink text-sm font-medium"
             >
-              <div className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent" />
+              <div className="isolate before:transition-opacity absolute inset-0 rounded-xl opacity-60 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent" />
               <span className="relative z-10">More about me</span>
             </Link>
           </motion.div>

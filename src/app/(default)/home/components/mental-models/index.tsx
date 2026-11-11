@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { motion } from "motion/react";
+import { motion } from "framer-motion";
 import { FirstCard } from "./first-card";
 import { SecondCard } from "./second-card";
 import { ThirdCard } from "./third-card";
@@ -47,7 +47,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
       {/* Seamless atmospheric fade into the next section */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a] z-0"
+        className="pointer-events-none absolute bottom-0 left-0 right-0 h-48 bg-linear-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a] z-0"
       />
       <div className="layout text-center py-12 pt-20 md:py-20 flex flex-col items-center">
         <div className="relative">
@@ -136,12 +136,12 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
                 </g>
               </motion.g>
             </svg>
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-[31.25rem] w-full aspect-[499/156] flex items-end justify-end pointer-events-none">
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 max-w-125 w-full aspect-499/156 flex items-end justify-end pointer-events-none">
               <motion.div
                 variants={textVariants}
                 className="pointer-events-auto transition-transform duration-500 hover:scale-110"
               >
-                <div className="isolate before:transition-opacity flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+                <div className="isolate before:transition-opacity flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
                   <svg
                     className="size-[50%]"
                     fill="none"
@@ -206,7 +206,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
         </motion.p>
         <motion.div
           variants={cardsContainerVariants}
-          className="mt-10 mb-12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:space-x-[-1rem] isolate"
+          className="mt-10 mb-12 flex flex-col gap-4 lg:flex-row lg:gap-0 lg:-space-x-4 isolate"
         >
           {mentalModels.concurrency && <FirstCard />}
           {mentalModels.cacheInvalidation && <SecondCard />}

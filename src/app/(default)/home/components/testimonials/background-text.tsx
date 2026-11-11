@@ -3,7 +3,7 @@ import React from "react";
 export const BackgroundText: React.FC = () => {
   return (
     <svg
-      className="absolute z-[-1] md:w-full top-[7rem] inset-x-0 pointer-events-none select-none"
+      className="absolute z-[-1] md:w-full top-28 inset-x-0 pointer-events-none select-none"
       fill="none"
       height="163"
       style={{

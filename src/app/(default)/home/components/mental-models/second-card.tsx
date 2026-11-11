@@ -8,7 +8,7 @@ export const SecondCard = () => {
   return (
     <motion.div variants={cardItemVariants as Variants} className="z-20">
       <Link
-        className="relative group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-[150%] w-80 lg:rotate-[-3deg] lg:translate-y-12"
+        className="relative group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-150 w-80 lg:-rotate-3 lg:translate-y-12"
         href="/#cache-invalidation"
         style={
           {
@@ -19,10 +19,10 @@ export const SecondCard = () => {
         }
       >
         {/* Top SVG Graphic: Pure Invalidation Architecture */}
-        <div className="relative h-[7.5rem] w-full flex items-center justify-center mb-auto overflow-hidden">
+        <div className="relative h-30 w-full flex items-center justify-center mb-auto overflow-hidden">
           <svg
             viewBox="0 0 240 100"
-            className="w-full h-full max-w-[240px] overflow-visible"
+            className="w-full h-full max-w-60 overflow-visible"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >

@@ -1,4 +1,4 @@
-import { Variants } from "motion/react";
+import { Variants } from "framer-motion";
 
 export const sectionVariants: Variants = {
   hidden: { opacity: 0 },

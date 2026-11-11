@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link } from "@/components/link";
-import { motion, type Variants } from "motion/react";
+import { motion, type Variants } from "framer-motion";
 import { Scribble } from "./scribble";
 import { PenSwoopUnderline } from "@/components/pen-swoop-underline";
 import ProjectCard from "@/app/(fuma)/projects/components/project-card";

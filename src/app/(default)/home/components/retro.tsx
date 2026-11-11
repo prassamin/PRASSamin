@@ -3,7 +3,7 @@
 import React from "react";
 import { Link } from "@/components/link";
 import { LuEye } from "react-icons/lu";
-import { motion, type Variants } from "motion/react";
+import { motion, type Variants } from "framer-motion";
 import { QueryBlogs } from "@/lib/get-blogs";
 
 const sectionVariants: Variants = {
@@ -106,7 +106,7 @@ export const Retro: React.FC<Props> = ({ retros }) => {
                     </div>
 
                     {/* Card Body */}
-                    <div className="-mx-px min-h-[290px] isolate relative px-6 py-6 rounded-xl border border-neutral-900 bg-neutral-925 overflow-hidden flex flex-col justify-start grow">
+                    <div className="-mx-px min-h-72.5 isolate relative px-6 py-6 rounded-xl border border-neutral-900 bg-neutral-925 overflow-hidden flex flex-col justify-start grow">
                       {/* Big Background Outline Year */}
                       <span
                         className="absolute z-[-1] -right-4 -bottom-8 text-9xl font-rethink font-extrabold text-neutral-900 pointer-events-none select-none"
@@ -128,7 +128,7 @@ export const Retro: React.FC<Props> = ({ retros }) => {
                       {/* Title with authentic text hover highlight */}
                       <h3 className="h5 mt-3 relative inline-block">
                         <span
-                          className="bg-gradient-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover/retro-card-with-views:opacity-30 opacity-0 transition duration-200 text-transparent"
+                          className="bg-linear-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover/retro-card-with-views:opacity-30 opacity-0 transition duration-200 text-transparent"
                           style={{
                             backgroundImage:
                               "linear-gradient(to right, rgba(76, 255, 180, 0.3), rgba(76, 255, 180, 0.9), rgba(76, 255, 180, 0.3))",
@@ -161,7 +161,7 @@ export const Retro: React.FC<Props> = ({ retros }) => {
           <div
             data-orientation="horizontal"
             role="none"
-            className="shrink-0 h-[1px] grow w-auto bg-neutral-900"
+            className="shrink-0 h-px grow w-auto bg-neutral-900"
           />
           {retros.map((item) => {
             const isHovered = hoveredYear === item.year;

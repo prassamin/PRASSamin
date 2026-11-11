@@ -3,7 +3,7 @@ import React from "react";
 export const Arrow: React.FC = () => {
   return (
     <svg
-      className="absolute right-4 -top-16 rotate-[215deg] w-[120px] scale-x-[-1] md:block hidden pointer-events-none select-none opacity-60"
+      className="absolute right-4 -top-16 rotate-215 w-30 scale-x-[-1] md:block hidden pointer-events-none select-none opacity-60"
       fill="none"
       height="28"
       viewBox="0 0 102 28"
