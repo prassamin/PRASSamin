@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, Users } from "lucide-react";
+import { LuUser } from "react-icons/lu";
 import { cn } from "@heroui/react";
 import { Tooltip } from "../ui/tooltip";
 
@@ -116,7 +116,7 @@ export const MdxAvatar: React.FC<MdxAvatarProps> = ({
           {initials}
         </span>
       ) : (
-        <User className={cn(sizeConfig.icon, "text-neutral-400")} />
+        <LuUser className={cn(sizeConfig.icon, "text-neutral-400")} />
       )}
     </div>
   );

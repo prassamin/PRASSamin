@@ -7,8 +7,8 @@ import React, {
   useId,
   useCallback,
 } from "react";
-import { ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { LuChevronDown as ChevronDown } from "react-icons/lu";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@heroui/react";
 
 interface AccordionContextValue {
@@ -125,8 +125,8 @@ export const MdxAccordionItem = ({
       className={cn(
         "group rounded-2xl border transition-all duration-300 overflow-hidden",
         isOpen
-          ? "border-accent/40 bg-accent/[0.02] shadow-[0_4px_24px_rgba(0,0,0,0.4),0_0_15px_rgba(112,255,195,0.06)]"
-          : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.035]",
+          ? "border-accent/40 bg-accent/2 shadow-[0_4px_24px_rgba(0,0,0,0.4),0_0_15px_rgba(112,255,195,0.06)]"
+          : "border-white/8 bg-white/2 hover:border-white/16 hover:bg-white/3.5",
         className,
       )}
       {...props}
@@ -152,7 +152,7 @@ export const MdxAccordionItem = ({
             "w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-all duration-300",
             isOpen
               ? "bg-accent/15 text-accent rotate-180 ring-1 ring-accent/30"
-              : "bg-white/[0.05] text-neutral-400 group-hover:bg-white/[0.1] group-hover:text-white",
+              : "bg-white/5 text-neutral-400 group-hover:bg-white/10 group-hover:text-white",
           )}
         >
           <ChevronDown className="w-3.5 h-3.5" />
@@ -169,7 +169,7 @@ export const MdxAccordionItem = ({
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="px-5 pb-5 pt-2 text-sm text-neutral-300 font-inter leading-relaxed border-t border-white/[0.05]">
+            <div className="px-5 pb-5 pt-2 text-sm text-neutral-300 font-inter leading-relaxed border-t border-white/5">
               {children}
             </div>
           </motion.div>

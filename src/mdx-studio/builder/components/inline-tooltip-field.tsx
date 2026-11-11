@@ -3,8 +3,8 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { LuMessageSquareQuote, LuX, LuSmile } from "react-icons/lu";
 import { cn } from "@heroui/react";
-import { useInlineTooltip } from "./InlineTooltipContext";
-import { useIconPicker } from "./IconPickerContext";
+import { useInlineTooltip } from "./inline-tooltip-context";
+import { useIconPicker } from "./icon-picker-context";
 import {
   TooltipOccurrence,
   buildTooltipTag,
@@ -98,7 +98,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
       ? cn(
           "w-full text-xs p-2.5 rounded-lg text-white font-inter leading-relaxed focus:outline-none border transition-colors resize-y placeholder:text-neutral-600",
           variant === "dark"
-            ? "bg-black/25 border border-white/[0.08] rounded-xl text-neutral-200 focus:border-accent/40"
+            ? "bg-black/25 border border-white/8 rounded-xl text-neutral-200 focus:border-accent/40"
             : "bg-white/3 border border-white/10 focus:border-accent/40",
         )
       : cn(
@@ -246,7 +246,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
       {isActive && target && (
         <div
           data-inline-tooltip-block="true"
-          className="rounded-xl border border-pink-400/25 bg-pink-400/[0.07] p-2.5 space-y-1.5 animate-in fade-in duration-150"
+          className="rounded-xl border border-pink-400/25 bg-pink-400/7 p-2.5 space-y-1.5 animate-in fade-in duration-150"
         >
           <div className="flex items-center gap-1.5">
             <LuMessageSquareQuote className="w-3.5 h-3.5 text-pink-300 shrink-0" />
@@ -259,7 +259,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
               tabIndex={-1}
               aria-label="Selected text"
               title="Selected text (read only)"
-              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-white/[0.06] border border-white/10 text-[11px] font-mono text-neutral-300 cursor-default select-none"
+              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-white/6 border border-white/10 text-[11px] font-mono text-neutral-300 cursor-default select-none"
             />
           </div>
           <div className="flex items-center gap-1.5">
@@ -311,7 +311,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
         <div
           key={`tip-row-${i}`}
           data-inline-tooltip-block="true"
-          className="rounded-xl border border-pink-400/20 bg-pink-400/[0.05] p-2.5 space-y-1.5"
+          className="rounded-xl border border-pink-400/20 bg-pink-400/5 p-2.5 space-y-1.5"
         >
           <div className="flex items-center gap-1.5">
             <LuMessageSquareQuote className="w-3.5 h-3.5 text-pink-300 shrink-0" />
@@ -324,7 +324,7 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
               tabIndex={-1}
               aria-label="Tooltip text"
               title="Tooltip text (read only)"
-              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-white/[0.06] border border-white/10 text-[11px] font-mono text-neutral-300 cursor-default select-none"
+              className="flex-1 min-w-0 px-2 py-1.5 rounded-lg bg-white/6 border border-white/10 text-[11px] font-mono text-neutral-300 cursor-default select-none"
             />
           </div>
           <div className="flex items-center gap-1.5">

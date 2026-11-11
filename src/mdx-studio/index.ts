@@ -1,5 +1,5 @@
-export { MdxStudioProvider, useMdxStudio } from "./MdxStudioContext";
-export { MdxStudioModal, default as MdxStudio } from "./MdxStudio";
+export { MdxStudioProvider, useMdxStudio } from "./mdx-studio-context";
+export { MdxStudioModal, default as MdxStudio } from "./mdx-studio";
 export type {
   OpenStudioOptions,
   MdxStudioContextValue,

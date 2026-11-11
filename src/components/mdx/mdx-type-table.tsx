@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, ExternalLink } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { LuChevronDown, LuExternalLink } from "react-icons/lu";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@heroui/react";
 
 export interface TypeTableItem {
@@ -58,14 +58,14 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
   return (
     <div
       className={cn(
-        "my-6 w-full rounded-2xl border border-white/[0.08] bg-[#141414]/90 shadow-sm overflow-hidden not-prose font-sans backdrop-blur-sm",
+        "my-6 w-full rounded-2xl border border-white/8 bg-[#141414]/90 shadow-sm overflow-hidden not-prose font-sans backdrop-blur-sm",
         className,
       )}
     >
       <div className="overflow-x-auto">
-        <div className="min-w-[420px]">
+        <div className="min-w-105">
           {/* Table Header */}
-          <div className="grid grid-cols-[180px_1fr_28px] sm:grid-cols-[220px_1fr_28px] items-center px-4 py-2.5 text-xs font-medium text-neutral-400 font-sans select-none bg-muted/35 border-b border-white/[0.06]">
+          <div className="grid grid-cols-[180px_1fr_28px] sm:grid-cols-[220px_1fr_28px] items-center px-4 py-2.5 text-xs font-medium text-neutral-400 font-sans select-none bg-muted/35 border-b border-white/6">
             <span>Prop</span>
             <span>Type</span>
             <div />
@@ -97,7 +97,7 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
                   key={item.name || idx}
                   className={cn(
                     "rounded-xl transition-colors",
-                    isExpanded ? "bg-white/[0.04]" : "hover:bg-white/[0.05]",
+                    isExpanded ? "bg-white/4" : "hover:bg-white/5",
                   )}
                 >
                   {/* Row Header / Trigger */}
@@ -133,7 +133,7 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
                         transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                         className="flex items-center justify-center text-neutral-400"
                       >
-                        <ChevronDown className="w-3.5 h-3.5" />
+                        <LuChevronDown className="w-3.5 h-3.5" />
                       </motion.div>
                     </div>
                   </div>
@@ -162,7 +162,7 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
 
                           {(item.typeDescription || item.type) && (
                             <div className="flex items-center gap-4 pt-0.5">
-                              <span className="text-neutral-500 font-sans min-w-[50px]">
+                              <span className="text-neutral-500 font-sans min-w-12.5">
                                 Type
                               </span>
                               <span className="font-mono text-[#ff9e64] flex items-center gap-1.5">
@@ -175,7 +175,7 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
                                     className="text-neutral-400 hover:text-white inline-flex items-center transition-colors ml-1"
                                     onClick={(e) => e.stopPropagation()}
                                   >
-                                    <ExternalLink className="w-3 h-3" />
+                                    <LuExternalLink className="w-3 h-3" />
                                   </a>
                                 )}
                               </span>
@@ -185,10 +185,10 @@ export const MdxTypeTable: React.FC<MdxTypeTableProps> = ({
                           {item.default !== undefined &&
                             item.default !== "" && (
                               <div className="flex items-center gap-4">
-                                <span className="text-neutral-500 font-sans min-w-[50px]">
+                                <span className="text-neutral-500 font-sans min-w-12.5">
                                   Default
                                 </span>
-                                <span className="font-mono text-neutral-200 bg-white/[0.06] px-1.5 py-0.5 rounded border border-white/10">
+                                <span className="font-mono text-neutral-200 bg-white/6 px-1.5 py-0.5 rounded border border-white/10">
                                   {item.default}
                                 </span>
                               </div>

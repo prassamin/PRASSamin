@@ -8,7 +8,7 @@ import {
   Files,
   Folder,
   File,
-} from "./components/mdx/MdxFiles";
+} from "./components/mdx/mdx-files";
 export { MdxFiles, MdxFolder, MdxFile, Files, Folder, File };
 import * as TabsComponents from "fumadocs-ui/components/tabs";
 import * as StepsComponents from "fumadocs-ui/components/steps";
@@ -20,7 +20,7 @@ import { Banner } from "fumadocs-ui/components/banner";
 import {
   MdxTypeTable,
   MdxTypeTable as TypeTable,
-} from "./components/mdx/MdxTypeTable";
+} from "./components/mdx/mdx-type-table";
 export { MdxTypeTable, TypeTable };
 import { Callout } from "fumadocs-ui/components/callout";
 import { Heading } from "fumadocs-ui/components/heading";
@@ -33,9 +33,9 @@ import {
   Avatar,
   MdxAvatarGroup,
   AvatarGroup,
-} from "./components/mdx/MdxAvatar";
-import { MdxProfile, Profile } from "./components/mdx/MdxProfile";
-import { MdxBlockquote, Blockquote } from "./components/mdx/MdxBlockquote";
+} from "./components/mdx/mdx-avatar";
+import { MdxProfile, Profile } from "./components/mdx/mdx-profile";
+import { MdxBlockquote, Blockquote } from "./components/mdx/mdx-blockquote";
 export {
   MdxAvatar,
   Avatar,
@@ -47,9 +47,9 @@ export {
   Blockquote,
 };
 import { InlineTooltip as MdxInlineTooltip } from "@/components/ui/inline-tooltip";
-import { MdxAccordion, MdxAccordionItem } from "./components/mdx/MdxAccordion";
-import { MdxCard, MdxCards } from "./components/mdx/MdxCard";
-import { MdxCodeBlock } from "./components/mdx/MdxCodeBlock";
+import { MdxAccordion, MdxAccordionItem } from "./components/mdx/mdx-accordion";
+import { MdxCard, MdxCards } from "./components/mdx/mdx-card";
+import { MdxCodeBlock } from "./components/mdx/mdx-code-block";
 
 type HeadProps = React.ComponentProps<typeof Heading>;
 const Head = ({ className, ...props }: HeadProps) => (
@@ -338,10 +338,7 @@ export const mdxComponents = {
     />
   ),
   p: ({ className, ...props }: React.ComponentProps<"p">) => (
-    <p
-      className={cn("leading-relaxed not-first:my-0", className)}
-      {...props}
-    />
+    <p className={cn("leading-relaxed not-first:my-0", className)} {...props} />
   ),
   input: ({
     type,

@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { EducationType } from "@/types";
-import MDXContent from "@/components/mdx/MDXContent";
+import MDXContent from "@/components/mdx/mdx-content";
 import {
   LuGraduationCap,
   LuCalendar,

@@ -6,14 +6,13 @@ import React, {
   useState,
   useCallback,
   useRef,
-  useEffect,
   useMemo,
 } from "react";
 import { stringify } from "yaml";
 import { OpenStudioOptions, MdxStudioContextValue, StudioTab } from "./types";
 import { MdxBlockType } from "./builder/types";
 import { toast } from "@heroui/react";
-import { MdxStudioModal } from "./MdxStudio";
+import { MdxStudioModal } from "./mdx-studio";
 
 const MdxStudioContext = createContext<MdxStudioContextValue | null>(null);
 
@@ -22,7 +21,9 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("MDX Studio");
-  const [documentName, setDocumentName] = useState<string | undefined>(undefined);
+  const [documentName, setDocumentName] = useState<string | undefined>(
+    undefined,
+  );
   const [activeTab, setActiveTab] = useState<StudioTab>("builder");
   const [informationSlot, setInformationSlot] = useState<
     | React.ReactNode
@@ -37,7 +38,9 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
   const [mdx, setMdx] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
-  const onSaveRef = useRef<((mdx: string) => Promise<void> | void) | null>(null);
+  const onSaveRef = useRef<((mdx: string) => Promise<void> | void) | null>(
+    null,
+  );
   const onCloseRef = useRef<(() => void) | null>(null);
   const includeMetadataRef = useRef(false);
   const getMetadataRef = useRef<(() => Record<string, any>) | null>(null);

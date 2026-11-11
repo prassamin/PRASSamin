@@ -1,23 +1,23 @@
 "use client";
 
 import React from "react";
-import { Select, ListBox, ListBoxItem } from "@heroui/react";
+import { Select as SelectImpl, ListBox, ListBoxItem } from "@heroui/react";
 
-export interface HeroSelectOption {
+export interface SelectOption {
   label: string;
   value: string;
 }
 
-export interface HeroSelectProps {
+export interface SelectProps {
   value: string;
   onChange: (val: string) => void;
-  options: HeroSelectOption[];
+  options: SelectOption[];
   placeholder?: string;
   isDisabled?: boolean;
   className?: string;
 }
 
-export const HeroSelect: React.FC<HeroSelectProps> = ({
+export const Select: React.FC<SelectProps> = ({
   value,
   onChange,
   options,
@@ -26,7 +26,7 @@ export const HeroSelect: React.FC<HeroSelectProps> = ({
   className = "",
 }) => {
   return (
-    <Select.Root
+    <SelectImpl.Root
       selectedKey={value ? String(value) : undefined}
       onSelectionChange={(key) => {
         if (key !== null && key !== undefined) {
@@ -37,11 +37,11 @@ export const HeroSelect: React.FC<HeroSelectProps> = ({
       className={`w-full ${className}`}
       placeholder={placeholder}
     >
-      <Select.Trigger className="w-full justify-between rounded-xl bg-white/[0.04] border border-white/10 px-3.5 py-2 text-xs text-white hover:bg-white/[0.08] transition-colors focus:border-accent">
-        <Select.Value />
-        <Select.Indicator className="text-neutral-400" />
-      </Select.Trigger>
-      <Select.Popover
+      <SelectImpl.Trigger className="w-full justify-between rounded-xl bg-white/4 border border-white/10 px-3.5 py-2 text-xs text-white hover:bg-white/8 transition-colors focus:border-accent">
+        <SelectImpl.Value />
+        <SelectImpl.Indicator className="text-neutral-400" />
+      </SelectImpl.Trigger>
+      <SelectImpl.Popover
         className="z-50 min-w-(--trigger-width) max-h-60 overflow-y-auto overscroll-contain rounded-xl bg-neutral-900 border border-white/10 p-1 shadow-2xl backdrop-blur-xl touch-pan-y"
         style={{ maxHeight: "240px" }}
       >
@@ -57,7 +57,7 @@ export const HeroSelect: React.FC<HeroSelectProps> = ({
             </ListBoxItem>
           ))}
         </ListBox>
-      </Select.Popover>
-    </Select.Root>
+      </SelectImpl.Popover>
+    </SelectImpl.Root>
   );
 };

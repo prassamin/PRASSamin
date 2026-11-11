@@ -13,7 +13,7 @@ import {
   LuMessageSquareQuote,
   LuChevronDown,
 } from "react-icons/lu";
-import { useInlineTooltip } from "./InlineTooltipContext";
+import { useInlineTooltip } from "./inline-tooltip-context";
 import {
   parseInlineTooltips,
   rangesOverlap,
@@ -471,23 +471,6 @@ export const TextSelectionMenu: React.FC<{
     const handleKeyUp = (e: KeyboardEvent) => {
       // Check for keyboard selections (e.g. Shift + Arrow keys, Cmd/Ctrl + A)
       checkAndShowMenu();
-    };
-
-    const handleBlur = () => {
-      // Small timeout to allow clicking menu buttons without prematurely hiding
-      setTimeout(() => {
-        const active = document.activeElement;
-        if (
-          !active ||
-          !(
-            active instanceof HTMLInputElement ||
-            active instanceof HTMLTextAreaElement
-          )
-        ) {
-          setPosition(null);
-          setShowSizeDropdown(false);
-        }
-      }, 150);
     };
 
     window.addEventListener("mousedown", handleMouseDown, true);

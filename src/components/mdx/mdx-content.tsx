@@ -25,9 +25,9 @@ import {
   Profile,
   Blockquote,
 } from "@/mdx-components";
-import { MdxAccordion, MdxAccordionItem } from "./MdxAccordion";
-import { MdxCard, MdxCards } from "./MdxCard";
-import { MdxCodeBlock } from "./MdxCodeBlock";
+import { MdxAccordion, MdxAccordionItem } from "./mdx-accordion";
+import { MdxCard, MdxCards } from "./mdx-card";
+import { MdxCodeBlock } from "./mdx-code-block";
 import { cn } from "@heroui/react";
 import { NODE_ENV } from "@/constants/env";
 
@@ -82,7 +82,7 @@ function getMdxPromise(content: string) {
       } catch (err: any) {
         // Safe resilient fallback component to prevent studio crash during active typing
         const ErrorFallback: React.FC<{ components?: any }> = () => (
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.06] p-3 text-xs text-amber-300 font-mono my-2 select-none">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/6 p-3 text-xs text-amber-300 font-mono my-2 select-none">
             <span className="font-semibold block text-[11px] uppercase tracking-wider text-amber-400 mb-1">
               Markdown Formatting Notice
             </span>
@@ -106,9 +106,9 @@ export const MDXContentSkeleton: React.FC<{ className?: string }> = ({
 }) => {
   return (
     <div className={cn("space-y-2.5 animate-pulse py-1 mt-2", className)}>
-      <div className="h-4 bg-white/[0.07] rounded-md w-full" />
-      <div className="h-4 bg-white/[0.07] rounded-md w-[88%]" />
-      <div className="h-4 bg-white/[0.07] rounded-md w-[62%]" />
+      <div className="h-4 bg-white/7 rounded-md w-full" />
+      <div className="h-4 bg-white/7 rounded-md w-[88%]" />
+      <div className="h-4 bg-white/7 rounded-md w-[62%]" />
     </div>
   );
 };
@@ -198,10 +198,10 @@ export const MDXContent: React.FC<MDXContentProps> = ({
         "prose prose-invert prose-neutral max-w-none text-sm",
         "[&_h1]:border-l-[5px] [&_h1]:border-accent-1 [&_h1]:pl-2.5",
         "[&_h2]:border-l-[5px] [&_h2]:border-accent-1 [&_h2]:pl-2.5",
-        "[&_thead_th:first-child]:!pl-4 [&_thead_th:last-child]:!pr-4",
-        "[&_tbody_td:first-child]:!pl-4 [&_tbody_td:last-child]:!pr-4",
-        "[&_thead_th]:!py-3 [&_thead_th]:!px-4",
-        "[&_tbody_td]:!py-3 [&_tbody_td]:!px-4",
+        "[&_thead_th:first-child]:pl-4! [&_thead_th:last-child]:pr-4!",
+        "[&_tbody_td:first-child]:pl-4! [&_tbody_td:last-child]:pr-4!",
+        "[&_thead_th]:py-3! [&_thead_th]:px-4!",
+        "[&_tbody_td]:py-3! [&_tbody_td]:px-4!",
         className,
       )}
     >

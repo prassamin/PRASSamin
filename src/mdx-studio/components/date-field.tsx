@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { Calendar, DateField, DatePicker, Label } from "@heroui/react";
+import { Calendar, DateField as DateFieldImpl, DatePicker, Label } from "@heroui/react";
 import { parseDate, type DateValue } from "@internationalized/date";
 
-export interface HeroDateFieldProps {
+export interface DateFieldProps {
   value?: string;
   onChange: (dateStr: string) => void;
   label?: string;
@@ -13,7 +13,7 @@ export interface HeroDateFieldProps {
   showLabel?: boolean;
 }
 
-export const HeroDateField: React.FC<HeroDateFieldProps> = ({
+export const DateField: React.FC<DateFieldProps> = ({
   value,
   onChange,
   label = "Date",
@@ -48,18 +48,18 @@ export const HeroDateField: React.FC<HeroDateFieldProps> = ({
           {label}
         </Label>
       )}
-      <DateField.Group fullWidth>
-        <DateField.Input>
+      <DateFieldImpl.Group fullWidth>
+        <DateFieldImpl.Input>
           {(segment) => (
-            <DateField.Segment segment={segment} key={segment.type} />
+            <DateFieldImpl.Segment segment={segment} key={segment.type} />
           )}
-        </DateField.Input>
-        <DateField.Suffix className="mr-0">
+        </DateFieldImpl.Input>
+        <DateFieldImpl.Suffix className="mr-0">
           <DatePicker.Trigger>
             <DatePicker.TriggerIndicator />
           </DatePicker.Trigger>
-        </DateField.Suffix>
-      </DateField.Group>
+        </DateFieldImpl.Suffix>
+      </DateFieldImpl.Group>
       <DatePicker.Popover className="z-50 rounded-2xl bg-neutral-900/95 border border-white/10 p-3 shadow-2xl backdrop-blur-2xl">
         <Calendar aria-label={label} className="text-white">
           <Calendar.Header className="flex items-center justify-between pb-3">

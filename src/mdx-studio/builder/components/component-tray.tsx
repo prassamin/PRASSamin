@@ -197,7 +197,7 @@ const SquareBlockCard: React.FC<SquareBlockCardProps> = ({
       onDragEnd={onDragEnd}
       onClick={() => onClick(item.type)}
       title={`${item.label} • ${item.description}`}
-      className="relative group aspect-[1/0.92] flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/[0.025] hover:bg-white/[0.07] border border-white/[0.07] hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 transition-all duration-150 cursor-grab active:cursor-grabbing text-center select-none active:scale-[0.98]"
+      className="relative group aspect-[1/0.92] flex flex-col items-center justify-center p-2.5 rounded-xl bg-white/2.5 hover:bg-white/7 border border-white/7 hover:border-accent/40 hover:shadow-lg hover:shadow-accent/5 transition-all duration-150 cursor-grab active:cursor-grabbing text-center select-none active:scale-[0.98]"
     >
       {/* Quick Add Pill Indicator on Hover */}
       <button
@@ -213,7 +213,7 @@ const SquareBlockCard: React.FC<SquareBlockCardProps> = ({
       </button>
 
       {/* Prominent Square Icon Container */}
-      <div className="w-9 h-9 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-accent/10 group-hover:border-accent/30 transition-all duration-150 shrink-0">
+      <div className="w-9 h-9 rounded-xl bg-white/4 border border-white/8 flex items-center justify-center mb-1.5 group-hover:scale-110 group-hover:bg-accent/10 group-hover:border-accent/30 transition-all duration-150 shrink-0">
         {icon}
       </div>
 

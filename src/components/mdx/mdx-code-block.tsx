@@ -318,23 +318,23 @@ export const MdxCodeBlock = (props: any) => {
                   data-line-numbers={showLineNumbers ? "true" : undefined}
                   className={cn(
                     // Critical: Force block display on code & line spans to prevent inline collapse/wrapping bugs
-                    "[&>code]:!block [&>code]:!w-full",
-                    "[&_.line]:!block [&_.line]:!w-full [&_.line]:!relative [&_.line]:!min-h-[1.5em]",
+                    "[&>code]:block! [&>code]:w-full!",
+                    "[&_.line]:block! [&_.line]:w-full! [&_.line]:relative! [&_.line]:min-h-[1.5em]!",
                     // Wrapping control per line
                     wrap
-                      ? "!min-w-full !w-full !whitespace-pre-wrap !break-words [&_.line]:!whitespace-pre-wrap [&_.line]:!break-words"
-                      : "!min-w-full !w-max !whitespace-pre !break-normal [&_.line]:!whitespace-pre [&_.line]:!break-normal",
+                      ? "min-w-full! w-full! whitespace-pre-wrap! wrap-break-word! [&_.line]:whitespace-pre-wrap! [&_.line]:wrap-break-word!"
+                      : "min-w-full! w-max! whitespace-pre! break-normal! [&_.line]:whitespace-pre! [&_.line]:break-normal!",
                     // Non-numbered line padding & diff positioning
-                    "not-data-[line-numbers=true]:[&_.line]:!pl-4",
-                    "not-data-[line-numbers=true]:[&_.line.diff]:!pl-8",
-                    "not-data-[line-numbers=true]:[&_.line.diff::before]:!left-2.5",
+                    "not-data-[line-numbers=true]:[&_.line]:pl-4!",
+                    "not-data-[line-numbers=true]:[&_.line.diff]:pl-8!",
+                    "not-data-[line-numbers=true]:[&_.line.diff::before]:left-2.5!",
                     // Numbered line padding, counter & diff positioning
-                    "data-[line-numbers=true]:[&_.line]:!pl-14",
-                    "data-[line-numbers=true]:[&_.line::after]:!left-4 data-[line-numbers=true]:[&_.line::after]:!w-7 data-[line-numbers=true]:[&_.line::after]:!text-right",
-                    "data-[line-numbers=true]:[&_.line.diff::before]:!left-2",
+                    "data-[line-numbers=true]:[&_.line]:pl-14!",
+                    "data-[line-numbers=true]:[&_.line::after]:left-4! data-[line-numbers=true]:[&_.line::after]:w-7! data-[line-numbers=true]:[&_.line::after]:text-right!",
+                    "data-[line-numbers=true]:[&_.line.diff::before]:left-2!",
                     // Custom state styling
-                    "[&_.line.error]:!bg-red-500/15 [&_.line.error]:!border-l-2 [&_.line.error]:!border-red-500",
-                    "[&_.line.warning]:!bg-amber-500/15 [&_.line.warning]:!border-l-2 [&_.line.warning]:!border-amber-500",
+                    "[&_.line.error]:bg-red-500/15! [&_.line.error]:border-l-2! [&_.line.error]:border-red-500!",
+                    "[&_.line.warning]:bg-amber-500/15! [&_.line.warning]:border-l-2! [&_.line.warning]:border-amber-500!",
                     preProps.className,
                   )}
                 >

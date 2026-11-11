@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { LuGraduationCap, LuSchool } from "react-icons/lu";
-import MDXContent from "@/components/mdx/MDXContent";
+import MDXContent from "@/components/mdx/mdx-content";
 import { EducationWatermark } from "./watermark";
 import { Reveal } from "@/components/reveal";
 import type { EducationType } from "@/types";

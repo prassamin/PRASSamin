@@ -3,12 +3,12 @@
 import React, { useState, useRef, useCallback } from "react";
 import { LuPlus } from "react-icons/lu";
 import { MdxBlock, MdxBlockType } from "../types";
-import { CanvasBlockItem } from "./CanvasBlockItem";
-import { DropIndicator } from "./DropIndicator";
-import { TextSelectionMenu } from "./TextSelectionMenu";
-import { InlineTooltipProvider } from "./InlineTooltipContext";
-import { IconPickerProvider } from "./IconPickerContext";
-import { IconPickerModal } from "./IconPickerModal";
+import { CanvasBlockItem } from "./canvas-block-item";
+import { DropIndicator } from "./drop-indicator";
+import { TextSelectionMenu } from "./text-selection-menu";
+import { InlineTooltipProvider } from "./inline-tooltip-context";
+import { IconPickerProvider } from "./icon-picker-context";
+import { IconPickerModal } from "./icon-picker-modal";
 import { cn } from "@heroui/react";
 
 interface CanvasAreaProps {
@@ -177,10 +177,10 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               onDragLeave={() => setIsDropTargetActive(false)}
               onDrop={handleContainerDrop}
               className={cn(
-                "border-2 border-dashed rounded-3xl p-12 text-center flex flex-col items-center justify-center transition-all min-h-[300px]",
+                "border-2 border-dashed rounded-3xl p-12 text-center flex flex-col items-center justify-center transition-all min-h-75",
                 isDropTargetActive
                   ? "border-accent bg-accent/5 scale-[1.01]"
-                  : "border-white/10 bg-white/[0.01]",
+                  : "border-white/10 bg-white/1",
               )}
             >
               <h3 className="text-sm font-semibold text-white font-rethink">

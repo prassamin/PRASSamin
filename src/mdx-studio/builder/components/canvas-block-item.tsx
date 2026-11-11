@@ -2,55 +2,52 @@
 
 import React, { useState, useRef } from "react";
 import {
-  GripVertical,
-  Trash2,
-  Copy,
-  ChevronUp,
-  ChevronDown,
-  Plus,
-  X,
-  Heading,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
-  Minus,
-  Lightbulb,
-  CreditCard,
-  Layers,
-  Code2,
-  Image as ImageIcon,
-  Tag,
-  Megaphone,
-  HelpCircle,
-  ListOrdered,
-  SlidersHorizontal,
-  Bold,
-  Italic,
-  Type,
-  RefreshCw,
-  ZoomIn,
-  Highlighter,
-  Eye,
-  AlertCircle,
-  AlertTriangle,
-  WholeWord,
-  Wand2,
-  Table as TableIcon,
-  TableProperties,
-  FolderTree,
-  Folder,
-  FolderOpen,
-  FolderPlus,
-  FileText,
-  FilePlus,
-  CircleUser,
-  User,
-  Users,
-  UserPlus,
-  Link as LinkIcon,
-  Quote,
-  CornerDownLeft,
-} from "lucide-react";
+  LuGripVertical as GripVertical,
+  LuTrash2 as Trash2,
+  LuCopy as Copy,
+  LuChevronUp as ChevronUp,
+  LuChevronDown as ChevronDown,
+  LuPlus as Plus,
+  LuX as X,
+  LuHeading as Heading,
+  LuAlignLeft as AlignLeft,
+  LuAlignCenter as AlignCenter,
+  LuAlignRight as AlignRight,
+  LuMinus as Minus,
+  LuLightbulb as Lightbulb,
+  LuCreditCard as CreditCard,
+  LuLayers as Layers,
+  LuCodeXml as CodeXml,
+  LuImage as ImageIcon,
+  LuTable as TableIcon,
+  LuTag as Tag,
+  LuMegaphone as Megaphone,
+  LuCircleHelp as HelpCircle,
+  LuListOrdered as ListOrdered,
+  LuSlidersHorizontal as SlidersHorizontal,
+  LuBold as Bold,
+  LuItalic as Italic,
+  LuRefreshCw as RefreshCw,
+  LuHighlighter as Highlighter,
+  LuEye as Eye,
+  LuCircleAlert as AlertCircle,
+  LuTriangleAlert as AlertTriangle,
+  LuWholeWord as WholeWord,
+  LuWandSparkles as WandSparkles,
+  LuTableProperties as TableProperties,
+  LuFolderTree as FolderTree,
+  LuFolder as Folder,
+  LuFolderOpen as FolderOpen,
+  LuFolderPlus as FolderPlus,
+  LuFileText as FileText,
+  LuFilePlus as FilePlus,
+  LuCircleUser as CircleUser,
+  LuUser as User,
+  LuUsers as Users,
+  LuLink as LinkIcon,
+  LuQuote as Quote,
+  LuCornerDownLeft as CornerDownLeft,
+} from "react-icons/lu";
 import {
   MdxBlock,
   MdxBlockType,
@@ -62,16 +59,16 @@ import {
 import { LuList, LuListOrdered, LuListTodo, LuCheck } from "react-icons/lu";
 import { createBlock } from "../compiler";
 import { cn } from "@heroui/react";
-import { DropIndicator } from "./DropIndicator";
+import { DropIndicator } from "./drop-indicator";
 import { ImagePicker } from "@/components/ImagePicker";
-import { InlineTooltipField } from "./InlineTooltipField";
+import { InlineTooltipField } from "./inline-tooltip-field";
 import { Input } from "@heroui/react";
 import { MdxChip } from "@/mdx-components";
-import { MdxAvatar, MdxAvatarGroup } from "@/components/mdx/MdxAvatar";
-import { MdxProfile } from "@/components/mdx/MdxProfile";
-import { MdxBlockquote } from "@/components/mdx/MdxBlockquote";
-import { HeroSelect } from "../../components/HeroSelect";
-import { motion, AnimatePresence } from "motion/react";
+import { MdxAvatarGroup } from "@/components/mdx/mdx-avatar";
+import { MdxProfile } from "@/components/mdx/mdx-profile";
+import { MdxBlockquote } from "@/components/mdx/mdx-blockquote";
+import { Select } from "@/components/ui/select";
+import { motion, AnimatePresence } from "framer-motion";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 
 const CODE_LANGUAGES = [
@@ -114,7 +111,7 @@ const BLOCK_ICONS: Record<MdxBlockType, React.ReactNode> = {
   tabs: <Layers className="w-3.5 h-3.5 text-amber-400" />,
   chipGroup: <Tag className="w-3.5 h-3.5 text-rose-400" />,
   banner: <Megaphone className="w-3.5 h-3.5 text-pink-400" />,
-  code: <Code2 className="w-3.5 h-3.5 text-amber-400" />,
+  code: <CodeXml className="w-3.5 h-3.5 text-amber-400" />,
   image: <ImageIcon className="w-3.5 h-3.5 text-blue-400" />,
   table: <TableIcon className="w-3.5 h-3.5 text-teal-400" />,
   typeTable: <TableProperties className="w-3.5 h-3.5 text-emerald-400" />,
@@ -611,7 +608,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
         <div
           className={cn(
             "flex items-center gap-2 p-1.5 rounded-xl transition-all group/node",
-            "bg-white/[0.025] hover:bg-white/[0.05] border border-white/[0.06] hover:border-white/[0.12]",
+            "bg-white/2.5 hover:bg-white/5 border border-white/6 hover:border-white/12",
           )}
           style={{ marginLeft: `${treeDepth * 18}px` }}
         >
@@ -641,7 +638,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             }
             placeholder={isFolder ? "folder-name" : "file-name.ts"}
             className={cn(
-              "flex-1 min-w-[120px] px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-xs font-mono focus:outline-none transition-colors",
+              "flex-1 min-w-30 px-2 py-1 bg-black/40 border border-white/10 rounded-lg text-xs font-mono focus:outline-none transition-colors",
               isFolder
                 ? "font-semibold text-amber-200 focus:border-amber-400/40"
                 : "text-neutral-200 focus:border-sky-400/40",
@@ -667,7 +664,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 "px-2 py-1 rounded-lg text-[10px] font-mono font-medium transition-all border cursor-pointer",
                 node.defaultOpen
                   ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                  : "bg-white/[0.03] text-neutral-500 border-white/5 hover:text-neutral-300",
+                  : "bg-white/3 text-neutral-500 border-white/5 hover:text-neutral-300",
               )}
             >
               {node.defaultOpen ? "Open" : "Closed"}
@@ -927,12 +924,12 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
       className={cn(
         "transition-all shadow-sm group relative overflow-hidden [&_*::placeholder]:text-neutral-500",
         depth === 0
-          ? "rounded-2xl border border-white/[0.08] bg-muted/40 hover:border-white/[0.14]"
-          : "rounded-xl border border-white/[0.08] bg-neutral-900/80 hover:border-white/[0.16] my-2",
+          ? "rounded-2xl border border-white/8 bg-muted/40 hover:border-white/14"
+          : "rounded-xl border border-white/8 bg-neutral-900/80 hover:border-white/16 my-2",
       )}
     >
       {/* Block Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.06] select-none">
+      <div className="flex items-center justify-between px-4 py-2.5 bg-white/2 border-b border-white/6 select-none">
         <div className="flex items-center gap-2">
           {onDragStart && (
             <div
@@ -947,9 +944,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             </div>
           )}
 
-          <div className="p-1 rounded-md bg-white/[0.04]">
-            {BLOCK_ICONS[type]}
-          </div>
+          <div className="p-1 rounded-md bg-white/4">{BLOCK_ICONS[type]}</div>
 
           <span className="text-xs font-semibold text-neutral-200 font-inter">
             {BLOCK_TITLES[type]}
@@ -1026,7 +1021,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-            className="overflow-hidden bg-white/[0.03] border-b border-white/[0.06] select-none"
+            className="overflow-hidden bg-white/3 border-b border-white/6 select-none"
           >
             <div className="px-4 py-2.5 text-xs">
               {/* Heading Properties (Level is in main block; Alignment, Style, and Anchor ID are here) */}
@@ -1067,7 +1062,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "p-1 rounded text-xs transition-colors",
                         props.isItalic
                           ? "bg-accent/20 text-accent border border-accent/40"
-                          : "bg-white/[0.04] text-neutral-400 hover:text-white",
+                          : "bg-white/4 text-neutral-400 hover:text-white",
                       )}
                     >
                       <Italic className="w-3 h-3" />
@@ -1132,7 +1127,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "p-1 rounded text-xs transition-colors",
                         props.isBold
                           ? "bg-accent/20 text-accent font-bold"
-                          : "bg-white/[0.04] text-neutral-400 hover:text-white",
+                          : "bg-white/4 text-neutral-400 hover:text-white",
                       )}
                     >
                       <Bold className="size-3" />
@@ -1145,7 +1140,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "p-1 rounded text-xs transition-colors",
                         props.isItalic
                           ? "bg-accent/20 text-accent"
-                          : "bg-white/[0.04] text-neutral-400 hover:text-white",
+                          : "bg-white/4 text-neutral-400 hover:text-white",
                       )}
                     >
                       <Italic className="w-3 h-3" />
@@ -1270,7 +1265,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1.5 border-t border-white/[0.06]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-1.5 border-t border-white/6">
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] font-mono uppercase text-neutral-400">
                         Aspect:
@@ -1323,7 +1318,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5 border-t border-white/[0.06]">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1.5 border-t border-white/6">
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] font-mono uppercase text-neutral-400 shrink-0">
                         Width:
@@ -1341,7 +1336,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                           });
                         }}
                         placeholder="Auto (px)"
-                        className="w-full text-xs bg-white/3 h-[32px] border border-white/10 text-white"
+                        className="w-full text-xs bg-white/3 h-8 border border-white/10 text-white"
                       />
                     </div>
 
@@ -1362,7 +1357,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                           });
                         }}
                         placeholder="Auto (px)"
-                        className="w-full text-xs bg-white/3 h-[32px] border border-white/10 text-white"
+                        className="w-full text-xs bg-white/3 h-8 border border-white/10 text-white"
                       />
                     </div>
                   </div>
@@ -1442,7 +1437,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       value={props.groupId || ""}
                       onChange={(e) => updateProp("groupId", e.target.value)}
                       placeholder="e.g. package-manager"
-                      className="px-2 py-0.5 text-xs bg-white/[0.04] border border-white/10 rounded-md text-white focus:outline-none focus:border-accent font-mono w-48"
+                      className="px-2 py-0.5 text-xs bg-white/4 border border-white/10 rounded-md text-white focus:outline-none focus:border-accent font-mono w-48"
                     />
                   </div>
                   <span className="text-[10px] text-neutral-500">
@@ -1538,7 +1533,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/[0.06]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-white/6">
                     <div className="flex items-center gap-1.5">
                       <span className="text-[10px] font-mono uppercase text-neutral-400">
                         Ring Color:
@@ -1575,7 +1570,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                           "px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer",
                           props.bordered !== false
                             ? "bg-accent/20 border-accent/40 text-accent"
-                            : "bg-white/[0.04] border-white/10 text-neutral-400",
+                            : "bg-white/4 border-white/10 text-neutral-400",
                         )}
                       >
                         {props.bordered !== false ? "Bordered" : "No Border"}
@@ -1825,7 +1820,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             return (
               <div className="space-y-3">
                 {/* List Header: Type Switcher & Count */}
-                <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-white/[0.06]">
+                <div className="flex flex-wrap items-center justify-between gap-2.5 pb-2 border-b border-white/6">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                       Type:
@@ -1872,7 +1867,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   {items.map((item, itemIdx) => (
                     <div
                       key={item.id || `li-${itemIdx}`}
-                      className="group/item flex items-center gap-2 p-1.5 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
+                      className="group/item flex items-center gap-2 p-1.5 rounded-xl border border-white/6 bg-white/2 hover:border-white/12 hover:bg-white/3 transition-all"
                     >
                       {/* Prefix Indicator */}
                       <div className="flex items-center justify-center shrink-0 pl-1">
@@ -1881,7 +1876,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         )}
 
                         {listType === "ordered" && (
-                          <div className="w-5 h-5 rounded-md bg-white/[0.06] border border-white/10 text-[11px] font-mono text-neutral-300 flex items-center justify-center">
+                          <div className="w-5 h-5 rounded-md bg-white/6 border border-white/10 text-[11px] font-mono text-neutral-300 flex items-center justify-center">
                             {itemIdx + 1}
                           </div>
                         )}
@@ -1903,7 +1898,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                               "w-5 h-5 rounded border flex items-center justify-center transition-all cursor-pointer",
                               item.checked
                                 ? "bg-emerald-500 border-emerald-400 text-black shadow-sm shadow-emerald-500/20"
-                                : "border-white/20 bg-white/[0.04] text-transparent hover:border-white/40",
+                                : "border-white/20 bg-white/4 text-transparent hover:border-white/40",
                             )}
                           >
                             <LuCheck className="w-3.5 h-3.5 stroke-[2.5]" />
@@ -1961,7 +1956,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 <button
                   type="button"
                   onClick={handleAddItem}
-                  className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg border border-dashed border-white/10 hover:border-emerald-500/40 bg-white/[0.02] hover:bg-emerald-500/[0.04] text-xs font-medium text-neutral-400 hover:text-emerald-400 transition-all cursor-pointer"
+                  className="flex items-center justify-center gap-1.5 w-full py-1.5 rounded-lg border border-dashed border-white/10 hover:border-emerald-500/40 bg-white/2 hover:bg-emerald-500/4 text-xs font-medium text-neutral-400 hover:text-emerald-400 transition-all cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add List Item</span>
@@ -1972,7 +1967,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
 
         {/* 2b. Announcement Banner Fields */}
         {type === "banner" && (
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:border-pink-400/25 transition-all duration-200 overflow-hidden shadow-sm">
+          <div className="rounded-2xl border border-white/8 bg-white/2 hover:border-pink-400/25 transition-all duration-200 overflow-hidden shadow-sm">
             <div className="flex flex-col gap-2 px-3 py-2.5">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5">
@@ -2018,7 +2013,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     value={props.id || ""}
                     onChange={(e) => updateProp("id", e.target.value)}
                     placeholder="banner id (remembers dismissed state)..."
-                    className="flex-1 px-2.5 py-1.5 text-[11px] font-mono bg-white/3 border border-white/[0.08] focus:border-accent/40 rounded-lg text-neutral-300 placeholder:text-neutral-600 focus:outline-none transition-colors"
+                    className="flex-1 px-2.5 py-1.5 text-[11px] font-mono bg-white/3 border border-white/8 focus:border-accent/40 rounded-lg text-neutral-300 placeholder:text-neutral-600 focus:outline-none transition-colors"
                   />
                 </div>
               )}
@@ -2037,11 +2032,11 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
         {type === "break" && (
           <div className="py-2 flex items-center justify-center">
             <div className="w-full flex items-center gap-2">
-              <div className="h-px bg-white/[0.06] flex-1 border-t border-dashed border-white/15" />
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-neutral-400 bg-white/[0.03] border border-white/[0.08] select-none">
+              <div className="h-px bg-white/6 flex-1 border-t border-dashed border-white/15" />
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono text-neutral-400 bg-white/3 border border-white/8 select-none">
                 <CornerDownLeft className="w-3 h-3 text-neutral-500" />
               </span>
-              <div className="h-px bg-white/[0.06] flex-1 border-t border-dashed border-white/15" />
+              <div className="h-px bg-white/6 flex-1 border-t border-dashed border-white/15" />
             </div>
           </div>
         )}
@@ -2064,7 +2059,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
               value={props.title || ""}
               onChange={(e) => updateProp("title", e.target.value)}
               placeholder="Callout title (optional)..."
-              className="w-full text-xs bg-white/3 h-[38px] border border-white/10 text-white"
+              className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white"
             />
             <InlineTooltipField
               rows={2}
@@ -2077,9 +2072,9 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
 
         {/* Showcase Card */}
         {type === "card" && (
-          <div className="rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm">
+          <div className="rounded-2xl border border-white/8 bg-white/2 hover:border-white/16 hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm">
             {/* Card Header row with Title on left, Badge on right */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 py-3 bg-white/[0.015] border-b border-white/[0.05]">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 px-4 py-3 bg-white/1.5 border-b border-white/5">
               <input
                 type="text"
                 value={props.title || ""}
@@ -2120,11 +2115,11 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             {(props.items || []).map((item: any, itIdx: number) => (
               <div
                 key={itIdx}
-                className="group/item rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm"
+                className="group/item rounded-2xl border border-white/8 bg-white/2 hover:border-white/16 hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm"
               >
                 {/* Header row with item pill badge, title input and controls */}
-                <div className="flex items-center gap-2.5 px-4 py-3 bg-white/[0.015] border-b border-white/[0.05]">
-                  <div className="w-6 h-6 rounded-full bg-white/[0.06] text-accent flex items-center justify-center shrink-0 text-[10px] font-mono font-bold">
+                <div className="flex items-center gap-2.5 px-4 py-3 bg-white/1.5 border-b border-white/5">
+                  <div className="w-6 h-6 rounded-full bg-white/6 text-accent flex items-center justify-center shrink-0 text-[10px] font-mono font-bold">
                     #{itIdx + 1}
                   </div>
                   <input
@@ -2226,7 +2221,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 ];
                 updateProp("items", newItems);
               }}
-              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/[0.015] hover:bg-accent/[0.04] text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
+              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/1.5 hover:bg-accent/4 text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
             >
               <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-accent transition-colors" />
               <span>Add Accordion Item</span>
@@ -2240,10 +2235,10 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             {(props.steps || []).map((step: any, stIdx: number) => (
               <div
                 key={stIdx}
-                className="group/item rounded-2xl border border-white/[0.08] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm"
+                className="group/item rounded-2xl border border-white/8 bg-white/2 hover:border-white/16 hover:bg-white/[0.035] transition-all duration-200 overflow-hidden shadow-sm"
               >
                 {/* Header row with step number, title input and controls */}
-                <div className="flex items-center gap-2.5 px-4 py-3 bg-white/[0.015] border-b border-white/[0.05]">
+                <div className="flex items-center gap-2.5 px-4 py-3 bg-white/1.5 border-b border-white/5">
                   <div className="w-6 h-6 rounded-full bg-accent/15 text-accent flex items-center justify-center shrink-0 text-[10px] font-mono font-bold">
                     {stIdx + 1}
                   </div>
@@ -2346,7 +2341,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 ];
                 updateProp("steps", newSteps);
               }}
-              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/[0.015] hover:bg-accent/[0.04] text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
+              className="w-full py-2.5 px-4 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/1.5 hover:bg-accent/4 text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
             >
               <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-accent transition-colors" />
               <span>Add Step</span>
@@ -2363,7 +2358,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
           ) : (
             <div className="space-y-4">
               {/* Top Tab Bar Pills */}
-              <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-white/[0.08] select-none">
+              <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-white/8 select-none">
                 {tabsList.map((tab: any, tIdx: number) => (
                   <div
                     key={tab.id || tIdx}
@@ -2372,7 +2367,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       "px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-2 cursor-pointer shrink-0 border",
                       safeTabIdx === tIdx
                         ? "bg-accent/15 border-accent/40 text-accent font-semibold shadow-xs"
-                        : "bg-white/[0.03] border-white/[0.08] text-neutral-400 hover:text-white hover:bg-white/[0.06]",
+                        : "bg-white/3 border-white/8 text-neutral-400 hover:text-white hover:bg-white/6",
                     )}
                   >
                     <span>{tab.title || `Tab ${tIdx + 1}`}</span>
@@ -2400,7 +2395,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 <button
                   type="button"
                   onClick={handleAddTab}
-                  className="px-3 py-1.5 rounded-xl text-xs font-medium text-neutral-300 hover:text-white bg-white/[0.04] hover:bg-white/[0.08] border border-dashed border-white/20 transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+                  className="px-3 py-1.5 rounded-xl text-xs font-medium text-neutral-300 hover:text-white bg-white/4 hover:bg-white/8 border border-dashed border-white/20 transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Tab</span>
@@ -2408,7 +2403,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
               </div>
 
               {/* Active Tab Configuration & Nested Blocks */}
-              <div className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] space-y-4">
+              <div className="p-4 rounded-xl bg-white/2 border border-white/6 space-y-4">
                 {/* Tab Title */}
                 <div className="flex items-center gap-3">
                   <label className="text-[11px] font-mono text-neutral-400 uppercase tracking-wider shrink-0 font-medium">
@@ -2423,7 +2418,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       handleUpdateTabTitle(safeTabIdx, e.target.value)
                     }
                     placeholder="Tab Title..."
-                    className="flex-1 w-full text-xs bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/40 transition-colors"
+                    className="flex-1 w-full text-xs bg-white/4 border border-white/10 rounded-xl px-3 py-2 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/40 transition-colors"
                   />
                 </div>
 
@@ -2438,7 +2433,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       onNestedDragChange?.(false);
                     }
                   }}
-                  className="space-y-3 pt-2 border-t border-white/[0.06]"
+                  className="space-y-3 pt-2 border-t border-white/6"
                 >
                   {currentTabBlocks.length === 0 ? (
                     <div
@@ -2474,7 +2469,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "border-2 border-dashed rounded-xl p-8 text-center transition-all flex flex-col items-center justify-center gap-1.5 select-none",
                         isTabDropActive
                           ? "border-accent bg-accent/10 text-accent scale-[1.01]"
-                          : "border-white/10 bg-white/[0.01] text-neutral-400 hover:border-white/20",
+                          : "border-white/10 bg-white/1 text-neutral-400 hover:border-white/20",
                       )}
                     >
                       <Plus className="w-5 h-5 opacity-60" />
@@ -2596,7 +2591,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
               />
             </div>
 
-            <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-white/[0.02] border border-white/10">
+            <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-xl bg-white/2 border border-white/10">
               {(props.chips || []).map((chip: string, cIdx: number) => (
                 <MdxChip
                   key={cIdx}
@@ -2634,7 +2629,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     e.currentTarget.value = "";
                   }
                 }}
-                className="w-full text-xs bg-white/3 h-[38px] border border-white/10 text-white min-w-[140px]"
+                className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white min-w-35"
               />
             </div>
           </div>
@@ -2644,7 +2639,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
         {type === "code" && (
           <div className="space-y-2.5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              <HeroSelect
+              <Select
                 options={CODE_LANGUAGES}
                 value={props.language || "typescript"}
                 onChange={(val) => updateProp("language", val)}
@@ -2656,13 +2651,13 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 value={props.title || ""}
                 onChange={(e) => updateProp("title", e.target.value)}
                 placeholder="File title (e.g. main.ts)..."
-                className="w-full text-xs bg-white/3 h-[38px] border border-white/10 text-white"
+                className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white"
               />
             </div>
 
             {/* Shiki Transformation Tools Top Bar & Code Editor */}
             <div className="border border-white/10 rounded-xl overflow-hidden focus-within:border-accent/60 transition-colors bg-neutral-950/80">
-              <div className="flex flex-wrap items-center justify-between gap-1.5 px-3 py-2 bg-white/[0.03] border-b border-white/10 text-xs select-none">
+              <div className="flex flex-wrap items-center justify-between gap-1.5 px-3 py-2 bg-white/3 border-b border-white/10 text-xs select-none">
                 <div className="flex flex-wrap items-center gap-1 text-[11px] font-mono">
                   <span className="text-[10px] uppercase font-semibold text-neutral-400 tracking-wider mr-1 flex items-center gap-1">
                     Transform:
@@ -2790,7 +2785,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 onBlur={() => setHasSelectedCodeWord(false)}
                 onKeyDown={handleCodeKeyDown}
                 placeholder="Paste or write code snippet here..."
-                className="w-full text-xs bg-transparent border-0 font-mono text-emerald-400 p-3 min-h-[260px] leading-relaxed resize-y focus:outline-none placeholder:text-neutral-600 block"
+                className="w-full text-xs bg-transparent border-0 font-mono text-emerald-400 p-3 min-h-65 leading-relaxed resize-y focus:outline-none placeholder:text-neutral-600 block"
                 spellCheck={false}
               />
             </div>
@@ -2818,9 +2813,9 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             {!props.src ? (
               <div
                 onClick={() => setIsImagePickerOpen(true)}
-                className="border-2 border-dashed border-white/15 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-accent/50 hover:bg-white/[0.02] transition-all group select-none"
+                className="border-2 border-dashed border-white/15 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer hover:border-accent/50 hover:bg-white/2 transition-all group select-none"
               >
-                <div className="p-3 rounded-2xl bg-white/[0.04] border border-white/10 text-neutral-300 group-hover:scale-105 group-hover:text-accent transition-all mb-2">
+                <div className="p-3 rounded-2xl bg-white/4 border border-white/10 text-neutral-300 group-hover:scale-105 group-hover:text-accent transition-all mb-2">
                   <ImageIcon className="w-5 h-5" />
                 </div>
                 <span className="text-xs font-semibold text-white">
@@ -2853,7 +2848,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 </div>
 
                 {/* Info bar & Actions */}
-                <div className="flex items-center justify-between p-3 bg-white/[0.02] border-t border-white/[0.08]">
+                <div className="flex items-center justify-between p-3 bg-white/2 border-t border-white/8">
                   <div className="flex items-center gap-2 min-w-0 flex-1 mr-2">
                     <div className="p-1 rounded-md bg-accent/10 text-accent">
                       <ImageIcon className="w-3.5 h-3.5" />
@@ -2895,14 +2890,14 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 value={props.alt || ""}
                 onChange={(e) => updateProp("alt", e.target.value)}
                 placeholder="Alt description (for accessibility)..."
-                className="w-full text-xs bg-white/3 h-[38px] border border-white/10 text-white"
+                className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white"
               />
               <Input
                 type="text"
                 value={props.caption || ""}
                 onChange={(e) => updateProp("caption", e.target.value)}
                 placeholder="Caption text (optional)..."
-                className="w-full text-xs bg-white/3 h-[38px] border border-white/10 text-white"
+                className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white"
               />
             </div>
           </div>
@@ -2916,7 +2911,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
               <button
                 type="button"
                 onClick={handleAddTableColumn}
-                className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                className="px-2.5 py-1 rounded-xl bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Plus className="w-3 h-3 text-accent" />
                 <span>Add Column</span>
@@ -2924,7 +2919,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             </div>
 
             {/* Scrollable table grid container */}
-            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.015] overflow-x-auto p-2.5 space-y-2">
+            <div className="rounded-2xl border border-white/8 bg-white/1.5 overflow-x-auto p-2.5 space-y-2">
               {/* Header row */}
               <div
                 className="grid gap-2"
@@ -2937,7 +2932,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   return (
                     <div
                       key={cIdx}
-                      className="flex flex-col gap-1.5 p-2 rounded-xl bg-white/[0.035] border border-white/[0.08]"
+                      className="flex flex-col gap-1.5 p-2 rounded-xl bg-white/[0.035] border border-white/8"
                     >
                       <div className="flex items-center justify-between gap-1">
                         <div className="flex items-center gap-0.5 bg-black/30 p-0.5 rounded-lg border border-white/5">
@@ -3008,7 +3003,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         }
                         placeholder={`Column ${cIdx + 1}`}
                         className={cn(
-                          "w-full px-2 py-1 bg-white/[0.04] border border-white/10 focus:border-accent/40 rounded-lg text-xs font-semibold text-white placeholder:text-neutral-500 focus:outline-none transition-colors",
+                          "w-full px-2 py-1 bg-white/4 border border-white/10 focus:border-accent/40 rounded-lg text-xs font-semibold text-white placeholder:text-neutral-500 focus:outline-none transition-colors",
                           align === "center" && "text-center",
                           align === "right" && "text-right",
                         )}
@@ -3042,7 +3037,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         }
                         placeholder="Cell value..."
                         className={cn(
-                          "w-full px-2.5 py-1.5 bg-black/30 border border-white/[0.08] focus:border-accent/40 rounded-lg text-xs text-neutral-200 placeholder:text-neutral-600 focus:outline-none transition-colors",
+                          "w-full px-2.5 py-1.5 bg-black/30 border border-white/8 focus:border-accent/40 rounded-lg text-xs text-neutral-200 placeholder:text-neutral-600 focus:outline-none transition-colors",
                           align === "center" && "text-center",
                           align === "right" && "text-right",
                         )}
@@ -3066,7 +3061,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             <button
               type="button"
               onClick={handleAddTableRow}
-              className="w-full py-2 px-3 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/[0.015] hover:bg-accent/[0.04] text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
+              className="w-full py-2 px-3 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/1.5 hover:bg-accent/4 text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
             >
               <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-accent transition-colors" />
               <span>Add Row</span>
@@ -3082,7 +3077,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
               {typeTableParams.map((param, pIdx) => (
                 <div
                   key={pIdx}
-                  className="p-3 rounded-2xl bg-white/[0.025] border border-white/[0.08] hover:border-white/[0.14] transition-all space-y-2.5"
+                  className="p-3 rounded-2xl bg-white/2.5 border border-white/8 hover:border-white/14 transition-all space-y-2.5"
                 >
                   {/* Top row: Name, Type, Default, Toggles, Reorder & Delete */}
                   <div className="flex flex-wrap items-center gap-2">
@@ -3109,7 +3104,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
 
                     {/* Prop Name */}
-                    <div className="flex-1 min-w-[130px]">
+                    <div className="flex-1 min-w-32.5">
                       <input
                         type="text"
                         data-format-role="plain"
@@ -3127,7 +3122,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
 
                     {/* Prop Type */}
-                    <div className="flex-1 min-w-[130px]">
+                    <div className="flex-1 min-w-32.5">
                       <input
                         type="text"
                         data-format-role="plain"
@@ -3145,7 +3140,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     </div>
 
                     {/* Default value */}
-                    <div className="w-28 min-w-[90px]">
+                    <div className="w-28 min-w-22.5">
                       <input
                         type="text"
                         data-format-role="plain"
@@ -3179,7 +3174,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "px-2.5 py-1.5 rounded-xl text-[11px] font-mono font-semibold transition-all border cursor-pointer",
                         param.required
                           ? "bg-purple-500/20 text-purple-300 border-purple-500/40 shadow-sm"
-                          : "bg-white/[0.03] text-neutral-500 border-white/5 hover:text-neutral-300 hover:border-white/15",
+                          : "bg-white/3 text-neutral-500 border-white/5 hover:text-neutral-300 hover:border-white/15",
                       )}
                     >
                       {param.required ? "Req" : "Opt"}
@@ -3204,7 +3199,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         "px-2 py-1.5 rounded-xl text-[11px] font-mono transition-all border cursor-pointer",
                         param.deprecated
                           ? "bg-red-500/20 text-red-300 border-red-500/40 line-through"
-                          : "bg-white/[0.03] text-neutral-500 border-white/5 hover:text-neutral-300 hover:border-white/15",
+                          : "bg-white/3 text-neutral-500 border-white/5 hover:text-neutral-300 hover:border-white/15",
                       )}
                     >
                       Dep
@@ -3234,7 +3229,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                         )
                       }
                       placeholder="Description of this prop (optional)..."
-                      className="w-full px-3 py-1.5 bg-black/20 border border-white/[0.06] focus:border-accent/30 rounded-xl text-xs text-neutral-300 placeholder:text-neutral-600 focus:outline-none transition-colors"
+                      className="w-full px-3 py-1.5 bg-black/20 border border-white/6 focus:border-accent/30 rounded-xl text-xs text-neutral-300 placeholder:text-neutral-600 focus:outline-none transition-colors"
                     />
                   </div>
                 </div>
@@ -3245,7 +3240,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             <button
               type="button"
               onClick={handleAddTypeTableProp}
-              className="w-full py-2 px-3 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/[0.015] hover:bg-accent/[0.04] text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
+              className="w-full py-2 px-3 rounded-xl border border-dashed border-white/15 hover:border-accent/40 bg-white/1.5 hover:bg-accent/4 text-neutral-400 hover:text-white text-xs font-medium flex items-center justify-center gap-2 transition-all cursor-pointer group"
             >
               <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-accent transition-colors" />
               <span>Add Property</span>
@@ -3262,7 +3257,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 <button
                   type="button"
                   onClick={() => handleAddFileTreeNode(null, "file")}
-                  className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-xl bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FilePlus className="w-3.5 h-3.5 text-sky-400" />
                   <span>Add File</span>
@@ -3270,7 +3265,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 <button
                   type="button"
                   onClick={() => handleAddFileTreeNode(null, "folder")}
-                  className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                  className="px-2.5 py-1 rounded-xl bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                 >
                   <FolderPlus className="w-3.5 h-3.5 text-amber-400" />
                   <span>Add Folder</span>
@@ -3280,11 +3275,11 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
 
             {/* Tree nodes list */}
             {fileTreeItems.length > 0 ? (
-              <div className="space-y-1.5 p-2 rounded-2xl bg-black/20 border border-white/[0.06]">
+              <div className="space-y-1.5 p-2 rounded-2xl bg-black/20 border border-white/6">
                 {fileTreeItems.map((item) => renderFileTreeNode(item, 0))}
               </div>
             ) : (
-              <div className="text-center py-6 border border-dashed border-white/10 rounded-2xl bg-white/[0.015] space-y-2">
+              <div className="text-center py-6 border border-dashed border-white/10 rounded-2xl bg-white/1.5 space-y-2">
                 <p className="text-xs text-neutral-500 m-0">
                   Empty file tree. Start by adding a folder or a file.
                 </p>
@@ -3311,7 +3306,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             />
 
             {/* Live Interactive Preview */}
-            <div className="p-4 rounded-2xl bg-black/30 border border-white/[0.08] flex flex-col items-center justify-center text-center gap-2">
+            <div className="p-4 rounded-2xl bg-black/30 border border-white/8 flex flex-col items-center justify-center text-center gap-2">
               <MdxProfile
                 src={props.src}
                 name={props.name}
@@ -3336,7 +3331,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   value={props.name || ""}
                   onChange={(e) => updateProp("name", e.target.value)}
                   placeholder="e.g. Alex Morgan"
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                 />
               </div>
 
@@ -3350,7 +3345,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   value={props.description || ""}
                   onChange={(e) => updateProp("description", e.target.value)}
                   placeholder="e.g. Software Engineer & Designer"
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                 />
               </div>
 
@@ -3377,14 +3372,14 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     value={props.src || ""}
                     onChange={(e) => updateProp("src", e.target.value)}
                     placeholder="https://... or choose from media"
-                    className="w-full px-3 py-2 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                    className="w-full px-3 py-2 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                   />
                   {props.src && (
                     <button
                       type="button"
                       onClick={() => updateProp("src", "")}
                       title="Clear photo"
-                      className="p-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                      className="p-2 rounded-xl bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>
@@ -3402,7 +3397,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   value={props.href || ""}
                   onChange={(e) => updateProp("href", e.target.value)}
                   placeholder="https://github.com/..."
-                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                  className="w-full px-3 py-2 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                 />
               </div>
             </div>
@@ -3478,7 +3473,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 />
 
                 {/* Live Interactive Preview */}
-                <div className="p-4 rounded-2xl bg-black/30 border border-white/[0.08] flex flex-col gap-2 w-full">
+                <div className="p-4 rounded-2xl bg-black/30 border border-white/8 flex flex-col gap-2 w-full">
                   <MdxAvatarGroup
                     items={avatarItems}
                     max={props.max}
@@ -3498,7 +3493,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   <button
                     type="button"
                     onClick={handleAddAvatarItem}
-                    className="px-2.5 py-1 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
+                    className="px-2.5 py-1 rounded-xl bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-300 hover:text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5 text-violet-400" />
                     <span>Add Avatar</span>
@@ -3515,7 +3510,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       return (
                         <div
                           key={actualIdx}
-                          className="p-2.5 rounded-xl bg-white/[0.02] border border-white/[0.06] flex flex-col sm:flex-row items-stretch sm:items-center gap-2 group hover:border-white/15 transition-colors"
+                          className="p-2.5 rounded-xl bg-white/2 border border-white/6 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 group hover:border-white/15 transition-colors"
                         >
                           {/* Thumbnail preview / Image picker trigger */}
                           <button
@@ -3556,7 +3551,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                               )
                             }
                             placeholder="Name"
-                            className="px-2.5 py-1.5 text-xs rounded-lg bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 sm:w-36 transition-colors"
+                            className="px-2.5 py-1.5 text-xs rounded-lg bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 sm:w-36 transition-colors"
                           />
 
                           {/* Image URL input */}
@@ -3572,7 +3567,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                                 )
                               }
                               placeholder="Image URL or pick from media"
-                              className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                              className="w-full px-2.5 py-1.5 text-xs rounded-lg bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                             />
                             <button
                               type="button"
@@ -3581,7 +3576,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                                 setIsImagePickerOpen(true);
                               }}
                               title="Pick from media library"
-                              className="p-1.5 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
+                              className="p-1.5 rounded-lg bg-white/4 hover:bg-white/8 border border-white/10 text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
                             >
                               <ImageIcon className="w-3 h-3" />
                             </button>
@@ -3599,7 +3594,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                               )
                             }
                             placeholder="Link URL (optional)"
-                            className="px-2.5 py-1.5 text-xs rounded-lg bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 sm:w-36 transition-colors"
+                            className="px-2.5 py-1.5 text-xs rounded-lg bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 sm:w-36 transition-colors"
                           />
 
                           {/* Delete button */}
@@ -3607,7 +3602,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                             type="button"
                             onClick={() => handleRemoveAvatarItem(actualIdx)}
                             title="Remove avatar"
-                            className="p-1.5 rounded-lg bg-white/[0.02] hover:bg-red-500/10 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer shrink-0 self-end sm:self-center"
+                            className="p-1.5 rounded-lg bg-white/2 hover:bg-red-500/10 text-neutral-500 hover:text-red-400 transition-colors cursor-pointer shrink-0 self-end sm:self-center"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -3616,7 +3611,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     })}
 
                   {avatarItems.length === 0 && (
-                    <div className="text-center py-5 border border-dashed border-white/10 rounded-xl bg-white/[0.015]">
+                    <div className="text-center py-5 border border-dashed border-white/10 rounded-xl bg-white/1.5">
                       <p className="text-xs text-neutral-500 m-0">
                         No avatars yet. Click &quot;Add Avatar&quot; to add one.
                       </p>
@@ -3648,7 +3643,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
             />
 
             {/* Live Interactive Preview */}
-            <div className="p-3 sm:p-4 rounded-2xl bg-black/30 border border-white/[0.08]">
+            <div className="p-3 sm:p-4 rounded-2xl bg-black/30 border border-white/8">
               <MdxBlockquote
                 quote={props.quote || "Enter your quote here..."}
                 author={props.author}
@@ -3715,7 +3710,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                   value={props.cite || ""}
                   onChange={(e) => updateProp("cite", e.target.value)}
                   placeholder="https://... or Book Title"
-                  className="w-full px-3 py-1.5 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                  className="w-full px-3 py-1.5 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                 />
               </div>
 
@@ -3730,7 +3725,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                     value={props.avatar || ""}
                     onChange={(e) => updateProp("avatar", e.target.value)}
                     placeholder="https://... image URL"
-                    className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-white/[0.04] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                    className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-white/4 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                   />
                   <button
                     type="button"
@@ -3739,7 +3734,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       setIsImagePickerOpen(true);
                     }}
                     title="Choose from media library"
-                    className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.1] text-neutral-300 hover:text-white transition-colors cursor-pointer shrink-0"
+                    className="p-2 rounded-xl bg-white/6 hover:bg-white/10 text-neutral-300 hover:text-white transition-colors cursor-pointer shrink-0"
                   >
                     <ImageIcon className="w-3.5 h-3.5" />
                   </button>
@@ -3748,7 +3743,7 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                       type="button"
                       onClick={() => updateProp("avatar", "")}
                       title="Clear avatar"
-                      className="p-2 rounded-xl bg-white/[0.06] hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer shrink-0"
+                      className="p-2 rounded-xl bg-white/6 hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer shrink-0"
                     >
                       <X className="w-3.5 h-3.5" />
                     </button>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { User, ExternalLink } from "lucide-react";
+import { LuUser, LuExternalLink } from "react-icons/lu";
 import { cn } from "@heroui/react";
 
 export interface MdxProfileProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -106,7 +106,7 @@ export const MdxProfile: React.FC<MdxProfileProps> = ({
           {initials}
         </span>
       ) : (
-        <User className={cn(sizeConfig.icon, "text-neutral-400")} />
+        <LuUser className={cn(sizeConfig.icon, "text-neutral-400")} />
       )}
     </div>
   );
@@ -114,7 +114,7 @@ export const MdxProfile: React.FC<MdxProfileProps> = ({
   const card = (
     <div
       className={cn(
-        "inline-flex items-center gap-3.5 my-3 p-3 rounded-2xl border border-white/[0.08] bg-[#141414]/90 backdrop-blur-sm shadow-sm not-prose font-sans transition-all duration-200",
+        "inline-flex items-center gap-3.5 my-3 p-3 rounded-2xl border border-white/8 bg-[#141414]/90 backdrop-blur-sm shadow-sm not-prose font-sans transition-all duration-200",
         href &&
           "hover:border-white/20 hover:bg-[#1a1a1a]/95 cursor-pointer group",
         className,
@@ -135,7 +135,7 @@ export const MdxProfile: React.FC<MdxProfileProps> = ({
             {name}
           </span>
           {href && (
-            <ExternalLink className="w-3.5 h-3.5 text-neutral-500 group-hover:text-neutral-300 transition-colors shrink-0" />
+            <LuExternalLink className="w-3.5 h-3.5 text-neutral-500 group-hover:text-neutral-300 transition-colors shrink-0" />
           )}
         </div>
 

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Quote } from "lucide-react";
+import { LuQuote } from "react-icons/lu";
 import { cn } from "@heroui/react";
 
 export interface MdxBlockquoteProps {
@@ -50,16 +50,16 @@ export const MdxBlockquote: React.FC<MdxBlockquoteProps> = ({
     return (
       <figure
         className={cn(
-          "my-6 relative rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 overflow-hidden not-prose backdrop-blur-sm group hover:border-white/[0.14] transition-all duration-300",
+          "my-6 relative rounded-2xl border border-white/8 bg-white/2 p-5 sm:p-6 overflow-hidden not-prose backdrop-blur-sm group hover:border-white/14 transition-all duration-300",
           className,
         )}
       >
-        <Quote className="absolute top-4 right-4 w-10 h-10 text-white/[0.04] pointer-events-none group-hover:text-accent/[0.08] transition-colors" />
+        <LuQuote className="absolute top-4 right-4 w-10 h-10 text-white/4 pointer-events-none group-hover:text-accent/8 transition-colors" />
         <blockquote className="relative z-10 text-base sm:text-lg text-neutral-200 italic font-serif leading-relaxed font-normal">
           {content}
         </blockquote>
         {(author || role || cite || avatar) && (
-          <figcaption className="relative z-10 mt-4 pt-3.5 border-t border-white/[0.06] flex items-center gap-3">
+          <figcaption className="relative z-10 mt-4 pt-3.5 border-t border-white/6 flex items-center gap-3">
             {avatar && (
               <img
                 src={avatar}
@@ -91,7 +91,7 @@ export const MdxBlockquote: React.FC<MdxBlockquoteProps> = ({
       <figure
         className={cn("my-6 py-2 px-1 not-prose relative group", className)}
       >
-        <Quote className="w-5 h-5 text-accent/60 mb-2" />
+        <LuQuote className="w-5 h-5 text-accent/60 mb-2" />
         <blockquote className="text-base sm:text-lg text-neutral-200 italic font-serif leading-relaxed">
           {content}
         </blockquote>
@@ -129,7 +129,7 @@ export const MdxBlockquote: React.FC<MdxBlockquoteProps> = ({
       className={cn(
         "my-6 relative pl-4 sm:pl-5 not-prose group transition-all duration-300",
         isAccent
-          ? "border-l-2 border-accent bg-accent/[0.02] py-2 rounded-r-xl"
+          ? "border-l-2 border-accent bg-accent/2 py-2 rounded-r-xl"
           : "border-l-2 border-white/20 hover:border-white/40 py-2",
         className,
       )}

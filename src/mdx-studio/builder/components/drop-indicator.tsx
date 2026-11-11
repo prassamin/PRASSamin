@@ -14,7 +14,7 @@ export const DropIndicator: React.FC<DropIndicatorProps> = ({ className }) => {
       )}
     >
       {/* Central Glowing Beam */}
-      <div className="w-full h-[2px] rounded-full bg-accent shadow-[0_0_10px_rgba(112,255,195,0.9)]" />
+      <div className="w-full h-0.5 rounded-full bg-accent shadow-[0_0_10px_rgba(112,255,195,0.9)]" />
 
       {/* Left Glowing Node */}
       <div className="absolute left-0 w-2 h-2 rounded-full bg-accent shadow-[0_0_6px_rgba(112,255,195,1)] -translate-x-0.5" />

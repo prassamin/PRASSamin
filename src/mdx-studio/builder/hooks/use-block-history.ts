@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { MdxBlock } from "../types";
+import { useShortcuts } from "@keybindy/react";
 
 const MAX_HISTORY = 100;
 
@@ -29,7 +30,7 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
   const setBlocks = useCallback(
     (
       action: MdxBlock[] | ((prev: MdxBlock[]) => MdxBlock[]),
-      isTyping = false
+      isTyping = false,
     ) => {
       const previousState = currentBlocksRef.current;
       const nextBlocks =
@@ -83,7 +84,7 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
         }, 450);
       }
     },
-    []
+    [],
   );
 
   const resetBlocks = useCallback((newBlocks: MdxBlock[]) => {
@@ -148,39 +149,24 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
     setHistoryVersion((v) => v + 1);
   }, []);
 
-  // Global keyboard shortcut listener
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-      if (!isCtrlOrCmd) return;
-
-      // Redo: Ctrl+Shift+Z or Ctrl+Y (case-insensitive)
-      if (
-        (e.shiftKey && (e.key === "z" || e.key === "Z")) ||
-        e.key === "y" ||
-        e.key === "Y"
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-        redo();
-        return;
-      }
-
-      // Undo: Ctrl+Z (without shift)
-      if (!e.shiftKey && (e.key === "z" || e.key === "Z")) {
+  useShortcuts([
+    {
+      keys: ["Ctrl", "Z"],
+      handler: (e) => {
         e.preventDefault();
         e.stopPropagation();
         undo();
-        return;
-      }
-    };
-
-    // Use capture phase to catch shortcuts even when focused inside an input/textarea
-    window.addEventListener("keydown", handleKeyDown, true);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [undo, redo]);
+      },
+    },
+    {
+      keys: [["Ctrl", "Y"], ["Ctrl", "Shift", "Z"]],
+      handler: (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        redo();
+      },
+    },
+  ]);
 
   return {
     blocks,

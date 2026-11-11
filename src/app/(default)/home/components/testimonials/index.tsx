@@ -14,7 +14,7 @@ import { motion, type Variants } from "motion/react";
 import { BackgroundText } from "./background-text";
 import { Arrow } from "./arrow";
 import { cn } from "@heroui/react";
-import MDXContent from "@/components/mdx/MDXContent";
+import MDXContent from "@/components/mdx/mdx-content";
 import type { TestimonialType } from "@/types";
 
 const sectionVariants: Variants = {
@@ -300,55 +300,55 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
           </svg>
         </motion.div>
 
-          <div
-            className={cn(
-              "grid grid-cols-1 gap-8 lg:grid-cols-3 items-center mt-20 relative",
-            )}
-          >
-            {/* Hand-drawn Dashed Arrow pointing to 3rd card */}
-            <Arrow />
+        <div
+          className={cn(
+            "grid grid-cols-1 gap-8 lg:grid-cols-3 items-center mt-20 relative",
+          )}
+        >
+          {/* Hand-drawn Dashed Arrow pointing to 3rd card */}
+          <Arrow />
 
-            {/* Card 1: As a Software Engineer */}
-            {softwareEngineerTestimonials.length > 0 && (
-              <motion.div variants={cardItemVariants} className="h-full">
-                <TestimonialCard
-                  category="as a Software Engineer"
-                  icon={<Laptop className="size-4" strokeWidth={1} />}
-                  testimonials={softwareEngineerTestimonials}
-                  initialIndex={1} // Shows latest (matches Image 1)
-                  autoPlayInterval={5000}
-                  className="lg:-rotate-[2deg] lg:mt-1.5"
-                />
-              </motion.div>
-            )}
+          {/* Card 1: As a Software Engineer */}
+          {softwareEngineerTestimonials.length > 0 && (
+            <motion.div variants={cardItemVariants} className="h-full">
+              <TestimonialCard
+                category="as a Software Engineer"
+                icon={<Laptop className="size-4" strokeWidth={1} />}
+                testimonials={softwareEngineerTestimonials}
+                initialIndex={1} // Shows latest (matches Image 1)
+                autoPlayInterval={5000}
+                className="lg:-rotate-[2deg] lg:mt-1.5"
+              />
+            </motion.div>
+          )}
 
-            {/* Card 2: As a Writer */}
-            {writerTestimonials.length > 0 && (
-              <motion.div variants={cardItemVariants} className="h-full">
-                <TestimonialCard
-                  category="as a Writer"
-                  icon={<PencilLine className="size-4" strokeWidth={1} />}
-                  testimonials={writerTestimonials}
-                  initialIndex={0}
-                  autoPlayInterval={6500}
-                  className="lg:rotate-0"
-                />
-              </motion.div>
-            )}
+          {/* Card 2: As a Writer */}
+          {writerTestimonials.length > 0 && (
+            <motion.div variants={cardItemVariants} className="h-full">
+              <TestimonialCard
+                category="as a Writer"
+                icon={<PencilLine className="size-4" strokeWidth={1} />}
+                testimonials={writerTestimonials}
+                initialIndex={0}
+                autoPlayInterval={6500}
+                className="lg:rotate-0"
+              />
+            </motion.div>
+          )}
 
-            {/* Card 3: As a Mentor */}
-            {mentorTestimonials.length > 0 && (
-              <motion.div variants={cardItemVariants} className="h-full">
-                <TestimonialCard
-                  category="as a Mentor"
-                  icon={<GraduationCap className="size-4" strokeWidth={1} />}
-                  testimonials={mentorTestimonials}
-                  initialIndex={0}
-                  className="lg:rotate-[2deg] lg:mt-1.5"
-                />
-              </motion.div>
-            )}
-          </div>
+          {/* Card 3: As a Mentor */}
+          {mentorTestimonials.length > 0 && (
+            <motion.div variants={cardItemVariants} className="h-full">
+              <TestimonialCard
+                category="as a Mentor"
+                icon={<GraduationCap className="size-4" strokeWidth={1} />}
+                testimonials={mentorTestimonials}
+                initialIndex={0}
+                className="lg:rotate-[2deg] lg:mt-1.5"
+              />
+            </motion.div>
+          )}
+        </div>
       </div>
     </motion.section>
   );

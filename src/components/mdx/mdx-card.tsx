@@ -33,17 +33,17 @@ export const MdxCard: React.FC<MdxCardProps> & {
     return (
       <div
         className={cn(
-          "group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 my-6",
-          "hover:border-white/[0.16] hover:bg-white/[0.035] transition-all duration-300",
+          "group relative overflow-hidden rounded-2xl border border-white/8 bg-white/2 p-5 sm:p-6 my-6",
+          "hover:border-white/16 hover:bg-white/3.5 transition-all duration-300",
           "shadow-[0_4px_24px_rgba(0,0,0,0.35)]",
           className,
         )}
         {...props}
       >
         {/* Subtle ambient glow on hover */}
-        <div className="pointer-events-none absolute -top-16 -right-16 w-36 h-36 rounded-full bg-accent/[0.06] blur-3xl group-hover:bg-accent/[0.12] transition-all duration-500" />
+        <div className="pointer-events-none absolute -top-16 -right-16 w-36 h-36 rounded-full bg-accent/6 blur-3xl group-hover:bg-accent/12 transition-all duration-500" />
 
-        <div className="not-prose flex items-center justify-between gap-3 mb-3.5 flex-wrap pb-3 border-b border-white/[0.05]">
+        <div className="not-prose flex items-center justify-between gap-3 mb-3.5 flex-wrap pb-3 border-b border-white/5">
           {title && (
             <h3 className="font-rethink text-base sm:text-lg font-bold text-white tracking-tight leading-snug">
               {title}
@@ -73,15 +73,15 @@ export const MdxCard: React.FC<MdxCardProps> & {
   return (
     <div
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 my-6",
-        "hover:border-white/[0.16] hover:bg-white/[0.035] transition-all duration-300",
+        "group relative overflow-hidden rounded-2xl border border-white/8 bg-white/2 p-5 sm:p-6 my-6",
+        "hover:border-white/16 hover:bg-white/3.5 transition-all duration-300",
         "shadow-[0_4px_24px_rgba(0,0,0,0.35)]",
         className,
       )}
       {...props}
     >
       {/* Subtle ambient glow on hover */}
-      <div className="pointer-events-none absolute -top-16 -right-16 w-36 h-36 rounded-full bg-accent/[0.06] blur-3xl group-hover:bg-accent/[0.12] transition-all duration-500" />
+      <div className="pointer-events-none absolute -top-16 -right-16 w-36 h-36 rounded-full bg-accent/6 blur-3xl group-hover:bg-accent/12 transition-all duration-500" />
       {children}
     </div>
   );
@@ -94,7 +94,7 @@ export const MdxCardHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "not-prose flex items-center justify-between gap-3 mb-3.5 flex-wrap pb-3 border-b border-white/[0.05]",
+      "not-prose flex items-center justify-between gap-3 mb-3.5 flex-wrap pb-3 border-b border-white/5",
       className,
     )}
     {...props}
@@ -158,7 +158,7 @@ export const MdxCardFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={cn(
-      "flex items-center gap-3 pt-3 mt-3 border-t border-white/[0.05] text-xs text-neutral-400",
+      "flex items-center gap-3 pt-3 mt-3 border-t border-white/5 text-xs text-neutral-400",
       className,
     )}
     {...props}
@@ -184,7 +184,7 @@ export const MdxCards = ({ children, className, ...props }: MdxCardsProps) => {
     <div className="@container w-full my-6">
       <div
         className={cn(
-          "grid grid-cols-1 @[720px]:grid-cols-2 gap-4.5 [&>*]:my-0",
+          "grid grid-cols-1 @[720px]:grid-cols-2 gap-4.5 *:my-0",
           className,
         )}
         {...props}

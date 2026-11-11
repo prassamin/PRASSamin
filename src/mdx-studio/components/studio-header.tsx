@@ -8,7 +8,7 @@ import {
   LuArrowRight,
 } from "react-icons/lu";
 import { Tabs } from "@heroui/react";
-import { useMdxStudio } from "../MdxStudioContext";
+import { useMdxStudio } from "../mdx-studio-context";
 import { AnimatePresence, motion } from "framer-motion";
 
 export const StudioHeader: React.FC = () => {
@@ -69,9 +69,11 @@ export const StudioHeader: React.FC = () => {
       {/* Right: Save & Return button */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {saveButton ? (
-          typeof saveButton === "function"
-            ? saveButton(studio)
-            : saveButton
+          typeof saveButton === "function" ? (
+            saveButton(studio)
+          ) : (
+            saveButton
+          )
         ) : (
           <button
             type="button"

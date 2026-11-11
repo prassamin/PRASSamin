@@ -5,22 +5,15 @@ import {
   Modal,
   Button,
   ColorPicker,
-  ColorSwatch,
   ColorArea,
   ColorSlider,
   Label,
   parseColor,
 } from "@heroui/react";
-import {
-  LuSearch,
-  LuX,
-  LuSparkles,
-  LuCheck,
-  LuRefreshCw,
-} from "react-icons/lu";
+import { LuSearch, LuX } from "react-icons/lu";
 import * as luIcons from "react-icons/lu";
 import * as siIcons from "react-icons/si";
-import { useIconPicker } from "./IconPickerContext";
+import { useIconPicker } from "./icon-picker-context";
 import { cn } from "@heroui/react";
 
 // Map of all icon components from both libraries
@@ -159,7 +152,7 @@ export const IconPickerModal: React.FC = () => {
             className="max-w-3xl w-[calc(100vw-32px)] max-h-[85vh] flex flex-col p-0 overflow-hidden border border-white/10 rounded-2xl shadow-2xl text-white"
           >
             {/* Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/[0.08] bg-white/[0.02]">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-white/8 bg-white/2">
               <div className="flex flex-col">
                 <h3 className="text-sm font-semibold text-white tracking-wide">
                   {isReplacing ? "Replace Icon" : "Insert Icon"}
@@ -181,7 +174,7 @@ export const IconPickerModal: React.FC = () => {
             </div>
 
             {/* Search Toolbar */}
-            <div className="px-5 py-3 border-b border-white/[0.06] bg-black/20">
+            <div className="px-5 py-3 border-b border-white/6 bg-black/20">
               <div className="relative w-full">
                 <LuSearch className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
@@ -193,7 +186,7 @@ export const IconPickerModal: React.FC = () => {
                   }}
                   placeholder="Search icons (e.g. react, terminal, user, check, heart, star)..."
                   autoFocus
-                  className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/[0.05] border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
+                  className="w-full pl-9 pr-8 py-2 text-xs rounded-xl bg-white/5 border border-white/10 text-white placeholder:text-neutral-500 focus:outline-none focus:border-accent/50 transition-colors"
                 />
                 {search && (
                   <button
@@ -210,7 +203,7 @@ export const IconPickerModal: React.FC = () => {
             {/* Icon Grid Area */}
             <div
               data-lenis-prevent
-              className="flex-1 overflow-y-auto p-4 max-h-[380px] min-h-[260px] overscroll-contain"
+              className="flex-1 overflow-y-auto p-4 max-h-95 min-h-65 overscroll-contain"
             >
               {displayedIcons.length === 0 ? (
                 <div className="py-14 text-center">
@@ -236,7 +229,7 @@ export const IconPickerModal: React.FC = () => {
                           "group relative flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all duration-150 cursor-pointer select-none",
                           isSelected
                             ? "bg-accent/20 border-accent text-accent shadow-sm ring-1 ring-accent/40"
-                            : "bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.06] hover:border-white/20 text-neutral-300 hover:text-white",
+                            : "bg-white/2 border-white/6 hover:bg-white/6 hover:border-white/20 text-neutral-300 hover:text-white",
                         )}
                       >
                         <IconComp className="w-5 h-5 mb-1.5 transition-transform group-hover:scale-110" />
@@ -255,7 +248,7 @@ export const IconPickerModal: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setPage((p) => p + 1)}
-                    className="px-4 py-1.5 text-xs rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-neutral-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
+                    className="px-4 py-1.5 text-xs rounded-xl bg-white/5 hover:bg-white/10 text-neutral-300 hover:text-white border border-white/10 transition-colors cursor-pointer"
                   >
                     Load More (
                     {filteredIconNames.length - displayedIcons.length}{" "}
@@ -266,7 +259,7 @@ export const IconPickerModal: React.FC = () => {
             </div>
 
             {/* Footer with Customization Controls and Insert Button */}
-            <div className="px-5 py-3.5 border-t border-white/[0.08] bg-white/[0.02] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <div className="px-5 py-3.5 border-t border-white/8 bg-white/2 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {/* Selected Icon Customizer */}
               <div className="flex flex-col gap-3">
                 {selectedIconName && SelectedIconComp ? (
@@ -304,7 +297,7 @@ export const IconPickerModal: React.FC = () => {
                           "px-2 py-0.5 text-[11px] rounded-md transition-colors cursor-pointer",
                           selectedSize === sz.value
                             ? "bg-accent/20 text-accent font-medium border border-accent/40"
-                            : "bg-white/[0.04] text-neutral-400 hover:text-white",
+                            : "bg-white/4 text-neutral-400 hover:text-white",
                         )}
                       >
                         {sz.label}
@@ -361,7 +354,7 @@ export const IconPickerModal: React.FC = () => {
                       </ColorPicker.Trigger>
                       <ColorPicker.Popover
                         data-lenis-prevent
-                        className="z-[100] p-3.5 bg-neutral-900/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl space-y-3 w-64 text-white"
+                        className="z-100 p-3.5 bg-neutral-900/95 backdrop-blur-md border border-white/15 rounded-2xl shadow-2xl space-y-3 w-64 text-white"
                       >
                         <ColorArea
                           aria-label="Color area"

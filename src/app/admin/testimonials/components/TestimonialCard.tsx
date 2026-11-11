@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { TestimonialType } from "@/types";
 import { LuQuote, LuPencil, LuTrash2 } from "react-icons/lu";
-import MDXContent from "@/components/mdx/MDXContent";
+import MDXContent from "@/components/mdx/mdx-content";
 import { cn } from "@heroui/react";
 
 interface TestimonialCardProps {

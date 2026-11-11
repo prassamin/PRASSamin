@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import dynamic from "next/dynamic";
-import { MdxBlock, MdxBlockType } from "./types";
+import { MdxBlockType } from "./types";
 import { createBlock, blocksToMdx, mdxToBlocks } from "./compiler";
-import { ComponentTray } from "./components/ComponentTray";
-import { CanvasArea } from "./components/CanvasArea";
-import { useBlockHistory } from "./hooks/useBlockHistory";
-import MDXContent from "@/components/mdx/MDXContent";
+import { ComponentTray } from "./components/component-tray";
+import { CanvasArea } from "./components/canvas-area";
+import { useBlockHistory } from "./hooks/use-block-history";
+import MDXContent from "@/components/mdx/mdx-content";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import {
   LuLayoutTemplate,
@@ -24,7 +24,7 @@ import {
 } from "react-icons/lu";
 import { toast } from "@heroui/react";
 import { cn } from "@heroui/react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
@@ -534,9 +534,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   const handleCopyCode = async () => {
     try {
       const body = mode === "code" ? codeValue : compiledMdx;
-      const textToCopy = frontmatter
-        ? `${frontmatter}\n\n${body}`
-        : body;
+      const textToCopy = frontmatter ? `${frontmatter}\n\n${body}` : body;
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast.success("MDX code copied to clipboard!");
@@ -563,12 +561,12 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       data-lenis-prevent
       style={{ minHeight }}
       className={cn(
-        "rounded-2xl border border-white/[0.08] bg-muted/40 shadow-xl flex flex-col overflow-hidden transition-all",
+        "rounded-2xl border border-white/8 bg-muted/40 shadow-xl flex flex-col overflow-hidden transition-all",
         className,
       )}
     >
       {/* Builder Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-white/[0.02] border-b border-white/[0.08] flex-wrap select-none">
+      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-white/2 border-b border-white/8 flex-wrap select-none">
         {/* Left branding & Mobile block sidebar trigger */}
         <div className="flex items-center gap-2 sm:gap-2.5">
           {/* Mobile floating sidebar trigger button (visible on small screens when in builder mode) */}
@@ -576,7 +574,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
             <button
               type="button"
               onClick={() => setIsFloatingTrayOpen(true)}
-              className="flex lg:hidden items-center gap-1.5 p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] active:scale-95 border border-white/10 text-xs font-medium text-neutral-200 hover:text-white transition-all cursor-pointer shadow-xs"
+              className="flex lg:hidden items-center gap-1.5 p-2 rounded-xl bg-white/6 hover:bg-white/12 active:scale-95 border border-white/10 text-xs font-medium text-neutral-200 hover:text-white transition-all cursor-pointer shadow-xs"
               title="Open Block Library"
               aria-label="Open Block Library"
             >
@@ -705,7 +703,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                   width: isTrayExpanded ? `${trayWidth}px` : "0px",
                 }}
                 className={cn(
-                  "bg-muted/40 hidden lg:flex flex-col overflow-hidden shrink-0 border-r border-white/[0.08]",
+                  "bg-muted/40 hidden lg:flex flex-col overflow-hidden shrink-0 border-r border-white/8",
                   dragSide === "left"
                     ? "transition-none"
                     : "transition-[width] duration-300 ease-in-out",
@@ -731,7 +729,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                   "w-1 transition-all duration-150",
                   dragSide === "left"
                     ? "bg-accent/50"
-                    : "bg-white/[0.08] hover:bg-white/20",
+                    : "bg-white/8 hover:bg-white/20",
                 )}
                 title="Drag to resize block panel • Click arrow to toggle"
               >
@@ -828,7 +826,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
             "w-1 transition-all duration-150",
             dragSide === "right"
               ? "bg-accent/50"
-              : "bg-white/[0.08] hover:bg-white/20",
+              : "bg-white/8 hover:bg-white/20",
           )}
           title="Drag to resize preview • Click arrow to toggle"
         >
@@ -867,7 +865,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
             width: isPreviewExpanded ? `${previewWidth}px` : "0px",
           }}
           className={cn(
-            "bg-white/[0.01] hidden lg:flex flex-col overflow-hidden shrink-0 border-l border-white/[0.08]",
+            "bg-white/1 hidden lg:flex flex-col overflow-hidden shrink-0 border-l border-white/8",
             dragSide === "right"
               ? "transition-none"
               : "transition-[width] duration-300 ease-in-out",
@@ -915,14 +913,14 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                 animate={{ x: 0 }}
                 exit={{ x: "-100%" }}
                 transition={{ type: "spring", damping: 26, stiffness: 280 }}
-                className="relative z-10 w-[310px] max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl flex flex-col overflow-hidden"
+                className="relative z-10 w-77.5 max-w-[85vw] h-full bg-neutral-900 border-r border-white/10 shadow-2xl flex flex-col overflow-hidden"
               >
                 {/* Drawer Header */}
-                <div className="h-14 px-4 border-b border-white/10 flex items-center justify-end shrink-0 bg-white/[0.02]">
+                <div className="h-14 px-4 border-b border-white/10 flex items-center justify-end shrink-0 bg-white/2">
                   <button
                     type="button"
                     onClick={() => setIsFloatingTrayOpen(false)}
-                    className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white bg-white/[0.04] hover:bg-white/10 transition-colors cursor-pointer"
+                    className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white bg-white/4 hover:bg-white/10 transition-colors cursor-pointer"
                     aria-label="Close block library"
                   >
                     <LuX className="w-4 h-4" />

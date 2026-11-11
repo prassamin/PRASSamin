@@ -2,14 +2,14 @@
 
 import React, { useState } from "react";
 import {
-  Folder,
-  FolderOpen,
-  File,
-  FileCode,
-  FileText,
-  FileJson,
-} from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+  LuFolder as Folder,
+  LuFolderOpen as FolderOpen,
+  LuFile as File,
+  LuFileCode as FileCode,
+  LuFileText as FileText,
+  LuFileJson as FileJson,
+} from "react-icons/lu";
+import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@heroui/react";
 
 export interface MdxFilesProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -73,7 +73,7 @@ export const MdxFiles: React.FC<MdxFilesProps> = ({
   return (
     <div
       className={cn(
-        "my-6 w-full rounded-2xl border border-white/[0.08] bg-muted/35 p-3 sm:p-3.5 shadow-sm not-prose font-sans backdrop-blur-sm space-y-0.5",
+        "my-6 w-full rounded-2xl border border-white/8 bg-muted/35 p-3 sm:p-3.5 shadow-sm not-prose font-sans backdrop-blur-sm space-y-0.5",
         className,
       )}
       {...props}
@@ -97,7 +97,7 @@ export const MdxFolder: React.FC<MdxFolderProps> = ({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm hover:bg-white/[0.04] transition-colors cursor-pointer group text-left"
+        className="flex w-full items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm hover:bg-white/4 transition-colors cursor-pointer group text-left"
       >
         <motion.div
           animate={{ scale: open ? 1.05 : 1 }}
@@ -124,7 +124,7 @@ export const MdxFolder: React.FC<MdxFolderProps> = ({
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="overflow-hidden"
           >
-            <div className="ms-3.5 flex flex-col border-l border-white/[0.08] ps-2.5 space-y-0.5 mt-0.5">
+            <div className="ms-3.5 flex flex-col border-l border-white/8 ps-2.5 space-y-0.5 mt-0.5">
               {children}
             </div>
           </motion.div>
@@ -143,7 +143,7 @@ export const MdxFile: React.FC<MdxFileProps> = ({
   return (
     <div
       className={cn(
-        "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm hover:bg-white/[0.04] transition-colors select-none text-left",
+        "flex items-center gap-2 rounded-xl px-2.5 py-1.5 text-sm hover:bg-white/4 transition-colors select-none text-left",
         className,
       )}
       {...props}

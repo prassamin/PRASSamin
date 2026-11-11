@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Link } from "@/components/Link";
 import { BriefcaseBusiness } from "lucide-react";
-import MDXContent from "@/components/mdx/MDXContent";
+import MDXContent from "@/components/mdx/mdx-content";
 import { ExperiencesWatermark } from "./watermark";
 import { Reveal } from "@/components/reveal";
 import type { ExperienceType } from "@/types";

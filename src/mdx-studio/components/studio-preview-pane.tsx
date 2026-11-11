@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import MDXContent from "@/components/mdx/MDXContent";
-import { Monitor, Smartphone, X } from "lucide-react";
+import MDXContent from "@/components/mdx/mdx-content";
+import {
+  LuMonitor as Monitor,
+  LuSmartphone as Smartphone,
+  LuX as X,
+} from "react-icons/lu";
 
 interface StudioPreviewPaneProps {
   mdx: string;
@@ -22,9 +26,9 @@ export const StudioPreviewPane: React.FC<StudioPreviewPaneProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="w-full lg:w-[480px] xl:w-[540px] bg-neutral-950/90 border-l border-white/[0.08] flex flex-col h-full overflow-hidden shrink-0 select-none">
+    <div className="w-full lg:w-120 xl:w-135 bg-neutral-950/90 border-l border-white/8 flex flex-col h-full overflow-hidden shrink-0 select-none">
       {/* Preview Header Bar */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="flex items-center justify-between px-5 py-3 border-b border-white/6 bg-white/1">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-white uppercase tracking-wider font-rethink">
             Live Site Preview
@@ -33,7 +37,7 @@ export const StudioPreviewPane: React.FC<StudioPreviewPaneProps> = ({
 
         <div className="flex items-center gap-2">
           {/* Device Toggle */}
-          <div className="flex items-center rounded-xl bg-white/[0.04] p-0.5 border border-white/[0.08]">
+          <div className="flex items-center rounded-xl bg-white/4 p-0.5 border border-white/8">
             <button
               type="button"
               onClick={() => setDevice("desktop")}
@@ -74,13 +78,13 @@ export const StudioPreviewPane: React.FC<StudioPreviewPaneProps> = ({
       {/* Preview Screen Canvas */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-6 flex flex-col items-center bg-black/40">
         <div
-          className={`w-full transition-all duration-300 rounded-2xl bg-neutral-900/90 border border-white/[0.08] p-6 shadow-2xl select-text ${
+          className={`w-full transition-all duration-300 rounded-2xl bg-neutral-900/90 border border-white/8 p-6 shadow-2xl select-text ${
             device === "mobile" ? "max-w-xs p-4 text-xs" : "max-w-xl"
           }`}
         >
           {/* Metadata Card Summary Preview */}
           {(metadata.degree || metadata.school || metadata.title) && (
-            <div className="pb-4 mb-4 border-b border-white/[0.08]">
+            <div className="pb-4 mb-4 border-b border-white/8">
               <span className="text-[10px] font-mono text-accent uppercase tracking-wider block font-bold mb-1">
                 Preview Header
               </span>
