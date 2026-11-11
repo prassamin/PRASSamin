@@ -40,11 +40,11 @@ export const EducationCard: React.FC<EducationCardProps> = ({
   return (
     <div
       className={cn(
-        "relative rounded-2xl border border-white/[0.08] bg-muted/40 hover:bg-muted/60 hover:border-white/[0.16]",
+        "relative rounded-2xl border border-white/8 bg-muted/40 hover:bg-muted/60 hover:border-white/16",
         "p-5 md:p-6 transition-all duration-300 shadow-md group overflow-hidden",
         isCurrent
-          ? "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-emerald-400 before:to-emerald-500/20"
-          : "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-gradient-to-b before:from-white/20 before:to-transparent",
+          ? "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-linear-to-b before:from-emerald-400 before:to-emerald-500/20"
+          : "before:absolute before:left-0 before:top-4 before:bottom-4 before:w-1 before:rounded-r-full before:bg-linear-to-b before:from-white/20 before:to-transparent",
       )}
     >
       {/* Top ambient hover glow */}
@@ -53,7 +53,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
           "absolute -top-16 -right-16 w-44 h-44 rounded-full blur-3xl pointer-events-none transition-all duration-500",
           isCurrent
             ? "bg-emerald-500/5 group-hover:bg-emerald-500/10"
-            : "bg-white/[0.02] group-hover:bg-white/[0.05]",
+            : "bg-white/2 group-hover:bg-white/5",
         )}
       />
 
@@ -67,7 +67,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
                 "w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 shadow-inner transition-transform group-hover:scale-105",
                 isCurrent
                   ? "bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 shadow-emerald-500/10"
-                  : "bg-white/[0.06] border border-white/10 text-neutral-300",
+                  : "bg-white/6 border border-white/10 text-neutral-300",
               )}
             >
               <LuGraduationCap className="w-5 h-5 md:w-6 md:h-6" />
@@ -75,12 +75,12 @@ export const EducationCard: React.FC<EducationCardProps> = ({
 
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h3 className="text-[15px] md:text-xl font-bold text-white font-rethink tracking-tight min-w-0 break-words">
+                <h3 className="text-[15px] md:text-xl font-bold text-white font-rethink tracking-tight min-w-0 wrap-break-word">
                   {education.degree}
                 </h3>
 
                 {education.field && (
-                  <span className="px-2 py-0.5 rounded-md md:rounded-lg text-[10px] md:text-[11px] font-mono font-medium bg-white/[0.06] border border-white/10 text-neutral-200">
+                  <span className="px-2 py-0.5 rounded-md md:rounded-lg text-[10px] md:text-[11px] font-mono font-medium bg-white/6 border border-white/10 text-neutral-200">
                     {education.field}
                   </span>
                 )}
@@ -96,7 +96,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
           {/* Right: Period Badge + Action Buttons — full-width row on mobile */}
           <div className="flex items-center gap-2 w-full md:w-auto md:self-center shrink-0 justify-between">
             {/* Period Badge — grows to fill on mobile */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.08] text-xs font-mono text-neutral-300 shadow-xs md:flex-none justify-center md:justify-start min-w-0">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/4 border border-white/8 text-xs font-mono text-neutral-300 shadow-xs md:flex-none justify-center md:justify-start min-w-0">
               <LuCalendar className="w-3.5 h-3.5 text-emerald-400/80 shrink-0" />
               <span className="truncate min-w-0">
                 {education.period || "Present"}
@@ -110,7 +110,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
                 onClick={() => onEdit(education)}
                 title={`Edit ${education.degree}`}
                 aria-label={`Edit ${education.degree}`}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/[0.06] hover:border-white/15 transition-all cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-white bg-white/3 hover:bg-white/8 border border-white/6 hover:border-white/15 transition-all cursor-pointer shrink-0"
               >
                 <LuPencil className="w-3.5 h-3.5" />
               </button>
@@ -121,7 +121,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
                 onClick={() => onDelete(education)}
                 title={`Delete ${education.degree}`}
                 aria-label={`Delete ${education.degree}`}
-                className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-red-400 bg-white/[0.03] hover:bg-red-500/10 border border-white/[0.06] hover:border-red-500/20 transition-all cursor-pointer shrink-0"
+                className="w-8 h-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-red-400 bg-white/3 hover:bg-red-500/10 border border-white/6 hover:border-red-500/20 transition-all cursor-pointer shrink-0"
               >
                 <LuTrash2 className="w-3.5 h-3.5" />
               </button>
@@ -131,7 +131,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
 
         {/* Description MDX section (if present) */}
         {hasDescription && (
-          <div className="pt-3 border-t border-white/[0.06]">
+          <div className="pt-3 border-t border-white/6">
             <button
               type="button"
               onClick={() => setIsExpanded((prev) => !prev)}
@@ -164,7 +164,7 @@ export const EducationCard: React.FC<EducationCardProps> = ({
                   transition={{ duration: 0.2 }}
                   className="overflow-hidden"
                 >
-                  <div className="mt-2.5 rounded-xl border border-white/[0.06] bg-black/25 p-3.5 md:p-5 overflow-x-auto shadow-inner">
+                  <div className="mt-2.5 rounded-xl border border-white/6 bg-black/25 p-3.5 md:p-5 overflow-x-auto shadow-inner">
                     <div className="prose prose-invert prose-sm max-w-none text-neutral-200 font-inter leading-relaxed">
                       <MDXContent content={education.description!} />
                     </div>

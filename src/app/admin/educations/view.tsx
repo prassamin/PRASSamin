@@ -4,9 +4,9 @@ import React from "react";
 import { EducationType } from "@/types";
 import { LuGraduationCap, LuPlus } from "react-icons/lu";
 import { Button, Card, toast } from "@heroui/react";
-import { EducationCard } from "./components/EducationCard";
+import { EducationCard } from "./components/education-card";
 import { useMdxStudio } from "@/mdx-studio";
-import { EducationForm, EducationFormData } from "./components/EducationForm";
+import { EducationForm, EducationFormData } from "./components/education-form";
 import { useRouter } from "@/hooks/use-router";
 import { useConfirm } from "@/providers/confirm-provider";
 import {
