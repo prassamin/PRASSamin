@@ -62,7 +62,7 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
         {hasInformationTab && (
           <div
             className={cn(
-              "w-full h-full flex flex-col overflow-y-auto transition-opacity duration-200",
+              "w-full h-full flex flex-col overflow-y-auto px-4 pt-8 sm:pt-12 after:content-[''] after:block after:h-8 after:sm:h-12 after:shrink-0 transition-opacity duration-200",
               activeTab === "details"
                 ? "relative z-10 opacity-100 flex"
                 : "hidden opacity-0 pointer-events-none -z-10",

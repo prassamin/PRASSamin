@@ -3,7 +3,10 @@
 import React, { useState } from "react";
 import { useMdxStudio } from "@/mdx-studio";
 import { LuFolderOpen, LuArrowRight } from "react-icons/lu";
-import { TagInput, ImageSelectField } from "@/app/admin/components/form-primitives";
+import {
+  ImageSelectField,
+  StackPicker,
+} from "@/app/admin/components/form-primitives";
 import { cn } from "@heroui/react";
 
 export interface ProjectFormData {
@@ -74,22 +77,17 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   );
 
   return (
-    <div className="w-full min-h-full px-4 py-8 sm:py-12 flex flex-col items-center justify-start relative">
-      <div className="w-full max-w-2xl mx-auto my-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
+    <div className="w-full my-auto flex flex-col items-center justify-start relative">
+      <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-white/8 pb-5">
-          <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-accent/10 border border-accent/25 text-accent flex items-center justify-center shrink-0 mt-0.5">
-              <LuFolderOpen className="w-4.5 h-4.5" />
-            </div>
-            <div>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col">
               <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight">
                 Project Metadata
               </h2>
               <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1 leading-relaxed">
                 Step 1 of 2 — set up the project before writing the content
               </p>
-            </div>
           </div>
         </div>
 
@@ -169,10 +167,13 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
             <label className="block text-xs font-medium text-neutral-300 font-inter">
               Tools
             </label>
-            <TagInput
+            <StackPicker
               value={form.tools}
               onChange={(tools) => updateField("tools", tools)}
             />
+            <p className="text-[10px] text-neutral-500 font-inter">
+              Click a tool to toggle it — search or type a custom one + Enter
+            </p>
           </div>
 
           {/* Links */}
@@ -239,9 +240,6 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
 
         {/* Footer Navigation */}
         <div className="flex items-center justify-end gap-2 border-t border-white/8 pt-5">
-          <span className="text-[10px] text-neutral-500 mr-1">
-            Continue to the MDX builder
-          </span>
           <button
             type="button"
             onClick={handleContinue}
