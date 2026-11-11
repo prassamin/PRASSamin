@@ -1,4 +1,6 @@
-import { SVGProps } from "@/components/icons/types";
+type SVGProps = React.ComponentPropsWithRef<"svg"> & {
+  size?: number;
+};
 
 export const Angularjs = {
   name: "AngularJS",
