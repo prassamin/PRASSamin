@@ -145,12 +145,10 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
   return (
     <MdxStudioContext.Provider value={value}>
       {children}
-      {isOpen && (
-        <MdxStudioModal
-          informationSlot={informationSlot}
-          insertBlockListenerRef={insertBlockListenerRef}
-        />
-      )}
+      <MdxStudioModal
+        informationSlot={informationSlot}
+        insertBlockListenerRef={insertBlockListenerRef}
+      />
     </MdxStudioContext.Provider>
   );
 };

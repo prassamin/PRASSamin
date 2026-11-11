@@ -52,7 +52,7 @@ import { MdxCodeBlock } from "./components/mdx/MdxCodeBlock";
 
 type HeadProps = React.ComponentProps<typeof Heading>;
 const Head = ({ className, ...props }: HeadProps) => (
-  <Heading className={cn("[&_a]:!no-underline", className)} {...props} />
+  <Heading className={cn("[&_a]:no-underline!", className)} {...props} />
 );
 
 export const MdxTable = ({
@@ -338,7 +338,7 @@ export const mdxComponents = {
   ),
   p: ({ className, ...props }: React.ComponentProps<"p">) => (
     <p
-      className={cn("leading-relaxed [&:not(:first-child)]:my-0", className)}
+      className={cn("leading-relaxed not-first:my-0", className)}
       {...props}
     />
   ),
@@ -412,7 +412,7 @@ export const mdxComponents = {
               className="inline-flex select-none disabled:opacity-100 data-[disabled='true']:opacity-100"
             >
               <Checkbox.Content className="flex items-center gap-2.5 cursor-pointer text-sm text-neutral-200">
-                <Checkbox.Control className="bg-white/5 shrink-0 translate-y-[1px]">
+                <Checkbox.Control className="bg-white/5 shrink-0 translate-y-px">
                   <Checkbox.Indicator />
                 </Checkbox.Control>
                 <span className="leading-snug select-text">{textChildren}</span>
@@ -446,7 +446,7 @@ export const mdxComponents = {
     return (
       <ul
         className={cn(
-          isTaskList && "list-none not-prose !pl-0 !ml-0 space-y-1.5 my-3",
+          isTaskList && "list-none not-prose pl-0! ml-0! space-y-1.5 my-3",
           className,
         )}
         {...props}
