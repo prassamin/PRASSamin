@@ -44,7 +44,7 @@ function ToolbarButton({
   variant?: "default" | "accent" | "danger";
 }) {
   const variantStyles = {
-    default: "text-neutral-400 hover:text-white hover:bg-white/[0.08]",
+    default: "text-neutral-400 hover:text-white hover:bg-white/8",
     accent: "text-accent bg-accent/10 hover:bg-accent/20",
     danger: "text-rose-400 hover:bg-rose-500/10",
   };
@@ -108,7 +108,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
       />
 
       {/* Content toolbar */}
-      <div className="flex items-center gap-4 px-4 py-2 border-b border-white/[0.05] bg-white/[0.02]">
+      <div className="flex items-center gap-4 px-4 py-2 border-b border-white/5 bg-white/2">
         {/* Navigation Group */}
         <div className={GROUP_BASE}>
           <ToolbarButton
@@ -154,14 +154,14 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
           <Dropdown.Trigger
             className={cn(
               BTN_BASE,
-              "w-auto px-2.5 text-neutral-400 hover:text-white hover:bg-white/[0.08]",
+              "w-auto px-2.5 text-neutral-400 hover:text-white hover:bg-white/8",
             )}
           >
             <LuArrowUpDown />
             <span className="hidden md:inline">Sort</span>
           </Dropdown.Trigger>
           <Dropdown.Popover
-            className="min-w-48 p-1.5 rounded-2xl border border-white/[0.06] bg-neutral-900/90 backdrop-blur-2xl shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.04)] text-neutral-200"
+            className="min-w-48 p-1.5 rounded-2xl border border-white/6 bg-neutral-900/90 backdrop-blur-2xl shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.04)] text-neutral-200"
             placement="bottom end"
           >
             <Dropdown.Menu className="gap-1">
@@ -176,7 +176,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortKey === "name"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortKeyChange("name")}
                 >
@@ -193,7 +193,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortKey === "date"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortKeyChange("date")}
                 >
@@ -210,7 +210,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortKey === "size"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortKeyChange("size")}
                 >
@@ -227,7 +227,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortKey === "type"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortKeyChange("type")}
                 >
@@ -241,7 +241,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
               </Dropdown.Section>
 
               {/* Sort Order Section */}
-              <Dropdown.Section className="mt-2 pt-2 border-t border-white/[0.05]">
+              <Dropdown.Section className="mt-2 pt-2 border-t border-white/5">
                 <Header className="text-[10px] uppercase font-semibold text-neutral-500 px-2 py-1">
                   Order
                 </Header>
@@ -251,7 +251,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortDirection === "asc"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortDirectionChange("asc")}
                 >
@@ -269,7 +269,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
                     "rounded-lg px-2.5 py-1.5 text-xs transition-all duration-150 cursor-pointer",
                     sortDirection === "desc"
                       ? "bg-accent/15 text-accent font-medium"
-                      : "hover:bg-white/[0.05] text-neutral-300",
+                      : "hover:bg-white/5 text-neutral-300",
                   )}
                   onAction={() => onSortDirectionChange("desc")}
                 >
@@ -297,7 +297,7 @@ export function ContentToolbar({ onCreateFolder }: Props = {}) {
               "gap-1.5 px-3 rounded-xl",
               selectedCount > 0
                 ? "text-rose-400 bg-rose-500/10 hover:bg-rose-500/15 hover:text-rose-300"
-                : "text-neutral-400 hover:text-white hover:bg-white/[0.08]",
+                : "text-neutral-400 hover:text-white hover:bg-white/8",
             )}
             title={
               selectedCount > 0

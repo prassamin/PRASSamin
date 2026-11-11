@@ -19,8 +19,7 @@ export function CreateFolderModal(props: Props = {}) {
   const isOpen = props.isOpen ?? content.isCreateFolderOpen;
   const onClose = props.onClose ?? content.handleCloseFolderModal;
   const folderName = props.folderName ?? content.folderName;
-  const onFolderNameChange =
-    props.onFolderNameChange ?? content.setFolderName;
+  const onFolderNameChange = props.onFolderNameChange ?? content.setFolderName;
   const onSubmit = props.onSubmit ?? content.handleCreateFolder;
   const isSubmitting =
     props.isSubmitting ??
@@ -35,7 +34,7 @@ export function CreateFolderModal(props: Props = {}) {
         }}
       >
         <Modal.Container size="sm">
-          <Modal.Dialog className="rounded-2xl bg-muted/40 backdrop-blur-2xl border border-white/[0.06] shadow-2xl text-white p-0 overflow-hidden">
+          <Modal.Dialog className="rounded-2xl bg-muted/40 backdrop-blur-2xl border border-white/6 shadow-2xl text-white p-0 overflow-hidden">
             {/* Close button */}
             {!isSubmitting && (
               <button
@@ -49,7 +48,7 @@ export function CreateFolderModal(props: Props = {}) {
             )}
 
             {/* Header */}
-            <div className="flex items-center gap-3.5 border-b border-white/[0.05] px-5 pt-5 pb-4 pr-12">
+            <div className="flex items-center gap-3.5 border-b border-white/5 px-5 pt-5 pb-4 pr-12">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-accent/15 text-accent border border-accent/20">
                 <LuFolderPlus className="w-5 h-5" />
               </div>
@@ -83,7 +82,7 @@ export function CreateFolderModal(props: Props = {}) {
                     value={folderName}
                     onChange={(e) => onFolderNameChange(e.target.value)}
                     placeholder="e.g. projects, banners, certificates"
-                    className="h-10 w-full rounded-xl border border-white/[0.08] bg-white/[0.04] px-3.5 text-xs text-white placeholder:text-neutral-500 outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-60"
+                    className="h-10 w-full rounded-xl border border-white/8 bg-white/4 px-3.5 text-xs text-white placeholder:text-neutral-500 outline-none transition-all focus:border-accent focus:ring-1 focus:ring-accent disabled:opacity-60"
                     autoFocus
                     disabled={isSubmitting}
                   />
@@ -95,12 +94,12 @@ export function CreateFolderModal(props: Props = {}) {
               </div>
 
               {/* Footer */}
-              <div className="flex items-center justify-end gap-2.5 border-t border-white/[0.05] bg-white/[0.02] px-5 py-4">
+              <div className="flex items-center justify-end gap-2.5 border-t border-white/5 bg-white/2 px-5 py-4">
                 <button
                   type="button"
                   onClick={onClose}
                   disabled={isSubmitting}
-                  className="rounded-xl border border-white/[0.08] px-4 py-2 text-xs font-medium text-neutral-300 hover:bg-white/[0.08] hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
+                  className="rounded-xl border border-white/8 px-4 py-2 text-xs font-medium text-neutral-300 hover:bg-white/8 hover:text-white transition-colors disabled:opacity-50 cursor-pointer"
                 >
                   Cancel
                 </button>

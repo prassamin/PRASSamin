@@ -42,7 +42,7 @@ export function ContentTree() {
             "group flex w-full items-center gap-2 rounded-lg py-1.5 px-2 text-left transition-colors cursor-pointer",
             isActive
               ? "bg-accent/15 text-accent font-medium"
-              : "text-neutral-400 hover:bg-white/[0.06] hover:text-white",
+              : "text-neutral-400 hover:bg-white/6 hover:text-white",
           )}
           style={{ paddingLeft: `${8 + depth * 14}px` }}
           title={nodePath}
@@ -58,14 +58,19 @@ export function ContentTree() {
             />
           )}
 
-          <LuFolder className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-accent" : "text-neutral-400 group-hover:text-neutral-200")} />
-          <span className="truncate text-xs flex-1">
-            {node.name}
-          </span>
+          <LuFolder
+            className={cn(
+              "w-3.5 h-3.5 shrink-0",
+              isActive
+                ? "text-accent"
+                : "text-neutral-400 group-hover:text-neutral-200",
+            )}
+          />
+          <span className="truncate text-xs flex-1">{node.name}</span>
         </button>
 
         {isExpanded && children.length > 0 && (
-          <div className="border-l border-white/[0.05] ml-4">
+          <div className="border-l border-white/5 ml-4">
             {children.map((child) => renderNode(child, depth + 1))}
           </div>
         )}
@@ -74,7 +79,7 @@ export function ContentTree() {
   };
 
   return (
-    <aside className="w-64 shrink-0 overflow-y-auto border-r border-white/[0.05] bg-white/[0.02] p-3 hidden md:block">
+    <aside className="w-64 shrink-0 overflow-y-auto border-r border-white/5 bg-white/2 p-3 hidden md:block">
       <div className="mb-2 px-2 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">
         Folder Tree
       </div>
@@ -86,7 +91,7 @@ export function ContentTree() {
           "group flex w-full items-center gap-2 rounded-lg py-1.5 px-2 text-left transition-colors cursor-pointer",
           normCurrent === normRoot
             ? "bg-accent/15 text-accent font-medium"
-            : "text-neutral-400 hover:bg-white/[0.06] hover:text-white",
+            : "text-neutral-400 hover:bg-white/6 hover:text-white",
         )}
         title="Root"
       >
@@ -101,7 +106,14 @@ export function ContentTree() {
           />
         )}
 
-        <LuHardDrive className={cn("w-3.5 h-3.5 shrink-0", normCurrent === normRoot ? "text-accent" : "text-neutral-400 group-hover:text-neutral-200")} />
+        <LuHardDrive
+          className={cn(
+            "w-3.5 h-3.5 shrink-0",
+            normCurrent === normRoot
+              ? "text-accent"
+              : "text-neutral-400 group-hover:text-neutral-200",
+          )}
+        />
         <span className="truncate text-xs flex-1">Root</span>
       </button>
 
@@ -110,7 +122,7 @@ export function ContentTree() {
           {Array.from({ length: 4 }).map((_, idx) => (
             <div
               key={idx}
-              className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-white/[0.02]"
+              className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-white/2"
               style={{ paddingLeft: `${8 + (idx % 2) * 12}px` }}
             >
               <div className="w-3.5 h-3.5 rounded bg-white/10 shrink-0" />
@@ -122,7 +134,7 @@ export function ContentTree() {
           ))}
         </div>
       ) : expandedPaths.has(normRoot) && rootChildren.length > 0 ? (
-        <div className="mt-1 border-l border-white/[0.05] ml-4">
+        <div className="mt-1 border-l border-white/5 ml-4">
           {rootChildren.map((node) => renderNode(node, 1))}
         </div>
       ) : null}

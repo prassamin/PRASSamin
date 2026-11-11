@@ -154,14 +154,14 @@ function RowActionsMenu({
   return (
     <Dropdown>
       <Dropdown.Trigger
-        className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+        className="inline-flex h-7 w-7 items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-white/8 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
         aria-label="Actions"
       >
         <LuEllipsisVertical className="w-4 h-4" />
       </Dropdown.Trigger>
       <Dropdown.Popover
         placement="bottom end"
-        className="min-w-44 rounded-2xl border border-white/[0.06] bg-neutral-900/90 backdrop-blur-2xl shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.04)] p-1 text-neutral-200"
+        className="min-w-44 rounded-2xl border border-white/6 bg-neutral-900/90 backdrop-blur-2xl shadow-[0_16px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(255,255,255,0.04)] p-1 text-neutral-200"
       >
         <Dropdown.Menu className="gap-0.5">
           <Dropdown.Section className="mb-1">
@@ -208,7 +208,7 @@ function RowActionsMenu({
                 "rounded-lg transition-colors py-1.5 px-2",
                 item.kind === "folder"
                   ? "opacity-40 cursor-not-allowed"
-                  : "hover:bg-white/[0.08] cursor-pointer",
+                  : "hover:bg-white/8 cursor-pointer",
               )}
             >
               <Label className="flex items-center gap-2.5 text-xs font-medium cursor-pointer">
@@ -218,7 +218,7 @@ function RowActionsMenu({
             </Dropdown.Item>
           </Dropdown.Section>
 
-          <Dropdown.Section className="pt-1 border-t border-white/[0.05]">
+          <Dropdown.Section className="pt-1 border-t border-white/5">
             <Dropdown.Item
               textValue="Delete"
               onAction={handleDelete}
@@ -243,7 +243,7 @@ function ContentGridSkeleton() {
         {Array.from({ length: 6 }).map((_, idx) => (
           <div
             key={idx}
-            className="flex items-center gap-4 py-3 px-4 rounded-xl bg-white/[0.02] border border-white/[0.04] animate-pulse"
+            className="flex items-center gap-4 py-3 px-4 rounded-xl bg-white/2 border border-white/4 animate-pulse"
           >
             <Skeleton className="w-4 h-4 rounded bg-white/10 shrink-0" />
             <Skeleton className="w-8 h-8 rounded-lg bg-white/10 shrink-0" />
@@ -350,7 +350,7 @@ export function ContentGrid({ onPreview: onPreviewProp }: Props = {}) {
       onDrop={handleDrop}
       className={cn(
         "flex-1 overflow-x-auto relative flex flex-col min-w-0 transition-colors",
-        isDragOver && "bg-accent/[0.03]",
+        isDragOver && "bg-accent/3",
       )}
     >
       {/* Drag overlay indicator */}
@@ -367,7 +367,7 @@ export function ContentGrid({ onPreview: onPreviewProp }: Props = {}) {
 
       <table className="w-full min-w-150 border-collapse">
         <thead>
-          <tr className="border-b border-white/[0.05] bg-white/[0.02]">
+          <tr className="border-b border-white/5 bg-white/2">
             <th className="w-10 px-4 py-2.5 text-left">
               <Checkbox
                 isSelected={allSelected}
@@ -392,7 +392,7 @@ export function ContentGrid({ onPreview: onPreviewProp }: Props = {}) {
             <th className="w-10 px-4 py-2.5" />
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.03]">
+        <tbody className="divide-y divide-white/3">
           {items.map((item) => {
             const selected = selectedPaths.has(item.path);
 
@@ -411,7 +411,7 @@ export function ContentGrid({ onPreview: onPreviewProp }: Props = {}) {
                   "group transition-colors cursor-pointer",
                   selected
                     ? "bg-accent/10 hover:bg-accent/15"
-                    : "hover:bg-white/[0.03]",
+                    : "hover:bg-white/3",
                 )}
               >
                 <td

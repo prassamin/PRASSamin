@@ -41,13 +41,13 @@ function ContentManagerViewInner() {
   }
 
   return (
-    <div className="w-full h-[calc(100dvh-112px)] rounded-2xl border border-white/[0.06] bg-muted/40 backdrop-blur-2xl flex flex-col overflow-hidden shadow-2xl relative">
+    <div className="w-full h-[calc(100dvh-112px)] rounded-2xl border border-white/6 bg-muted/40 backdrop-blur-2xl flex flex-col overflow-hidden shadow-2xl relative">
       {/* Ambient gloss glow */}
       <div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 rounded-full bg-accent/5 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-sky-500/[0.04] blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 -left-20 w-80 h-80 rounded-full bg-sky-500/4 blur-3xl" />
 
       {/* Header with Breadcrumbs */}
-      <div className="border-b border-white/[0.05] bg-white/[0.02] px-4 py-2.5">
+      <div className="border-b border-white/5 bg-white/2 px-4 py-2.5">
         <ContentBreadcrumbs />
       </div>
 

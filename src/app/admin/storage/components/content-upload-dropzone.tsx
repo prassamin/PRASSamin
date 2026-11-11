@@ -31,11 +31,11 @@ export function ContentUploadDropzone({ onUpload, disabled }: Props) {
         "rounded-2xl border-2 border-dashed p-6 transition-all duration-200 text-center",
         isDragOver
           ? "border-accent bg-accent/10"
-          : "border-white/[0.08] bg-white/[0.02] hover:border-white/[0.16] hover:bg-white/[0.04]",
+          : "border-white/8 bg-white/2 hover:border-white/16 hover:bg-white/4",
       )}
     >
       <div className="flex flex-col items-center justify-center gap-2">
-        <div className="w-10 h-10 rounded-xl bg-white/[0.05] border border-white/[0.08] flex items-center justify-center text-accent">
+        <div className="w-10 h-10 rounded-xl bg-white/5 border border-white/8 flex items-center justify-center text-accent">
           <LuUpload className="w-5 h-5" />
         </div>
         <div>
@@ -61,7 +61,7 @@ export function ContentUploadDropzone({ onUpload, disabled }: Props) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={disabled}
-          className="mt-2 rounded-xl border border-white/[0.08] bg-white/[0.06] px-4 py-1.5 text-xs font-medium text-white hover:bg-white/[0.1] transition-colors disabled:opacity-50 cursor-pointer"
+          className="mt-2 rounded-xl border border-white/8 bg-white/6 px-4 py-1.5 text-xs font-medium text-white hover:bg-white/10 transition-colors disabled:opacity-50 cursor-pointer"
         >
           Choose Files
         </button>
