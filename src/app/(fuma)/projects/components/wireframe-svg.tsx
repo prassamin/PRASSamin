@@ -3,7 +3,7 @@ import React from "react";
 export function WireframeSvg() {
   return (
     <svg
-      className="absolute overflow-hidden top-10 inset-x-0 md:w-full z-[-1] md:max-w-[68rem] mx-auto opacity-70"
+      className="absolute overflow-hidden top-10 inset-x-0 md:w-full z-[-1] md:max-w-272 mx-auto opacity-70"
       fill="none"
       height="800"
       viewBox="0 0 1153 800"

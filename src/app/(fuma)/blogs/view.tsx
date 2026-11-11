@@ -129,7 +129,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
     >
       {/* Background Architectural Glow and Wireframe Header */}
       <div
-        className="absolute overflow-hidden inset-0 h-[450px] bg-neutral-950 pointer-events-none"
+        className="absolute overflow-hidden inset-0 h-112.5 bg-neutral-950 pointer-events-none"
         style={{
           maskImage:
             "linear-gradient(to bottom, rgba(0, 0, 0, 1) 80%, rgba(0, 0, 0, 0) 100%)",
@@ -139,11 +139,11 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
       >
         <div
           aria-hidden="true"
-          className="h-[25px] w-[400px] rounded-r-[50%] bg-gradient-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
+          className="h-6.25 w-100 rounded-r-[50%] bg-linear-to-r from-accent via-accent to-[color-mix(in_srgb,var(--accent)_50%,var(--foreground))]/80 blur-[32px] absolute -top-4 -translate-y-1/2 rotate-45 origin-left -left-4 z-[-1]"
         />
         <div
           aria-hidden="true"
-          className="h-[400px] w-[650px] rounded-full bg-gradient-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
+          className="h-100 w-162.5 rounded-full bg-linear-to-r from-accent-dark/30 to-accent-deep/30 blur-[150px] absolute top-0 -translate-y-full rotate-45 origin-left z-[-2] left-[15%]"
         />
       </div>
 
@@ -151,21 +151,21 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
       <motion.div variants={itemVariants} className="relative">
         <div className="layout text-center pb-12 pt-28 md:pb-20 md:pt-36 flex flex-col items-center justify-center">
           {/* Glass Icon Squircle Badge with Gradient Border */}
-          <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+          <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
             <LuBookText className="size-[45%] text-neutral-300" />
           </div>
 
           {/* Heading: The Blog */}
           <h1 className="mt-4 h2 sm:h1">
             The{" "}
-            <span className="transition-colors bg-gradient-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
+            <span className="transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
               Blog
             </span>
           </h1>
 
           {/* Subtitle */}
           <p className="b1 mt-3">
-            <span className="transition-colors bg-gradient-to-r from-neutral-300/[35%] via-neutral-300/90 to-neutral-300/[35%] bg-clip-text text-transparent">
+            <span className="transition-colors bg-linear-to-r from-neutral-300/35 via-neutral-300/90 to-neutral-300/35 bg-clip-text text-transparent">
               Thoughts, mental models, and tutorials about front-end
               development.
             </span>
@@ -173,7 +173,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
 
           {/* Search Box */}
           <div className="mt-7 w-full">
-            <div className="relative isolate before:transition-opacity rounded-xl bg-muted/50 backdrop-blur-sm w-full max-w-[500px] mx-auto group gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] border-1 border-transparent">
+            <div className="relative isolate before:transition-opacity rounded-xl bg-muted/50 backdrop-blur-sm w-full max-w-125 mx-auto group gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
               <input
                 ref={searchRef}
                 type="text"
@@ -182,7 +182,7 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
                 placeholder="Search..."
                 className="b2 placeholder:neutral-500 rounded-[inherit] bg-transparent border-0 w-full py-3 px-5 pl-12 focus:outline-none focus:ring-0 text-sm text-neutral-200"
               />
-              <LuSearch className="lucide lucide-search text-neutral-300 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none size-5" />
+              <LuSearch className="text-neutral-300 absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none size-5" />
               <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center flex-col">
                 {searchQuery ? (
                   <button

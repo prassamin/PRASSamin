@@ -3,8 +3,8 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, type Variants } from "motion/react";
-import { ArrowRight, Link as LinkIcon } from "lucide-react";
+import { motion, type Variants } from "framer-motion";
+import { LuArrowRight as ArrowRight, LuLink as LinkIcon } from "react-icons/lu";
 import { FaGithub } from "react-icons/fa6";
 import { ShiningText } from "./shining-text";
 import type { QueryProjects } from "@/lib/get-projects";
@@ -93,7 +93,10 @@ export default function ProjectCard({
         viewport={{ once: true, amount: 0.2 }}
       >
         {/* Card Header: 01 -- Title, Category Badge */}
-        <motion.div className="flex flex-col gap-4" variants={cardSectionVariants}>
+        <motion.div
+          className="flex flex-col gap-4"
+          variants={cardSectionVariants}
+        >
           <div className="flex items-end justify-between gap-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-3">
@@ -105,7 +108,10 @@ export default function ProjectCard({
                   {project.category}
                 </span>
               </div>
-              <Link className="group flex items-center gap-2" href={projectHref}>
+              <Link
+                className="group flex items-center gap-2"
+                href={projectHref}
+              >
                 <h2 className="font-bold text-3xl text-foreground leading-tight line-clamp-1 tracking-tight">
                   {project.title}
                 </h2>
@@ -120,49 +126,49 @@ export default function ProjectCard({
             className="group relative block aspect-16/11 w-full cursor-pointer rounded-2xl bg-[#f2f2f20c] p-1 border border-neutral-800/80 sm:aspect-video md:aspect-16/10 lg:aspect-16/11 lg:rounded-3xl lg:p-2 hover:-translate-y-2 transition-transform duration-300 ease-in-out lg:mt-2.5"
             href={projectHref}
           >
-          {/* Top highlight border line */}
-          <div
-            aria-hidden="true"
-            className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,rgba(0,0,0,0)_5%,rgba(255,255,255,0.8)_35%,rgb(255,255,255)_50%,rgba(255,255,255,0.8)_65%,rgba(0,0,0,0)_95%)]"
-          />
-
-          {/* Inside Container */}
-          <div className="relative flex size-full flex-col items-center justify-between overflow-hidden rounded-xl bg-black max-lg:pt-2 lg:rounded-2xl from-black/20 to-black/45 transition-colors duration-300 hover:from-black/20 lg:from-black/35 bg-linear-to-b">
-            {/* Landscape Thumbnail */}
-            {project?.thumbnail ? (
-              <Image
-                src={project.thumbnail}
-                alt={project.title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
-              />
-            ) : (
-              <div className="absolute inset-0 flex items-center justify-center bg-neutral-950">
-                <span className="font-mono text-xs text-neutral-600 uppercase tracking-wider">
-                  {project.title}
-                </span>
-              </div>
-            )}
-
-            {/* Top gradient scrim for text legibility */}
-            <div className="absolute inset-x-0 top-0 z-10 h-2/3 bg-linear-to-b from-black/70 via-black/20 to-transparent" />
-
-            {/* Inner top subtle line */}
+            {/* Top highlight border line */}
             <div
               aria-hidden="true"
-              className="absolute inset-x-0 top-0 z-10 h-[0.8px] bg-[linear-gradient(90deg,rgba(0,0,0,0)_20%,rgb(255,255,255)_50%,rgba(0,0,0,0)_80%)] opacity-70"
+              className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,rgba(0,0,0,0)_5%,rgba(255,255,255,0.8)_35%,rgb(255,255,255)_50%,rgba(255,255,255,0.8)_65%,rgba(0,0,0,0)_95%)]"
             />
 
-            {/* Heading text + ArrowRight (top-aligned) */}
-            <div className="relative z-20 flex w-full flex-row items-center justify-between gap-8 px-4 py-3 text-white/90 md:px-6 md:py-4 lg:px-5 lg:py-5">
-              <p className="text-sm sm:text-base md:text-lg line-clamp-2">
-                {project.description}
-              </p>
-              <ArrowRight className="size-5 shrink-0 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+            {/* Inside Container */}
+            <div className="relative flex size-full flex-col items-center justify-between overflow-hidden rounded-xl bg-black max-lg:pt-2 lg:rounded-2xl from-black/20 to-black/45 transition-colors duration-300 hover:from-black/20 lg:from-black/35 bg-linear-to-b">
+              {/* Landscape Thumbnail */}
+              {project?.thumbnail ? (
+                <Image
+                  src={project.thumbnail}
+                  alt={project.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-neutral-950">
+                  <span className="font-mono text-xs text-neutral-600 uppercase tracking-wider">
+                    {project.title}
+                  </span>
+                </div>
+              )}
+
+              {/* Top gradient scrim for text legibility */}
+              <div className="absolute inset-x-0 top-0 z-10 h-2/3 bg-linear-to-b from-black/70 via-black/20 to-transparent" />
+
+              {/* Inner top subtle line */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 z-10 h-[0.8px] bg-[linear-gradient(90deg,rgba(0,0,0,0)_20%,rgb(255,255,255)_50%,rgba(0,0,0,0)_80%)] opacity-70"
+              />
+
+              {/* Heading text + ArrowRight (top-aligned) */}
+              <div className="relative z-20 flex w-full flex-row items-center justify-between gap-8 px-4 py-3 text-white/90 md:px-6 md:py-4 lg:px-5 lg:py-5">
+                <p className="text-sm sm:text-base md:text-lg line-clamp-2">
+                  {project.description}
+                </p>
+                <ArrowRight className="size-5 shrink-0 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+              </div>
             </div>
-          </div>
-        </Link>
+          </Link>
         </motion.div>
 
         {/* Links: Live Preview & Source Code */}
@@ -179,7 +185,10 @@ export default function ProjectCard({
                 className="text-neutral-300 font-light flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
                 <LinkIcon className="text-foreground size-4 stroke-[1.5px]" />
-                <ShiningText text="Live Preview" className="text-[14px] sm:text-base" />
+                <ShiningText
+                  text="Live Preview"
+                  className="text-[14px] sm:text-base"
+                />
               </a>
             )}
             {project.links?.github && (
@@ -190,7 +199,10 @@ export default function ProjectCard({
                 className="text-neutral-300 font-light flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
                 <FaGithub className="text-foreground size-4 stroke-[1.5px] sm:stroke-2" />
-                <ShiningText text="Source Code" className="text-[14px] sm:text-base" />
+                <ShiningText
+                  text="Source Code"
+                  className="text-[14px] sm:text-base"
+                />
               </a>
             )}
           </motion.div>
