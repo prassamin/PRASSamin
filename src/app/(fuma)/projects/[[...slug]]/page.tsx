@@ -3,7 +3,7 @@ import { metatag } from "@/lib/metatag";
 import { projectSource } from "@/lib/source";
 import { notFound } from "next/navigation";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
-import { getTableOfContents } from "fumadocs-core/server";
+import { projectMeta } from "~/generated/mdx";
 import { RailToc, type RailTocItem } from "@/components/rail-toc";
 import { TrackView } from "@/components/track-view";
 import { ProjectDetailBackground } from "../components/project-detail-background";
@@ -46,13 +46,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
 
   const MDX = page.data.body;
 
-  // Table of contents from the raw MDX
-  const toc = getTableOfContents(page.data.content || "");
-  const tocItems: RailTocItem[] = toc.map((item) => ({
-    id: item.url.replace(/^#/, ""),
-    label: typeof item.title === "string" ? item.title : "",
-    depth: item.depth,
-  }));
+  const tocItems: RailTocItem[] = projectMeta[fSlug]?.toc ?? [];
 
   return (
     <>

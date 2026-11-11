@@ -3,9 +3,9 @@ import { metatag } from "@/lib/metatag";
 import { source } from "@/lib/source";
 import { notFound } from "next/navigation";
 import { getMDXComponents, mdxComponents } from "@/mdx-components";
-import { getTableOfContents } from "fumadocs-core/server";
 import { RailToc, type RailTocItem } from "@/components/rail-toc";
 import { BlogCard } from "@/components/blog-card";
+import { blogMeta } from "~/generated/mdx";
 import { TrackView } from "@/components/track-view";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,7 +13,6 @@ import { LuBookOpen, LuEye } from "react-icons/lu";
 import Footer from "@/components/Footer";
 import BlogsView from "../view";
 import { getBlogs } from "@/lib/get-blogs";
-import readingTime from "reading-time";
 import { getOwnerCached, toPublicOwner } from "@/lib/github";
 import { TWITTER_USERNAME } from "@/constants";
 import { getOrigin } from "@/lib/url";
@@ -43,8 +42,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
   page.data.views = blogStat?.totalViews || 0;
   const MDX = page.data.body;
 
-  const readStats = readingTime(page.data.content || "");
-  const readingTimeText = readStats.text || "5 min read";
+  const readingTimeText = blogMeta[fSlug]?.readingTime || "-";
 
   const formattedDate = new Date(
     page.data.createdAt || Date.now(),
@@ -72,13 +70,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
 
   const tags: string[] = page.data.tags || [];
 
-  // Table of contents from the raw MDX (headings get slugged by the Heading component)
-  const toc = getTableOfContents(page.data.content || "");
-  const tocItems: RailTocItem[] = toc.map((item) => ({
-    id: item.url.replace(/^#/, ""),
-    label: typeof item.title === "string" ? item.title : "",
-    depth: item.depth,
-  }));
+  const tocItems: RailTocItem[] = blogMeta[fSlug]?.toc ?? [];
 
   return (
     <>

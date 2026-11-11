@@ -1,6 +1,6 @@
 import { source } from "@/lib/source";
 import { db } from "@/lib/db";
-import readingTime from "reading-time";
+import { blogMeta } from "~/generated/mdx";
 
 type GetBlogsParams = {
   page?: number;
@@ -78,7 +78,7 @@ export async function getBlogs({
       slug: entry.slugs.join("/"),
       url: entry.url,
       views: views,
-      readingTime: readingTime(entry.data.content).text,
+      readingTime: blogMeta[entry.slugs.join("/")]?.readingTime ?? "",
     };
   });
 

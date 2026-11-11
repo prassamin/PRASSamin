@@ -49,4 +49,4 @@ seed.ts
 .source
 demo.mdx
 
-/generated/prisma
+/generated/

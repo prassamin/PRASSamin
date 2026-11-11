@@ -11,8 +11,10 @@
   "description": "My Portfolio v2.",
   "homepage": "https://pras.me/",
   "scripts": {
-    "dev": "prisma generate && next dev --turbopack",
-    "build": "prisma generate && next build",
+    "predev": "prisma generate && node scripts/generate-content-meta.mjs",
+    "dev": "next dev --turbopack",
+    "prebuild": "prisma generate && node scripts/generate-content-meta.mjs",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "cli": "./content-manager",

@@ -9,11 +9,6 @@ const withFM = withFrontmatter({
 });
 
 const nextConfig: NextConfig = {
-  // Ensure MDX content files are included in serverless function bundles
-  // (Fumadocs reads them lazily at runtime).
-  outputFileTracingIncludes: {
-    "/**": ["./content/**"],
-  },
   async rewrites() {
     return [
       {
