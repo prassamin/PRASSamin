@@ -3,7 +3,8 @@ import { cn } from "@heroui/react";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Github } from "./icons";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { useRouter } from "@/hooks/use-router";
 import { toast } from "@heroui/react";
 import axios, { AxiosError } from "axios";
 
@@ -29,7 +30,7 @@ export const GithubOAuthButton: React.FC<
     } catch (error) {
       if (error instanceof AxiosError && error.response?.data.message) {
         toast.danger(error.response?.data.message);
-        return
+        return;
       }
       toast.danger("Something went wrong");
     } finally {

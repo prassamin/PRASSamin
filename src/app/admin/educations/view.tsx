@@ -7,7 +7,7 @@ import { Button, Card, toast } from "@heroui/react";
 import { EducationCard } from "./components/EducationCard";
 import { useMdxStudio } from "@/mdx-studio";
 import { EducationForm, EducationFormData } from "./components/EducationForm";
-import { useRouter } from "@/hooks/useRouter";
+import { useRouter } from "@/hooks/use-router";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import {
   createEducationAction,
@@ -184,7 +184,7 @@ export const AdminEduView: React.FC<AdminEduViewProps> = ({ educations }) => {
       {/* Education Cards List */}
       {educations.length === 0 ? (
         /* Empty State */
-        <Card className="bg-muted/30 border border-white/[0.08] rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
+        <Card className="bg-muted/30 border border-white/8 rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
           <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
             <LuGraduationCap className="w-7 h-7" />
           </div>

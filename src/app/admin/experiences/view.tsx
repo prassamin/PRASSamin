@@ -10,7 +10,7 @@ import {
   ExperienceForm,
   ExperienceFormData,
 } from "./components/experience-form";
-import { useRouter } from "@/hooks/useRouter";
+import { useRouter } from "@/hooks/use-router";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import {
   createExperienceAction,
@@ -161,78 +161,78 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
   };
 
   return (
-      <div className="space-y-6 sm:space-y-8 w-full">
-        {/* Header Section */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-rethink text-white tracking-tight">
-              Experiences
-            </h1>
-            <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 leading-relaxed">
-              Manage your professional work history, roles, engineering
-              achievements, and company contributions.
-            </p>
-          </div>
-
-          {/* Primary Action Button */}
-          <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
-            <Button
-              type="button"
-              onClick={handleOpenCreate}
-              className="bg-accent text-neutral-950 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <LuPlus className="w-4 h-4" />
-              <span>Add Experience</span>
-            </Button>
-          </div>
+    <div className="space-y-6 sm:space-y-8 w-full">
+      {/* Header Section */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold font-rethink text-white tracking-tight">
+            Experiences
+          </h1>
+          <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 leading-relaxed">
+            Manage your professional work history, roles, engineering
+            achievements, and company contributions.
+          </p>
         </div>
 
-        {/* Experience Cards List */}
-        {experiences.length === 0 ? (
-          /* Empty State */
-          <Card className="bg-muted/30 border border-white/8 rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
-              <LuBriefcase className="w-7 h-7" />
-            </div>
-            <h3 className="text-lg font-bold text-white font-rethink">
-              No experience records yet
-            </h3>
-            <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 max-w-sm mx-auto leading-relaxed">
-              Add your professional roles, engineering positions, or freelancing
-              history to display on your portfolio.
-            </p>
-            <Button
-              type="button"
-              onClick={handleOpenCreate}
-              className="mt-6 bg-accent text-neutral-950 font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer"
-            >
-              <LuPlus className="w-4 h-4" />
-              <span>Add First Experience</span>
-            </Button>
-          </Card>
-        ) : (
-          <div className="space-y-4">
-            {experiences.map((exp) => (
-              <ExperienceCard
-                key={exp.id}
-                experience={exp}
-                onEdit={(item) => handleOpenEdit(item)}
-                onDelete={(item) => {
-                  confirm({
-                    isDanger: true,
-                    title: `Delete ${item.role}?`,
-                    description: `Are you sure you want to delete this position at ${item.company}? This action cannot be undone.`,
-                    confirmText: "Delete",
-                    onConfirm: async () => {
-                      await handleDelete(item);
-                    },
-                  });
-                }}
-              />
-            ))}
-          </div>
-        )}
+        {/* Primary Action Button */}
+        <div className="flex items-center gap-2 self-start sm:self-center shrink-0">
+          <Button
+            type="button"
+            onClick={handleOpenCreate}
+            className="bg-accent text-neutral-950 font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <LuPlus className="w-4 h-4" />
+            <span>Add Experience</span>
+          </Button>
+        </div>
       </div>
+
+      {/* Experience Cards List */}
+      {experiences.length === 0 ? (
+        /* Empty State */
+        <Card className="bg-muted/30 border border-white/8 rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
+          <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
+            <LuBriefcase className="w-7 h-7" />
+          </div>
+          <h3 className="text-lg font-bold text-white font-rethink">
+            No experience records yet
+          </h3>
+          <p className="text-xs sm:text-sm text-neutral-400 font-inter mt-1.5 max-w-sm mx-auto leading-relaxed">
+            Add your professional roles, engineering positions, or freelancing
+            history to display on your portfolio.
+          </p>
+          <Button
+            type="button"
+            onClick={handleOpenCreate}
+            className="mt-6 bg-accent text-neutral-950 font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xs hover:bg-accent/90 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <LuPlus className="w-4 h-4" />
+            <span>Add First Experience</span>
+          </Button>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          {experiences.map((exp) => (
+            <ExperienceCard
+              key={exp.id}
+              experience={exp}
+              onEdit={(item) => handleOpenEdit(item)}
+              onDelete={(item) => {
+                confirm({
+                  isDanger: true,
+                  title: `Delete ${item.role}?`,
+                  description: `Are you sure you want to delete this position at ${item.company}? This action cannot be undone.`,
+                  confirmText: "Delete",
+                  onConfirm: async () => {
+                    await handleDelete(item);
+                  },
+                });
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 

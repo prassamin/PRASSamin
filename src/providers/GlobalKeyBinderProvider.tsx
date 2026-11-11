@@ -4,8 +4,7 @@ import { useShortcuts } from "@keybindy/react";
 import axios from "axios";
 import { Spinner, toast } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
-import { useRouter } from "next/navigation";
-import { useRouter as useRouterWithProgress } from "@/hooks/useRouter";
+import { useRouter } from "@/hooks/use-router";
 import { useOwner } from "./OwnerProvider";
 
 const GlobalKeyBinderProvider = ({
@@ -15,7 +14,6 @@ const GlobalKeyBinderProvider = ({
 }) => {
   const [isSignOutProcessing, setIsSignOutProcessing] = useState(false);
   const router = useRouter();
-  const routerWithProgress = useRouterWithProgress();
   const { owner } = useOwner();
 
   useEffect(() => {
@@ -53,13 +51,13 @@ const GlobalKeyBinderProvider = ({
       {
         keys: ["Ctrl", "S"],
         handler: async () => {
-          routerWithProgress.push("/signin");
+          router.push("/signin");
         },
       },
       {
         keys: ["G"],
         handler: async () => {
-          routerWithProgress.push(`https://github.com/${owner?.username}`);
+          router.push(`https://github.com/${owner?.username}`);
         },
         options: {
           ignoreInputs: true,
@@ -68,17 +66,14 @@ const GlobalKeyBinderProvider = ({
       {
         keys: [["Ctrl", "A"]],
         handler: () => {
-          routerWithProgress.push("/admin");
+          router.push("/admin");
         },
       },
     ],
     {
       beforeEach: (_, e) => {
         e.preventDefault();
-      },
-      onShortcutFired(info) {
-        console.log(info);
-      },
+      }
     },
   );
 

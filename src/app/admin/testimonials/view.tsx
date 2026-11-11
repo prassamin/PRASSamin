@@ -20,7 +20,7 @@ import {
 } from "@dnd-kit/sortable";
 import { LuPlus } from "react-icons/lu";
 import { toast } from "@heroui/react";
-import { useRouter } from "@/hooks/useRouter";
+import { useRouter } from "@/hooks/use-router";
 import { useConfirm } from "@/providers/ConfirmProvider";
 import { useMdxStudio } from "@/mdx-studio";
 import { TestimonialCategoryType, TestimonialType } from "@/types";
