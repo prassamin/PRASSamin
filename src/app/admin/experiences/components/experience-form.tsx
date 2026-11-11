@@ -9,7 +9,6 @@ import {
   LuLink,
   LuMapPin,
   LuImage,
-  LuX,
 } from "react-icons/lu";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Label } from "@heroui/react";
@@ -69,7 +68,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({
     <div className="w-full my-auto flex flex-col items-center justify-start relative">
       <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
+        <div className="flex items-start justify-between gap-4 border-b border-white/8 pb-5">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight flex items-center gap-2.5">
               <span>Work Experience</span>
@@ -124,7 +123,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({
               <button
                 type="button"
                 onClick={() => setIsLogoPickerOpen(true)}
-                className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/[0.03] transition-colors hover:border-accent/40 hover:bg-white/[0.05] cursor-pointer"
+                className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-white/15 bg-white/3 transition-colors hover:border-accent/40 hover:bg-white/5 cursor-pointer"
                 aria-label="Pick company logo"
               >
                 {form.companyLogo ? (
@@ -225,7 +224,7 @@ export const ExperienceForm: React.FC<ExperienceFormProps> = ({
         </div>
 
         {/* Footer Navigation */}
-        <div className="flex items-center justify-end border-t border-white/[0.08] pt-5">
+        <div className="flex items-center justify-end border-t border-white/8 pt-5">
           <button
             type="button"
             onClick={() => goToTab("builder")}
