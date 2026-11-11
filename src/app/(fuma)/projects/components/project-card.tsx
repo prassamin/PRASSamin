@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "motion/react";
 import { ArrowRight, Link as LinkIcon } from "lucide-react";
-import { Github } from "@/components/icons";
+import { FaGithub } from "react-icons/fa6";
 import { ShiningText } from "./shining-text";
 import type { QueryProjects } from "@/lib/get-projects";
 import { getStack } from "@/lib/stacks";
@@ -146,7 +146,7 @@ export default function ProjectCard({
             )}
 
             {/* Top gradient scrim for text legibility */}
-            <div className="absolute inset-x-0 top-0 z-10 h-2/3 bg-gradient-to-b from-black/70 via-black/20 to-transparent" />
+            <div className="absolute inset-x-0 top-0 z-10 h-2/3 bg-linear-to-b from-black/70 via-black/20 to-transparent" />
 
             {/* Inner top subtle line */}
             <div
@@ -189,7 +189,7 @@ export default function ProjectCard({
                 rel="noreferrer"
                 className="text-neutral-300 font-light flex items-center gap-1.5 hover:text-foreground transition-colors"
               >
-                <Github className="text-foreground size-4 stroke-[1.5px] sm:stroke-2" />
+                <FaGithub className="text-foreground size-4 stroke-[1.5px] sm:stroke-2" />
                 <ShiningText text="Source Code" className="text-[14px] sm:text-base" />
               </a>
             )}
@@ -209,7 +209,7 @@ export default function ProjectCard({
                 <span
                   key={idx}
                   data-slot="badge"
-                  className="inline-flex w-fit bg-muted/50 items-center justify-center whitespace-nowrap text-neutral-300 transition-[color,box-shadow] gap-1.5 rounded-lg px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] md:text-xs font-medium capitalize gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)]"
+                  className="inline-flex w-fit bg-muted/50 items-center justify-center whitespace-nowrap text-neutral-300 transition-[color,box-shadow] gap-1.5 rounded-lg px-2 py-1 sm:px-2.5 sm:py-1.5 text-[10px] md:text-xs font-medium capitalize gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)]"
                 >
                   {StackIcon && <StackIcon className="size-3.5" />}
                   {tool}

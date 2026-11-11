@@ -140,7 +140,7 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                 {/* Sticky Table of Contents */}
                 <aside className="hidden md:block w-64 shrink-0 py-4">
                   {tocItems.length > 0 && (
-                    <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-y-auto overflow-x-hidden">
+                    <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-hidden">
                       <RailToc items={tocItems} className="w-full" />
                     </div>
                   )}

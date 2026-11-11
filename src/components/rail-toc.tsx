@@ -64,7 +64,7 @@ export type RailTocProps = React.ComponentProps<"nav"> & {
   title?: string
 }
 
-const RailToc = ({
+export const RailToc = ({
   className,
   items,
   containerRef,
@@ -402,7 +402,7 @@ const RailToc = ({
                     className={cn(
                       "transition-[fill,stroke] duration-200",
                       covered
-                        ? "fill-[var(--rail)] stroke-[var(--rail)]"
+                        ? "fill-(--rail) stroke-(--rail)"
                         : "fill-transparent stroke-foreground/30",
                     )}
                   />
@@ -415,7 +415,7 @@ const RailToc = ({
         {geometry && (
           <motion.div
             data-slot="rail-toc-plane"
-            className="pointer-events-none absolute left-0 top-0 -ml-2 -mt-2 h-4 w-4 text-foreground [filter:drop-shadow(0_0_2px_rgb(0_0_0/0.35))]"
+            className="pointer-events-none absolute left-0 top-0 -ml-2 -mt-2 h-4 w-4 text-foreground filter-[drop-shadow(0_0_2px_rgb(0_0_0/0.35))]"
             style={{ x, y, rotate: reduceMotion ? heading : turn }}
             aria-hidden
           >
@@ -447,7 +447,7 @@ const RailToc = ({
                 className={cn(
                   "block w-full rounded-md py-1.5 pr-2 text-left leading-5 transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20",
                   isActive
-                    ? "font-medium text-foreground"
+                    ? "text-foreground"
                     : "text-foreground/50 hover:text-foreground/80",
                 )}
                 style={{
@@ -463,5 +463,3 @@ const RailToc = ({
     </nav>
   )
 }
-
-export { RailToc }
