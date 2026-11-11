@@ -53,7 +53,6 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     const meta = getMetadataRef.current();
     if (!meta || Object.keys(meta).length === 0) return "";
     return `---\n${stringify(meta, { lineWidth: 80 })}---`;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mdx, activeTab]);
 
   const openStudio = useCallback((options: OpenStudioOptions) => {

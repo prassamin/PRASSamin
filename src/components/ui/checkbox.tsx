@@ -1,3 +1,5 @@
+"use client";
+
 import { Checkbox as CheckboxImpl } from "@heroui/react";
 
 interface CheckboxProps extends React.ComponentProps<typeof CheckboxImpl> {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { cn } from "@heroui/react";
+import { cn } from "tailwind-variants";
 import defaultMdxComponents from "fumadocs-ui/mdx";
 import {
   MdxFiles,
@@ -26,7 +26,8 @@ import { Callout } from "fumadocs-ui/components/callout";
 import { Heading } from "fumadocs-ui/components/heading";
 import { ImageZoom } from "fumadocs-ui/components/image-zoom";
 import Image from "next/image";
-import { Chip, Checkbox } from "@heroui/react";
+import { Chip } from "@heroui/react/chip";
+import { Checkbox } from "@heroui/react/checkbox";
 import {
   MdxAvatar,
   Avatar,
