@@ -2,6 +2,7 @@
 
 import React from "react";
 import { motion, type Variants } from "motion/react";
+import { cn } from "@heroui/styles";
 
 const swoopVariants: Variants = {
   hidden: { pathLength: 0, opacity: 0 },
@@ -27,10 +28,15 @@ const inkTextureVariants: Variants = {
   },
 };
 
-export const PenSwoopUnderline: React.FC = () => {
+export const PenSwoopUnderline: React.FC<
+  React.ComponentProps<typeof motion.svg & { height?: string }>
+> = ({ className, height = "2.6", ...props }) => {
   return (
     <motion.svg
-      className="absolute left-[-2px] sm:left-[-4px] -bottom-[2px] w-[calc(100%+4px)] sm:w-[calc(100%+8px)] h-[16px] sm:h-[18px] overflow-visible pointer-events-none select-none"
+      className={cn(
+        "absolute -left-0.5 sm:-left-1 -bottom-0.5 w-[calc(100%+4px)] sm:w-[calc(100%+8px)] h-4 sm:h-4.5 overflow-visible pointer-events-none select-none",
+        className,
+      )}
       viewBox="0 0 220 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -38,6 +44,7 @@ export const PenSwoopUnderline: React.FC = () => {
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
+      {...props}
     >
       <defs>
         <linearGradient
@@ -76,7 +83,7 @@ export const PenSwoopUnderline: React.FC = () => {
         <motion.path
           d="M 3 15 C 45 2.5, 165 2.5, 217 15"
           stroke="url(#pen-swoop-gradient)"
-          strokeWidth="2.6"
+          strokeWidth={height}
           strokeLinecap="round"
           strokeLinejoin="round"
           variants={swoopVariants}

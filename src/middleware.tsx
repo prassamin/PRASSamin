@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createRouteMatcher } from "./lib/route-matcher";
-import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "./constants";
+import { CURRENT_URL_HEADER, ORIGIN_HEADER, SESSION_COOKIE_NAME } from "./constants";
 import { isDonationEnabled, NODE_ENV } from "./constants/env";
 
 const isAdminRoute = createRouteMatcher([
@@ -14,6 +14,8 @@ const isDonationRoute = createRouteMatcher([
   "/donate/:path*",
   "/api/donate",
 ]);
+
+const isAuthRoute = createRouteMatcher(["/sign-in"]);
 
 export default async function middleware(request: NextRequest) {
   const headers = new Headers(request.headers);
@@ -38,26 +40,43 @@ export default async function middleware(request: NextRequest) {
     });
   }
 
-  // Admin Protection
-  if (isAdminRoute(request)) {
-    const token = request.cookies.get("_auth_data");
+  const isAdminPage = isAdminRoute(request);
+  const isAuthPage = isAuthRoute(request);
 
-    if (!token) {
-      return NextResponse.rewrite(new URL("/not-found", request.url), {
-        request: { headers },
-      });
-    }
+  // routes outside admin/auth guards need no session handling.
+  if (!isAdminPage && !isAuthPage) {
+    return NextResponse.next({ request: { headers } });
+  }
 
+  const token = request.cookies.get(SESSION_COOKIE_NAME);
+
+  // Admin requires a session cookie.
+  if (isAdminPage && !token) {
+    return NextResponse.rewrite(new URL("/not-found", request.url), {
+      request: { headers },
+    });
+  }
+
+  // Validate the session server-side only when one exists — this skips the
+  // internal round-trip for anonymous visits (e.g. the public sign-in page).
+  if (token) {
     try {
       const res = await fetch(new URL("/api/auth/verify", request.url).href, {
         method: "POST",
         headers: { cookie: request.headers.get("cookie") ?? "" },
       });
       if (!res.ok) throw new Error("verify failed");
+
+      // Already authenticated.
+      if (isAuthPage) {
+        return NextResponse.redirect(new URL("/admin", request.url));
+      }
     } catch {
-      return NextResponse.rewrite(new URL("/not-found", request.url), {
-        request: { headers },
-      });
+      if (isAdminPage) {
+        return NextResponse.rewrite(new URL("/not-found", request.url), {
+          request: { headers },
+        });
+      }
     }
   }
 

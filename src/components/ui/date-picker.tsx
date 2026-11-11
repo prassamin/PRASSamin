@@ -70,7 +70,7 @@ export const DatePicker = ({
     <DatePickerImpl
       className={cn(
         "w-full",
-        isRequired && "[&_[data-slot=label]]:after:text-accent!",
+        isRequired && "**:data-[slot=label]:after:text-accent!",
         className,
       )}
       onChange={handleChange}
@@ -110,6 +110,7 @@ export const DatePicker = ({
         </DateField.Suffix>
       </DateField.Group>
       <DatePickerImpl.Popover
+        placement="top"
         className={cn("z-50 p-4 border shadow-2xl shadow-background")}
       >
         <Calendar />
