@@ -1,4 +1,4 @@
-import { metatag } from "@/utils/metatag";
+import { metatag } from "@/lib/metatag";
 
 export const generateMetadata = () => {
   return metatag({
