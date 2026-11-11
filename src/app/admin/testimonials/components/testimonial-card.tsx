@@ -27,7 +27,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(
     return (
       <div
         className={cn(
-          "group relative flex flex-col rounded-2xl border border-white/[0.06] bg-muted/40 backdrop-blur-xl",
+          "group relative flex flex-col rounded-2xl border border-white/6 bg-muted/40 backdrop-blur-xl",
           "p-4 sm:p-5 transition-all duration-200 hover:bg-muted/60 hover:border-white/[0.14]",
           "shadow-sm hover:shadow-lg overflow-hidden",
         )}
@@ -46,7 +46,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(
         </div>
 
         {/* Divider */}
-        <div className="mt-4 h-px bg-gradient-to-r from-white/[0.08] via-white/[0.05] to-transparent" />
+        <div className="mt-4 h-px bg-linear-to-r from-white/8 via-white/5 to-transparent" />
 
         {/* Author footer */}
         <div className="pt-3.5 flex items-center gap-3">
@@ -79,7 +79,7 @@ export const TestimonialCard: React.FC<TestimonialCardProps> = React.memo(
             <button
               type="button"
               onClick={() => onEdit(testimonial)}
-              className="w-7 h-7 rounded-lg flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/[0.08] transition-colors cursor-pointer"
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-neutral-400 hover:text-white hover:bg-white/8 transition-colors cursor-pointer"
               title="Edit"
             >
               <LuPencil className="w-3.5 h-3.5" />

@@ -24,12 +24,12 @@ import { useRouter } from "@/hooks/use-router";
 import { useConfirm } from "@/providers/confirm-provider";
 import { useMdxStudio } from "@/mdx-studio";
 import { TestimonialCategoryType, TestimonialType } from "@/types";
-import { TestimonialKanbanCard } from "./components/TestimonialKanbanCard";
-import { TestimonialCard } from "./components/TestimonialCard";
+import { TestimonialKanbanCard } from "./components/testimonial-kanban-card";
+import { TestimonialCard } from "./components/testimonial-card";
 import {
   TestimonialForm,
   TestimonialFormData,
-} from "./components/TestimonialForm";
+} from "./components/testimonial-form";
 import {
   createTestimonialAction,
   updateTestimonialAction,

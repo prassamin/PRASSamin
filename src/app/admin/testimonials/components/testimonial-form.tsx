@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { useMdxStudio } from "@/mdx-studio";
 import { ImagePicker } from "@/components/image-picker";
@@ -13,9 +13,7 @@ import {
   LuLink,
   LuArrowRight,
   LuFolderOpen,
-  LuUpload,
 } from "react-icons/lu";
-import { Spinner, toast } from "@heroui/react";
 import { TestimonialCategoryType } from "@/types";
 import { cn } from "@heroui/react";
 
@@ -46,8 +44,6 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
 
   const [isImagePickerOpen, setIsImagePickerOpen] = useState(false);
   const [showUrlInput, setShowUrlInput] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadPercent, setUploadPercent] = useState<number>(0);
 
   const updateField = <K extends keyof TestimonialFormData>(
     key: K,
@@ -64,7 +60,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
     <div className="w-full my-auto flex flex-col items-center justify-start relative">
       <div className="w-full max-w-2xl mx-auto rounded-2xl bg-muted/40 backdrop-blur-2xl border border-foreground/6 p-6 sm:p-7 flex flex-col gap-6 shadow-2xl">
         {/* Header */}
-        <div className="flex items-start justify-between gap-4 border-b border-white/[0.08] pb-5">
+        <div className="flex items-start justify-between gap-4 border-b border-white/8 pb-5">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold font-rethink text-foreground tracking-tight flex items-center gap-2.5">
               <span>Testimonial Details</span>
@@ -81,7 +77,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
             Client Avatar <span className="text-accent">*</span>
           </label>
 
-          <div className="rounded-2xl border border-white/[0.08] bg-neutral-900/50 p-4 sm:p-5 hover:border-white/[0.14] transition-all">
+          <div className="rounded-2xl border border-white/8 bg-neutral-900/50 p-4 sm:p-5 hover:border-white/[0.14] transition-all">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-5">
               {/* Interactive Avatar Frame */}
               <div className="relative group/avatar shrink-0 self-start sm:self-center">
@@ -92,7 +88,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
                     "relative w-20 h-20 rounded-2xl overflow-hidden border transition-all cursor-pointer shadow-md flex items-center justify-center outline-none",
                     form.avatar
                       ? "border-white/15 bg-neutral-950 hover:border-accent/60"
-                      : "border-dashed border-white/20 bg-white/[0.02] hover:border-accent/50 hover:bg-white/[0.04]",
+                      : "border-dashed border-white/20 bg-white/2 hover:border-accent/50 hover:bg-white/4",
                   )}
                   title={
                     form.avatar
@@ -116,16 +112,9 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
                         </span>
                       </div>
                     </>
-                  ) : isUploading ? (
-                    <div className="flex flex-col items-center justify-center gap-1.5 text-accent p-2">
-                      <Spinner size="sm" color="current" />
-                      <span className="text-[10px] font-mono font-medium">
-                        {uploadPercent}%
-                      </span>
-                    </div>
                   ) : (
                     <div className="w-full h-full flex flex-col items-center justify-center text-neutral-400 group-hover/avatar:text-neutral-200 transition-colors gap-1.5">
-                      <div className="w-8 h-8 rounded-xl bg-white/[0.04] flex items-center justify-center group-hover/avatar:bg-accent/15 transition-colors">
+                      <div className="w-8 h-8 rounded-xl bg-white/4 flex items-center justify-center group-hover/avatar:bg-accent/15 transition-colors">
                         <LuCamera className="w-4 h-4 text-neutral-400 group-hover/avatar:text-accent transition-colors" />
                       </div>
                       <span className="text-[10px] font-medium text-neutral-400 group-hover/avatar:text-neutral-200">
@@ -158,7 +147,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsImagePickerOpen(true)}
-                    className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/20 text-xs font-medium text-white transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-xs"
+                    className="px-3 py-1.5 rounded-xl border border-white/10 bg-white/4 hover:bg-white/8 hover:border-white/20 text-xs font-medium text-white transition-all cursor-pointer flex items-center gap-1.5 active:scale-95 shadow-xs"
                   >
                     <LuFolderOpen className="w-3.5 h-3.5 text-accent" />
                     <span>Choose from Library</span>
@@ -182,7 +171,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
                         "px-2.5 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer flex items-center gap-1 active:scale-95",
                         showUrlInput
                           ? "border-accent/40 bg-accent/10 text-accent"
-                          : "border-white/10 bg-white/[0.02] hover:bg-white/[0.06] text-neutral-400 hover:text-white",
+                          : "border-white/10 bg-white/2 hover:bg-white/6 text-neutral-400 hover:text-white",
                       )}
                       title="Paste URL directly"
                     >
@@ -194,7 +183,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
 
                 {/* Collapsible URL Input */}
                 {showUrlInput && !form.avatar && (
-                  <div className="pt-2 border-t border-white/[0.06] flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <div className="pt-2 border-t border-white/6 flex items-center gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
                     <div className="relative flex-1">
                       <LuLink className="w-3.5 h-3.5 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                       <input
@@ -260,7 +249,7 @@ export const TestimonialForm: React.FC<TestimonialFormProps> = ({
         </div>
 
         {/* Continue to Quote Action */}
-        <div className="flex items-center justify-end pt-4 border-t border-white/[0.08]">
+        <div className="flex items-center justify-end pt-4 border-t border-white/8">
           <button
             type="button"
             onClick={() => goToTab("builder")}

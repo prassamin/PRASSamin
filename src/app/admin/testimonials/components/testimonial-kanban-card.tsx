@@ -4,7 +4,7 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { TestimonialType } from "@/types";
-import { TestimonialCard } from "./TestimonialCard";
+import { TestimonialCard } from "./testimonial-card";
 import { cn } from "@heroui/react";
 
 interface TestimonialKanbanCardProps {
