@@ -5,10 +5,10 @@ import { AppProgressProvider as ProgressProvider } from "@bprogress/next";
 import { Toast } from "@heroui/react";
 import { RootProvider } from "fumadocs-ui/provider";
 import { ReactLenis } from "lenis/react";
-import { AnalyticsProvider } from "./AnalyticsProvider";
-import GlobalKeyBinderProvider from "./GlobalKeyBinderProvider";
-import { ConfirmProvider } from "./ConfirmProvider";
-import { OwnerProvider } from "./OwnerProvider";
+import { AnalyticsProvider } from "./analytics-provider";
+import { GlobalKeyBindingProvider } from "./global-keybinding-provider";
+import { ConfirmProvider } from "./confirm-provider";
+import { OwnerProvider } from "./owner-provider";
 import {
   useLenisSmartScroll,
   shouldPreventLenisScroll,
@@ -46,7 +46,7 @@ export function RootProviders({
         >
           <Toast.Provider placement="top" width={360} />
           <OwnerProvider initialOwner={initialOwner ?? null}>
-            <GlobalKeyBinderProvider>{children}</GlobalKeyBinderProvider>
+            <GlobalKeyBindingProvider>{children}</GlobalKeyBindingProvider>
           </OwnerProvider>
         </RootProvider>
         <AnalyticsProvider />

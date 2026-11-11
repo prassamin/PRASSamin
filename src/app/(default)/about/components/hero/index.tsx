@@ -4,7 +4,7 @@ import React from "react";
 import { CircleUserRound } from "lucide-react";
 import { PolaroidCard } from "./polaroid-card";
 import { TechStack } from "./tech-stack";
-import { useOwner } from "@/providers/OwnerProvider";
+import { useOwner } from "@/providers/owner-provider";
 import { Link } from "@/components/Link";
 import { Reveal } from "@/components/reveal";
 

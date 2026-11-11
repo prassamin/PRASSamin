@@ -17,7 +17,7 @@ import {
 import type { ContentItem } from "../types";
 import { Dropdown, Header, Label, Skeleton, cn, toast } from "@heroui/react";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import { useContent } from "../hooks/use-content-manager";
 import {
   formatItemTypeLabel,

@@ -5,9 +5,9 @@ import axios from "axios";
 import { Spinner, toast } from "@heroui/react";
 import { AnimatePresence, motion } from "motion/react";
 import { useRouter } from "@/hooks/use-router";
-import { useOwner } from "./OwnerProvider";
+import { useOwner } from "./owner-provider";
 
-const GlobalKeyBinderProvider = ({
+export const GlobalKeyBindingProvider = ({
   children,
 }: {
   children: React.ReactNode;
@@ -51,16 +51,13 @@ const GlobalKeyBinderProvider = ({
       {
         keys: ["Ctrl", "S"],
         handler: async () => {
-          router.push("/signin");
+          router.push("/sign-in");
         },
       },
       {
         keys: ["G"],
         handler: async () => {
           router.push(`https://github.com/${owner?.username}`);
-        },
-        options: {
-          ignoreInputs: true,
         },
       },
       {
@@ -73,7 +70,8 @@ const GlobalKeyBinderProvider = ({
     {
       beforeEach: (_, e) => {
         e.preventDefault();
-      }
+      },
+      ignoreInputs: true,
     },
   );
 
@@ -101,5 +99,3 @@ const GlobalKeyBinderProvider = ({
     </>
   );
 };
-
-export default GlobalKeyBinderProvider;

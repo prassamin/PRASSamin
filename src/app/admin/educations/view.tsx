@@ -8,7 +8,7 @@ import { EducationCard } from "./components/EducationCard";
 import { useMdxStudio } from "@/mdx-studio";
 import { EducationForm, EducationFormData } from "./components/EducationForm";
 import { useRouter } from "@/hooks/use-router";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import {
   createEducationAction,
   updateEducationAction,

@@ -1,7 +1,7 @@
 import "./globals.css";
 import { poppins, rethinkSans, inter } from "@/constants/fonts";
 import { Metadata } from "next";
-import { RootProviders } from "@/providers/RootProviders";
+import { RootProviders } from "@/providers/root-providers";
 import { getOwnerCached, toPublicOwner } from "@/lib/github";
 
 export const viewport = {

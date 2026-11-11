@@ -11,7 +11,7 @@ import {
   ExperienceFormData,
 } from "./components/experience-form";
 import { useRouter } from "@/hooks/use-router";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import {
   createExperienceAction,
   updateExperienceAction,

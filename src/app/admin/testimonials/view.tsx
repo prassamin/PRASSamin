@@ -21,7 +21,7 @@ import {
 import { LuPlus } from "react-icons/lu";
 import { toast } from "@heroui/react";
 import { useRouter } from "@/hooks/use-router";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import { useMdxStudio } from "@/mdx-studio";
 import { TestimonialCategoryType, TestimonialType } from "@/types";
 import { TestimonialKanbanCard } from "./components/TestimonialKanbanCard";

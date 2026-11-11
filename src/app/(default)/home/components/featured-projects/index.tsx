@@ -66,7 +66,7 @@ export const FeaturedProjects: React.FC<Props> = ({ projects = [] }) => {
           <h2 className="relative flex items-center gap-2 self-start h2 sm:h1 text-white">
             <span>
               Featured{" "}
-              <span className="relative transition-colors bg-gradient-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
+              <span className="relative transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
                 Projects
                 {/* Pen-written Swoop Underline */}
                 <PenSwoopUnderline />
@@ -97,7 +97,7 @@ export const FeaturedProjects: React.FC<Props> = ({ projects = [] }) => {
             className="flex items-center gap-2 hover:text-neutral-100 transition-colors text-neutral-300 text-sm sm:text-base group"
           >
             <span>See more projects</span>
-            <div className="isolate before:transition-opacity size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,_rgba(23,_23,_23,_70%)_0%,_#525252_62%,_rgba(23,_23,_23,_70%)_100%)] group-hover:scale-105 transition-transform">
+            <div className="isolate before:transition-opacity size-6 flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-[10px] gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] group-hover:scale-105 transition-transform">
               <LuChevronRight
                 className="size-[70%] text-neutral-300 group-hover:text-neutral-100 transition-colors"
                 strokeWidth={1.3}

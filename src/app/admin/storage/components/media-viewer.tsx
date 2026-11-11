@@ -19,7 +19,7 @@ import {
   LuCheck,
   LuX,
 } from "react-icons/lu";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import type { ContentItem } from "../types";
 import { useContent } from "../hooks/use-content-manager";
 import {

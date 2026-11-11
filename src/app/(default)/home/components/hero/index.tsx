@@ -6,7 +6,7 @@ import { HeroGrid } from "./hero-grid";
 import { FaGithub, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { LuArrowDown } from "react-icons/lu";
 import { motion, type Variants } from "motion/react";
-import { useOwner } from "@/providers/OwnerProvider";
+import { useOwner } from "@/providers/owner-provider";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },

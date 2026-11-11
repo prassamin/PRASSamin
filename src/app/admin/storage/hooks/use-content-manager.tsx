@@ -9,14 +9,19 @@ import React, {
   useEffect,
 } from "react";
 import { toast } from "@heroui/react";
-import { useConfirm } from "@/providers/ConfirmProvider";
+import { useConfirm } from "@/providers/confirm-provider";
 import {
   getStorageStructureAction,
   createCloudinaryFolderAction,
   deleteCloudinaryFileAction,
   deleteCloudinaryFolderAction,
 } from "../actions";
-import type { ContentItem, SortDirection, SortKey, UploadFileItem } from "../types";
+import type {
+  ContentItem,
+  SortDirection,
+  SortKey,
+  UploadFileItem,
+} from "../types";
 import { getCloudinaryMimeType } from "@/lib/file-type";
 import { storageClient } from "@/lib/storage";
 
@@ -204,7 +209,8 @@ export function ContentManagerProvider({
   initialStructure = {},
   children,
 }: ContentManagerProviderProps) {
-  const [structure, setStructure] = useState<Record<string, any>>(initialStructure);
+  const [structure, setStructure] =
+    useState<Record<string, any>>(initialStructure);
   const [currentPath, setCurrentPath] = useState<string>(ROOT_PATH);
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -212,7 +218,9 @@ export function ContentManagerProvider({
   const [expandedPaths, setExpandedPaths] = useState<Set<string>>(
     new Set([ROOT_PATH]),
   );
-  const [loadingTreePaths, setLoadingTreePaths] = useState<Set<string>>(new Set());
+  const [loadingTreePaths, setLoadingTreePaths] = useState<Set<string>>(
+    new Set(),
+  );
   const [isFetching, setIsFetching] = useState<boolean>(() => {
     return !initialStructure || Object.keys(initialStructure).length === 0;
   });
@@ -305,57 +313,74 @@ export function ContentManagerProvider({
   }, [currentPath]);
 
   // Navigation
-  const goToPath = useCallback((targetPath: string) => {
-    setSelectedPaths(new Set());
+  const goToPath = useCallback(
+    (targetPath: string) => {
+      setSelectedPaths(new Set());
 
-    const normCurrent = normalizePath(currentPath);
-    const normTarget = normalizePath(targetPath);
+      const normCurrent = normalizePath(currentPath);
+      const normTarget = normalizePath(targetPath);
 
-    // Case 1: Clicking the currently active folder -> toggle expand/collapse
-    if (normCurrent === normTarget) {
-      const isExpanded = expandedPaths.has(normTarget);
-      if (isExpanded) {
-        // Root stays open, but collapse all its subfolders
-        if (normTarget === ROOT_PATH) {
-          setExpandedPaths(new Set([ROOT_PATH]));
+      // Case 1: Clicking the currently active folder -> toggle expand/collapse
+      if (normCurrent === normTarget) {
+        const isExpanded = expandedPaths.has(normTarget);
+        if (isExpanded) {
+          // Root stays open, but collapse all its subfolders
+          if (normTarget === ROOT_PATH) {
+            setExpandedPaths(new Set([ROOT_PATH]));
+          } else {
+            // Collapse normTarget and all subfolders beneath it
+            setExpandedPaths((prev) => {
+              const next = new Set<string>();
+              for (const p of prev) {
+                const normP = normalizePath(p);
+                const isTargetOrChild =
+                  normP === normTarget || normP.startsWith(normTarget + "/");
+                if (!isTargetOrChild) next.add(normP);
+              }
+              return next;
+            });
+          }
         } else {
-          // Collapse normTarget and all subfolders beneath it
-          setExpandedPaths((prev) => {
-            const next = new Set<string>();
-            for (const p of prev) {
-              const normP = normalizePath(p);
-              const isTargetOrChild =
-                normP === normTarget || normP.startsWith(normTarget + "/");
-              if (!isTargetOrChild) next.add(normP);
-            }
-            return next;
-          });
+          // Expand normTarget (children come from folderTree)
+          setExpandedPaths((prev) => new Set(prev).add(normTarget));
         }
-      } else {
-        // Expand normTarget (children come from folderTree)
-        setExpandedPaths((prev) => new Set(prev).add(normTarget));
+        return;
       }
-      return;
-    }
 
-    // Case 2: Navigating from a child up to its parent / ancestor -> collapse deeper branches
-    const isChildToParent =
-      normTarget === ROOT_PATH
-        ? normCurrent !== ROOT_PATH
-        : normCurrent.startsWith(normTarget + "/");
+      // Case 2: Navigating from a child up to its parent / ancestor -> collapse deeper branches
+      const isChildToParent =
+        normTarget === ROOT_PATH
+          ? normCurrent !== ROOT_PATH
+          : normCurrent.startsWith(normTarget + "/");
 
-    if (isChildToParent) {
+      if (isChildToParent) {
+        setExpandedPaths((prev) => {
+          const next = new Set<string>();
+          for (const p of prev) {
+            const normP = normalizePath(p);
+            const isDescendant =
+              normTarget === ROOT_PATH
+                ? normP !== ROOT_PATH
+                : normP !== normTarget && normP.startsWith(normTarget + "/");
+            if (!isDescendant) next.add(normP);
+          }
+          // Ensure normTarget and all its ancestors stay expanded
+          const parts = normTarget.split("/").filter(Boolean);
+          next.add(ROOT_PATH);
+          for (let i = 1; i <= parts.length; i++) {
+            next.add(parts.slice(0, i).join("/"));
+          }
+          return next;
+        });
+        setCurrentPath(normTarget);
+        return;
+      }
+
+      // Case 3: Navigating from a parent to a child, or jumping to another branch
+      // -> expand normTarget and all its ancestors
+      setCurrentPath(normTarget);
       setExpandedPaths((prev) => {
-        const next = new Set<string>();
-        for (const p of prev) {
-          const normP = normalizePath(p);
-          const isDescendant =
-            normTarget === ROOT_PATH
-              ? normP !== ROOT_PATH
-              : normP !== normTarget && normP.startsWith(normTarget + "/");
-          if (!isDescendant) next.add(normP);
-        }
-        // Ensure normTarget and all its ancestors stay expanded
+        const next = new Set<string>(prev);
         const parts = normTarget.split("/").filter(Boolean);
         next.add(ROOT_PATH);
         for (let i = 1; i <= parts.length; i++) {
@@ -363,23 +388,9 @@ export function ContentManagerProvider({
         }
         return next;
       });
-      setCurrentPath(normTarget);
-      return;
-    }
-
-    // Case 3: Navigating from a parent to a child, or jumping to another branch
-    // -> expand normTarget and all its ancestors
-    setCurrentPath(normTarget);
-    setExpandedPaths((prev) => {
-      const next = new Set<string>(prev);
-      const parts = normTarget.split("/").filter(Boolean);
-      next.add(ROOT_PATH);
-      for (let i = 1; i <= parts.length; i++) {
-        next.add(parts.slice(0, i).join("/"));
-      }
-      return next;
-    });
-  }, [currentPath, expandedPaths]);
+    },
+    [currentPath, expandedPaths],
+  );
 
   const goUp = useCallback(() => {
     if (parentPath) {
@@ -536,7 +547,10 @@ export function ContentManagerProvider({
                   ? {
                       ...item,
                       status: "error",
-                      error: err?.response?.data?.error?.message || err?.message || "Upload failed",
+                      error:
+                        err?.response?.data?.error?.message ||
+                        err?.message ||
+                        "Upload failed",
                     }
                   : item,
               ),
