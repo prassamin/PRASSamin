@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { getBlogs, QueryBlogs } from "@/lib/get-blogs";
 import { metatag } from "@/lib/metatag";
-import { AdminBody } from "@/app/admin/components/AdminBody";
+import { AdminBody } from "@/app/admin/components/admin-body";
 import { BlogsView } from "./view";
 
 const getBlogList = cache(async (): Promise<QueryBlogs["blogs"]> => {

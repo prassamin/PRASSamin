@@ -1,7 +1,7 @@
 import { metatag } from "@/lib/metatag";
 import { getBlogs } from "@/lib/get-blogs";
 import { getProjects } from "@/lib/get-projects";
-import { AdminBody } from "./components/AdminBody";
+import { AdminBody } from "./components/admin-body";
 import { AdminDashboardView } from "./dashboard/view";
 
 export const generateMetadata = () => {
@@ -19,11 +19,11 @@ const AdminDashboardPage = async () => {
 
   const totalBlogViews = blogsData.blogs.reduce(
     (sum, b) => sum + (b.views || 0),
-    0
+    0,
   );
   const totalProjectViews = projectsData.projects.reduce(
     (sum, p) => sum + (p.views || 0),
-    0
+    0,
   );
   const totalViews = totalBlogViews + totalProjectViews;
 

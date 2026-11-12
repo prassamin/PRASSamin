@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useShortcuts } from "@keybindy/react";
 import axios from "axios";
 import { Spinner, toast } from "@heroui/react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "@/hooks/use-router";
 import { useOwner } from "./owner-provider";
 

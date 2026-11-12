@@ -1,13 +1,11 @@
 "use client";
 
 import React, { useMemo } from "react";
-import Link from "next/link";
 import {
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-  ExternalLink,
-} from "lucide-react";
+  LuMenu,
+  LuPanelLeftClose,
+  LuPanelLeftOpen
+} from "react-icons/lu";
 import { UserType } from "@/types";
 
 interface AdminHeaderProps {
@@ -43,7 +41,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           aria-label="Open Menu Drawer"
           className="flex lg:hidden rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
         >
-          <Menu className="size-5" />
+          <LuMenu className="size-5" />
         </button>
 
         {/* Desktop Only: Expand / Collapse Toggle Button */}
@@ -55,9 +53,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
           className="hidden lg:flex rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
         >
           {isCollapsed ? (
-            <PanelLeftOpen className="size-5" />
+            <LuPanelLeftOpen className="size-5" />
           ) : (
-            <PanelLeftClose className="size-5" />
+            <LuPanelLeftClose className="size-5" />
           )}
         </button>
 

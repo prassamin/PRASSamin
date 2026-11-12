@@ -2,8 +2,7 @@
 
 import React, { useState } from "react";
 import { useMdxStudio } from "@/mdx-studio";
-import { LuFileText, LuArrowRight, LuX, LuRefreshCw } from "react-icons/lu";
-import { Label } from "@heroui/react";
+import { LuArrowRight, LuX, LuRefreshCw } from "react-icons/lu";
 import { ImagePicker } from "@/components/image-picker";
 import { cn } from "@heroui/react";
 

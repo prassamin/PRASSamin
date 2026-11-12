@@ -7,7 +7,7 @@ import { Tape } from "@/components/tape";
 import { PenSwoopUnderline } from "@/components/pen-swoop-underline";
 import { Tooltip } from "@/components/ui/tooltip";
 import { LuLock, LuInfo } from "react-icons/lu";
-import { motion, type Variants } from "motion/react";
+import { motion, type Variants } from "framer-motion";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const itemVariants: Variants = {
@@ -26,13 +26,13 @@ export const SignInView: React.FC = () => {
   const isMobile = useIsMobile();
   const [isRevealed, setIsRevealed] = useState(true);
 
-  // // Trigger the reveal expansion shortly after the initial card drops in
-  // useEffect(() => {
-  //   const timer = setTimeout(() => {
-  //     setIsRevealed(true);
-  //   }, 450);
-  //   return () => clearTimeout(timer);
-  // }, []);
+  // Trigger the reveal expansion shortly after the initial card drops in
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsRevealed(true);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="relative w-full flex items-center justify-center p-2 sm:p-4">

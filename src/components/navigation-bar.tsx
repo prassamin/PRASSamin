@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, FC } from "react";
 import { Link } from "@/components/link";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { ProgressiveImage } from "./progressive-image";
 import { RiHome9Line } from "react-icons/ri";
 import {

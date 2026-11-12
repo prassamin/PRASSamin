@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { AdminSidebar } from "./AdminSidebar";
-import { AdminHeader } from "./AdminHeader";
+import { AdminSidebar } from "./admin-sidebar";
+import { AdminHeader } from "./admin-header";
 import { UserType } from "@/types";
 import { MdxStudioProvider } from "@/mdx-studio";
 

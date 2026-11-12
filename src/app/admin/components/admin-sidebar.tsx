@@ -4,22 +4,22 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  GraduationCap,
-  Briefcase,
-  FolderKanban,
-  MessageSquareQuote,
-  BookOpen,
-  FolderOpen,
-  LogOut,
-  X,
-} from "lucide-react";
+  LuLayoutDashboard,
+  LuGraduationCap,
+  LuBriefcase,
+  LuFolderKanban,
+  LuMessageSquareQuote,
+  LuBookOpen,
+  LuFolderOpen,
+  LuLogOut,
+  LuX,
+} from "react-icons/lu";
 import { Avatar, Chip } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { UserType } from "@/types";
 import { LuUser } from "react-icons/lu";
 import { Tooltip } from "@/components/ui/tooltip";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface AdminSidebarProps {
   user: UserType | null;
@@ -37,37 +37,37 @@ const mainNavItems: {
   {
     title: "Dashboard",
     href: "/admin",
-    icon: LayoutDashboard,
+    icon: LuLayoutDashboard,
   },
   {
     title: "Educations",
     href: "/admin/educations",
-    icon: GraduationCap,
+    icon: LuGraduationCap,
   },
   {
     title: "Experiences",
     href: "/admin/experiences",
-    icon: Briefcase,
+    icon: LuBriefcase,
   },
   {
     title: "Blogs",
     href: "/admin/blogs",
-    icon: BookOpen,
+    icon: LuBookOpen,
   },
   {
     title: "Projects",
     href: "/admin/projects",
-    icon: FolderOpen,
+    icon: LuFolderOpen,
   },
   {
     title: "Storage",
     href: "/admin/storage",
-    icon: FolderKanban,
+    icon: LuFolderKanban,
   },
   {
     title: "Testimonials",
     href: "/admin/testimonials",
-    icon: MessageSquareQuote,
+    icon: LuMessageSquareQuote,
   },
 ];
 
@@ -208,7 +208,7 @@ const SidebarInner: React.FC<SidebarInnerProps> = ({
                   : "gap-3 px-3.5 py-2.5 w-full text-muted-foreground hover:bg-destructive/10 hover:text-destructive",
               )}
             >
-              <LogOut className="size-5 shrink-0" />
+              <LuLogOut className="size-5 shrink-0" />
               {!isCollapsed && <span>Log out</span>}
             </button>
           );
@@ -277,7 +277,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({
                 aria-label="Close Drawer"
                 className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors cursor-pointer"
               >
-                <X className="size-5" />
+                <LuX className="size-5" />
               </button>
 
               <SidebarInner

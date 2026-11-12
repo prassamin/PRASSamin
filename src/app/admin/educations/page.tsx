@@ -3,7 +3,7 @@ import AdminEduView from "./view";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { EDUCATIONSERIALIZER } from "@/lib/serializers";
-import { AdminBody } from "@/app/admin/components/AdminBody";
+import { AdminBody } from "@/app/admin/components/admin-body";
 
 const Educations = cache(async () => {
   const p = await db.education.findMany({

@@ -3,7 +3,7 @@ import AdminExpView from "./view";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { EXPERIENCESERIALIZER } from "@/lib/serializers";
-import { AdminBody } from "@/app/admin/components/AdminBody";
+import { AdminBody } from "@/app/admin/components/admin-body";
 
 const Experiences = cache(async () => {
   const p = await db.experience.findMany({

@@ -12,51 +12,55 @@ export const viewport = {
   themeColor: "#09090b",
 };
 
-const title = "PRAS";
-const description =
-  "PRAS Samin - a curious developer who’s always building, learning, and exploring what’s possible with code.";
-
-export const metadata: Metadata = {
-  icons: {
-    icon: [
-      { url: "/favicons/favicon-96x96.png", sizes: "96x96" },
-      { url: "/favicons/favicon-192x192.png", sizes: "192x192" },
-      { url: "/favicons/favicon-512x512.png", sizes: "512x512" },
-      { url: "/favicons/favicon.svg" },
-    ],
-    shortcut: ["/favicons/favicon.svg"],
-    apple: [
+export const generateMetadata = async (): Promise<Metadata> => {
+  const title = "PRAS";
+  const description =
+    "PRAS Samin - a curious developer who’s always building, learning, and exploring what’s possible with code.";
+  return {
+    title: title,
+    description: description,
+    keywords: ["pras", "pras samin", "pras samin portfolio", "portfolio"],
+    publisher: "PRAS",
+    creator: "PRAS",
+    authors: [
       {
-        url: "/favicons/favicon-192x192.png",
-        sizes: "192x192",
-        type: "image/png",
+        name: "PRAS",
+        url: "https://pras.me",
       },
     ],
-  },
-  manifest: "/favicons/site.webmanifest",
-  publisher: "PRAS",
-  creator: "PRAS",
-  authors: [
-    {
-      name: "PRAS",
-      url: "https://pras.me",
+    appleWebApp: {
+      title: "PRAS",
     },
-  ],
-  appleWebApp: {
-    title: "PRAS",
-  },
-  title: title,
-  description: description,
-  openGraph: {
-    title: title,
-    description: description,
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: title,
-    description: description,
-    creator: "@imprassamin",
-  },
+    icons: {
+      icon: [
+        { url: "/favicons/favicon-96x96.png", sizes: "96x96" },
+        { url: "/favicons/favicon-192x192.png", sizes: "192x192" },
+        { url: "/favicons/favicon-512x512.png", sizes: "512x512" },
+        { url: "/favicons/favicon.svg" },
+      ],
+      shortcut: ["/favicons/favicon.svg"],
+      apple: [
+        {
+          url: "/favicons/favicon-192x192.png",
+          sizes: "192x192",
+          type: "image/png",
+        },
+      ],
+    },
+    manifest: "/favicons/site.webmanifest",
+    openGraph: {
+      title: title,
+      description: description,
+      type: "website",
+      siteName: "PRAS",
+      locale: "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: description,
+    },
+  };
 };
 
 export default async function RootLayout({

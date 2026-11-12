@@ -8,7 +8,6 @@ import {
   LuDownload,
   LuCheck,
   LuX,
-  LuFileCode2,
 } from "react-icons/lu";
 import type { MdxStudioContextValue } from "@/mdx-studio";
 import { useMdxStudio } from "@/mdx-studio";

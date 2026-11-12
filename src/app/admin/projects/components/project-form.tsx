@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useMdxStudio } from "@/mdx-studio";
-import { LuFolderOpen, LuArrowRight } from "react-icons/lu";
+import { LuArrowRight } from "react-icons/lu";
 import {
   ImageSelectField,
   StackPicker,

@@ -7,7 +7,7 @@ import {
   useMotionValueEvent,
   useReducedMotion,
   useSpring,
-} from "motion/react"
+} from "framer-motion"
 
 import { cn } from "@heroui/react"
 

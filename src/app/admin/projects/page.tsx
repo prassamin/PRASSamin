@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { getProjects, QueryProjects } from "@/lib/get-projects";
 import { metatag } from "@/lib/metatag";
-import { AdminBody } from "@/app/admin/components/AdminBody";
+import { AdminBody } from "@/app/admin/components/admin-body";
 import { ProjectsView } from "./view";
 
 const getProjectList = cache(async (): Promise<QueryProjects["projects"]> => {

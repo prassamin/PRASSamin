@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { metatag } from "@/lib/metatag";
-import { AdminBody } from "@/app/admin/components/AdminBody";
+import { AdminBody } from "@/app/admin/components/admin-body";
 import { TestimonialsView } from "./view";
 import { TestimonialType } from "@/types";
 

@@ -1,5 +1,5 @@
 import { AUTH_PUBLIC_KEY } from "@/constants/env";
-import { AdminLayout } from "./components/AdminLayout";
+import { AdminLayout } from "./components/admin-layout";
 import { SESSION_COOKIE_NAME } from "@/constants";
 import { cookies } from "next/headers";
 import { UserType } from "@/types";

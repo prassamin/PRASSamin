@@ -14,7 +14,7 @@ import {
   LuChevronUp,
 } from "react-icons/lu";
 import { cn } from "@heroui/react";
-import { motion, AnimatePresence } from "motion/react";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface EducationCardProps {
   education: EducationType;

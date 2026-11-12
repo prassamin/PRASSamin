@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion } from "framer-motion";
 import { LuX, LuCheck, LuCircleAlert } from "react-icons/lu";
 import type { UploadFileItem } from "@/lib/storage";
 
