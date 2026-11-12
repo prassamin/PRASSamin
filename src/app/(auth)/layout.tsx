@@ -1,5 +1,5 @@
 import "../globals.css";
-export { metadata } from "@/app/layout";
+export { generateMetadata } from "@/app/layout";
 
 export default function AuthLayout({
   children,

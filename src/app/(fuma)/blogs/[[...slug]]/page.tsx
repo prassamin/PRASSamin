@@ -274,8 +274,16 @@ export async function generateMetadata(props: {
   const params = await props.params;
   const page = source.getPage(params.slug);
   if (!page) notFound();
+
+  if (page.slugs.length === 0) {
+    return metatag({
+      title: `Blogs`,
+      robots: "index, follow",
+    });
+  }
+
   return metatag({
-    title: `${page.data.title} | PRAS`,
+    title: `${page.data.title}`,
     description: page.data.description,
     image: page.data.thumbnail,
     robots: "index, follow",

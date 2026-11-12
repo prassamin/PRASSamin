@@ -84,7 +84,6 @@
   --color-theme-secondary: var(--theme-secondary);
 
   /* --- Fonts --- */
-  --font-frozito: frozito;
   --font-montserrat: "Montserrat", "sans-serif";
   --font-rethink: var(--font-rethink-sans), "Rethink Sans", sans-serif;
   --font-inter: var(--font-inter), "Inter", sans-serif;
@@ -227,13 +226,6 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #8e95a133;
     border-radius: 10px;
-  }
-
-  @font-face {
-    font-family: "frozito";
-    font-style: normal;
-    font-display: swap;
-    src: url(/fonts/frozito.ttf) format("truetype");
   }
 
   @font-face {

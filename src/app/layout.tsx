@@ -3,33 +3,31 @@ import { poppins, rethinkSans, inter } from "@/constants/fonts";
 import { Metadata } from "next";
 import { RootProviders } from "@/providers/root-providers";
 import { getOwnerCached, toPublicOwner } from "@/lib/github";
+import { APP_NAME, CREATOR, CREATOR_LINK, META_DESCRIPTION, PUBLISHER } from "@/constants";
 
 export const viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#09090b",
+  themeColor: "#0a0a0a",
 };
 
 export const generateMetadata = async (): Promise<Metadata> => {
-  const title = "PRAS";
-  const description =
-    "PRAS Samin - a curious developer who’s always building, learning, and exploring what’s possible with code.";
   return {
-    title: title,
-    description: description,
+    title: { default: APP_NAME, template: `%s | ${APP_NAME}` },
+    description: META_DESCRIPTION,
     keywords: ["pras", "pras samin", "pras samin portfolio", "portfolio"],
-    publisher: "PRAS",
-    creator: "PRAS",
+    publisher: PUBLISHER,
+    creator: CREATOR,
     authors: [
       {
-        name: "PRAS",
-        url: "https://pras.me",
+        name: CREATOR,
+        url: CREATOR_LINK,
       },
     ],
     appleWebApp: {
-      title: "PRAS",
+      title: APP_NAME,
     },
     icons: {
       icon: [
@@ -49,16 +47,16 @@ export const generateMetadata = async (): Promise<Metadata> => {
     },
     manifest: "/favicons/site.webmanifest",
     openGraph: {
-      title: title,
-      description: description,
+      title: APP_NAME,
+      description: META_DESCRIPTION,
       type: "website",
-      siteName: "PRAS",
+      siteName: APP_NAME,
       locale: "en_US",
     },
     twitter: {
       card: "summary_large_image",
-      title: title,
-      description: description,
+      title: APP_NAME,
+      description: META_DESCRIPTION,
     },
   };
 };

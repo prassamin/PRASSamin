@@ -5,6 +5,7 @@ import { metatag } from "@/lib/metatag";
 import { cache } from "react";
 import { db } from "@/lib/db";
 import { TestimonialType } from "@/types";
+import { notFound } from "next/navigation";
 
 const getTestimonials = cache(async (): Promise<TestimonialType[]> => {
   try {
@@ -67,7 +68,7 @@ Home.DisplayName = "Home";
 
 export const generateMetadata = () => {
   return metatag({
-    title: "Home | PRAS",
+    title: "Home",
     robots: "index, follow",
   });
 };

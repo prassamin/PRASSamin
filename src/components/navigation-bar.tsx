@@ -16,6 +16,7 @@ import {
   LuChevronDown,
   LuHeart,
 } from "react-icons/lu";
+import { cn } from "@heroui/styles";
 
 const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
   className,
@@ -140,11 +141,15 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
 
       <header
         ref={headerRef}
-        className={`pointer-events-none fixed top-0 inset-x-0 z-50 transition-opacity duration-300 ${
+        className={cn(
+          `pointer-events-none fixed top-0 inset-x-0 z-50 transition-opacity duration-30`,
           isScrolled && !isMoreOpen
             ? "opacity-40 hover:opacity-100"
-            : "opacity-100"
-        } ${className || ""}`}
+            : "opacity-100",
+          // Hide the header when the 404 page is displayed, to avoid showing a blank header on top of the 404 page.
+          "[[data-not-found]~&]:hidden [&:has(~[data-not-found])]:hidden [*:has([data-not-found])>&]:hidden",
+          className,
+        )}
         id="header"
         {...props}
       >

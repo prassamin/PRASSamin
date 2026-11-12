@@ -84,7 +84,7 @@ export default AboutPage;
 
 export const generateMetadata = () => {
   return metatag({
-    title: "About | PRAS",
+    title: "About",
     robots: "index, follow",
   });
 };

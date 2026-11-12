@@ -7,7 +7,7 @@ export default function Page() {
 
 export const generateMetadata = () => {
   return metatag({
-    title: "Sign In | PRAS",
+    title: "Sign In",
     description: "Authenticate to access the admin studio and portfolio dashboard.",
     robots: "noindex, nofollow",
   });

@@ -5,6 +5,7 @@ import { Link } from "@/components/link";
 import { LuArrowUpRight as ArrowUpRight } from "react-icons/lu";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import Image from "next/image";
+import { cn } from "@heroui/styles";
 
 export const Footer: React.FC = () => {
   const navLinks = [
@@ -47,7 +48,13 @@ export const Footer: React.FC = () => {
   ];
 
   return (
-    <footer className="relative pt-24 not-sm:pt-14 w-full z-20 overflow-hidden bg-transparent text-left">
+    <footer
+      className={cn(
+        "relative pt-24 not-sm:pt-14 w-full z-20 overflow-hidden bg-transparent text-left",
+        // Hide the header when the 404 page is displayed, to avoid showing a blank header on top of the 404 page.
+        "[[data-not-found]~&]:hidden [&:has(~[data-not-found])]:hidden [*:has([data-not-found])>&]:hidden",
+      )}
+    >
       {/* Subtle Top Glowing Border Line */}
       <div className="absolute top-0 inset-x-0 h-px bg-linear-to-r from-transparent via-neutral-800 to-transparent" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 sm:w-96 h-px bg-linear-to-r from-transparent via-accent/50 to-transparent" />

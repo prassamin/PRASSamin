@@ -302,7 +302,7 @@ export const Testimonials: React.FC<TestimonialsProps> = ({
 
         <div
           className={cn(
-            "grid grid-cols-1 gap-8 lg:grid-cols-3 items-center mt-20 relative",
+            "grid grid-cols-1 gap-8 w-full lg:grid-cols-3 items-center mt-20 relative",
           )}
         >
           {/* Hand-drawn Dashed Arrow pointing to 3rd card */}

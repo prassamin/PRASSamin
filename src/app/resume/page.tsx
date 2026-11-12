@@ -2,7 +2,7 @@ import { metatag } from "@/lib/metatag";
 
 export const generateMetadata = () => {
   return metatag({
-    title: "Resume | PRAS",
+    title: "Resume",
     robots: "index, follow",
   });
 };

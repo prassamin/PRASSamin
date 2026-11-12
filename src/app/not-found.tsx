@@ -6,7 +6,10 @@ import { Link } from "@/components/link";
 
 export default function NotFound() {
   return (
-    <div className="layout flex min-h-screen flex-col items-center justify-center text-center text-white">
+    <div
+      data-not-found
+      className="layout flex min-h-screen flex-col items-center justify-center text-center text-white"
+    >
       <div className="before:transition-opacity rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm size-12 gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
         <LuSignpost className="size-5" />
       </div>

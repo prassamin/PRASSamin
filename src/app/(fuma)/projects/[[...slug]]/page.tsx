@@ -179,8 +179,16 @@ export async function generateMetadata(props: { params: Props }) {
   const params = await props.params;
   const page = projectSource.getPage(params.slug);
   if (!page) notFound();
+
+  if (page.slugs.length === 0) {
+    return metatag({
+      title: `Projects`,
+      robots: "index, follow",
+    });
+  }
+
   return metatag({
-    title: `${page?.data.title} | PRAS`,
+    title: `${page?.data.title}`,
     description: page?.data.description,
     image: page?.data.thumbnail,
     robots: "index, follow",
