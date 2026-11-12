@@ -17,7 +17,7 @@ const isDonationRoute = createRouteMatcher([
 
 const isAuthRoute = createRouteMatcher(["/sign-in"]);
 
-export default async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const headers = new Headers(request.headers);
   const { pathname } = request.nextUrl;
 
