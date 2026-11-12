@@ -2,8 +2,7 @@
 
 import React from "react";
 import { Card, Chip } from "@heroui/react";
-import { Eye, BookOpen, FolderGit2 } from "lucide-react";
-
+import { LuEye, LuBookOpen, LuFolderGit2 } from "react-icons/lu";
 interface TotalContentsViewCardProps {
   totalViews: number;
   totalBlogViews: number;
@@ -27,7 +26,7 @@ export const TotalContentsViewCard: React.FC<TotalContentsViewCardProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full">
       {/* Hero Card: Total Contents View */}
-      <Card className="relative overflow-hidden bg-muted/40 border border-accent/25 hover:border-accent/40 transition-all duration-300 !p-5 sm:!p-6 rounded-2xl flex flex-col justify-between group shadow-sm">
+      <Card className="relative overflow-hidden bg-muted/40 border border-accent/25 hover:border-accent/40 transition-all duration-300 p-5! sm:p-6! rounded-2xl flex flex-col justify-between group shadow-sm">
         <div className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-accent/10 blur-2xl pointer-events-none group-hover:bg-accent/20 transition-all duration-300" />
 
         {/* Top Row: Title on Left, Icon on Right */}
@@ -36,7 +35,7 @@ export const TotalContentsViewCard: React.FC<TotalContentsViewCardProps> = ({
             Total Contents View
           </h3>
           <div className="w-8 h-8 rounded-xl bg-accent/10 text-accent flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <Eye className="w-4 h-4" />
+            <LuEye className="w-4 h-4" />
           </div>
         </div>
 
@@ -52,14 +51,14 @@ export const TotalContentsViewCard: React.FC<TotalContentsViewCardProps> = ({
       </Card>
 
       {/* Blog Views Card */}
-      <Card className="bg-muted/40 border border-white/[0.08] hover:border-white/[0.16] transition-all duration-300 !p-5 sm:!p-6 rounded-2xl flex flex-col justify-between group shadow-sm">
+      <Card className="bg-muted/40 border border-white/8 hover:border-white/16 transition-all duration-300 p-5! sm:p-6! rounded-2xl flex flex-col justify-between group shadow-sm">
         {/* Top Row: Title on Left, Icon on Right */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-neutral-300 font-inter">
             Blog Views
           </h3>
           <div className="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <BookOpen className="w-4 h-4" />
+            <LuBookOpen className="w-4 h-4" />
           </div>
         </div>
 
@@ -85,14 +84,14 @@ export const TotalContentsViewCard: React.FC<TotalContentsViewCardProps> = ({
       </Card>
 
       {/* Project Views Card */}
-      <Card className="bg-muted/40 border border-white/[0.08] hover:border-white/[0.16] transition-all duration-300 !p-5 sm:!p-6 rounded-2xl flex flex-col justify-between group shadow-sm">
+      <Card className="bg-muted/40 border border-white/8 hover:border-white/16 transition-all duration-300 p-5! sm:p-6! rounded-2xl flex flex-col justify-between group shadow-sm">
         {/* Top Row: Title on Left, Icon on Right */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-sm font-medium text-neutral-300 font-inter">
             Project Views
           </h3>
           <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-            <FolderGit2 className="w-4 h-4" />
+            <LuFolderGit2 className="w-4 h-4" />
           </div>
         </div>
 

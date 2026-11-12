@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Link } from "@/components/link";
-import { ArrowUpRight } from "lucide-react";
+import { LuArrowUpRight as ArrowUpRight } from "react-icons/lu";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import Image from "next/image";
 

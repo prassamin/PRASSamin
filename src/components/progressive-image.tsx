@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import NextImage, { type ImageProps as NextImageProps } from "next/image";
-import { ImageOff } from "lucide-react";
+import { LuImageOff } from "react-icons/lu";
 import { cn } from "@heroui/react";
 
 export type ImageSrc = NextImageProps["src"];
@@ -119,7 +119,7 @@ export const ProgressiveImage = React.forwardRef<HTMLImageElement, ImageProps>(
             ...style,
           }}
         >
-          <ImageOff className="size-6 mb-1.5 opacity-60 stroke-[1.5]" />
+          <LuImageOff className="size-6 mb-1.5 opacity-60 stroke-[1.5]" />
           <span className="text-xs line-clamp-1 max-w-[90%] text-neutral-400">
             {alt || "Image unavailable"}
           </span>

@@ -11,7 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { BarChart2, Table as TableIcon, ExternalLink } from "lucide-react";
+import { LuChartBar, LuTable as TableIcon, LuExternalLink } from "react-icons/lu";
 import { cn } from "@heroui/react";
 
 export interface AnalyticsItem {
@@ -53,7 +53,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({
       totalViews > 0 ? ((item.views / totalViews) * 100).toFixed(1) : "0";
 
     return (
-      <div className="bg-neutral-900/95 border border-white/10 rounded-xl p-3 shadow-2xl backdrop-blur-xl text-left min-w-[200px]">
+      <div className="bg-neutral-900/95 border border-white/10 rounded-xl p-3 shadow-2xl backdrop-blur-xl text-left min-w-50">
         <p className="text-xs font-semibold text-white tracking-tight line-clamp-2">
           {item.title}
         </p>
@@ -99,9 +99,9 @@ export const ContentAnalyticsSection: React.FC<
   }, [data]);
 
   return (
-    <Card className="bg-muted/30 border border-white/[0.08] rounded-2xl overflow-hidden shadow-md !p-0 !gap-0">
+    <Card className="bg-muted/30 border border-white/8 rounded-2xl overflow-hidden shadow-md p-0! gap-0!">
       {/* Header: Title + Description on Left, Total + Mode Toggle on Right */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 border-b border-white/[0.06]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 border-b border-white/6">
         {/* Left Info */}
         <div className="flex items-start gap-3.5">
           <div>
@@ -126,18 +126,18 @@ export const ContentAnalyticsSection: React.FC<
           </div>
 
           {/* Segmented Switcher */}
-          <div className="flex items-center rounded-xl bg-white/[0.04] p-1 border border-white/[0.06] shrink-0">
+          <div className="flex items-center rounded-xl bg-white/4 p-1 border border-white/6 shrink-0">
             <button
               type="button"
               onClick={() => setSelectedTab("chart")}
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer",
                 selectedTab === "chart"
-                  ? "bg-white/[0.1] text-white shadow-xs"
+                  ? "bg-white/1 text-white shadow-xs"
                   : "text-neutral-400 hover:text-white",
               )}
             >
-              <BarChart2 className="w-3.5 h-3.5 shrink-0" />
+              <LuChartBar className="w-3.5 h-3.5 shrink-0" />
               <span className="not-sm:hidden">Graph View</span>
             </button>
             <button
@@ -146,7 +146,7 @@ export const ContentAnalyticsSection: React.FC<
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer",
                 selectedTab === "table"
-                  ? "bg-white/[0.1] text-white shadow-xs"
+                  ? "bg-white/1 text-white shadow-xs"
                   : "text-neutral-400 hover:text-white",
               )}
             >
@@ -165,11 +165,11 @@ export const ContentAnalyticsSection: React.FC<
               No data available yet.
             </div>
           ) : !mounted ? (
-            <div className="h-[270px] w-full rounded-xl bg-white/[0.02] animate-pulse flex items-center justify-center">
+            <div className="h-67.5 w-full rounded-xl bg-white/2 animate-pulse flex items-center justify-center">
               <span className="text-xs text-neutral-500">Loading chart...</span>
             </div>
           ) : (
-            <div className="w-full h-[270px]">
+            <div className="w-full h-67.5">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={displayData}
@@ -231,14 +231,14 @@ export const ContentAnalyticsSection: React.FC<
           )
         ) : (
           /* Table View */
-          <div className="rounded-xl border border-white/[0.06] overflow-hidden bg-white/[0.01]">
+          <div className="rounded-xl border border-white/6 overflow-hidden bg-white/1">
             <Table>
               <Table.ScrollContainer>
                 <Table.Content
                   aria-label={`${title} Table`}
-                  className="min-w-[650px] w-full text-left"
+                  className="min-w-162.5 w-full text-left"
                 >
-                  <Table.Header className="bg-white/[0.03] text-neutral-400 text-xs border-b border-white/[0.06]">
+                  <Table.Header className="bg-white/3 text-neutral-400 text-xs border-b border-white/6">
                     <Table.Column className="py-3 px-4 w-14 font-medium">
                       #
                     </Table.Column>
@@ -257,7 +257,7 @@ export const ContentAnalyticsSection: React.FC<
                       <Table.Row
                         key={item.slug}
                         id={item.slug}
-                        className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors"
+                        className="border-b border-white/4 hover:bg-white/2 transition-colors"
                       >
                         {/* Rank */}
                         <Table.Cell className="py-3 px-4 text-xs">
@@ -286,7 +286,7 @@ export const ContentAnalyticsSection: React.FC<
                             <span className="text-sm font-medium text-white line-clamp-1 hover:text-accent transition-colors">
                               {item.title}
                             </span>
-                            <span className="text-[11px] text-neutral-500 font-mono truncate max-w-[280px]">
+                            <span className="text-[11px] text-neutral-500 font-mono truncate max-w-70">
                               /{type === "blog" ? "blogs" : "projects"}/
                               {item.slug}
                             </span>
@@ -309,7 +309,7 @@ export const ContentAnalyticsSection: React.FC<
                             className="inline-flex items-center gap-1 text-xs text-neutral-400 hover:text-accent transition-colors p-1"
                           >
                             <span>View</span>
-                            <ExternalLink className="w-3 h-3" />
+                            <LuExternalLink className="w-3 h-3" />
                           </Link>
                         </Table.Cell>
                       </Table.Row>
