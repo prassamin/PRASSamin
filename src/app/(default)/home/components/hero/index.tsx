@@ -190,33 +190,28 @@ const HeroSection: React.FC = () => {
               href="https://github.com/PRASSamin"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs font-mono"
+              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs"
               title="GitHub"
             >
-              <FaGithub className="size-4" />
-              <span>GitHub</span>
+              <FaGithub className="size-5" />
             </Link>
-            <span className="text-neutral-700">•</span>
             <Link
-              href="https://twitter.com/prassamin78"
+              href="https://twitter.com/prassami"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs font-mono"
+              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs"
               title="Twitter"
             >
-              <FaXTwitter className="size-4" />
-              <span>Twitter</span>
+              <FaXTwitter className="size-5" />
             </Link>
-            <span className="text-neutral-700">•</span>
             <Link
-              href="https://www.linkedin.com/in/prassamin/"
+              href="https://www.instagram.com/imprassamin/"
               target="_blank"
               rel="noopener noreferrer"
-              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs font-mono"
+              className="p-1 hover:text-neutral-200 transition-colors flex items-center gap-1.5 text-xs"
               title="Instagram"
             >
-              <FaInstagram className="size-4" />
-              <span>Instagram</span>
+              <FaInstagram className="size-5" />
             </Link>
           </motion.div>
         </motion.div>

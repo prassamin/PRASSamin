@@ -5,7 +5,7 @@ type GetProjectsParams = {
   page?: number;
   limit?: number | "all";
   search?: string;
-  sortBy?: "views" | "created_at" | string;
+  sortBy?: "views" | "created_at";
   order?: "asc" | "desc";
 };
 

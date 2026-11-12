@@ -61,7 +61,15 @@ export default async function Home() {
 
   blogs.blogs = blogs.blogs.filter((blog) => !ignoreSlugs.has(blog.slug));
 
-  return <HomeView projects={projects.projects} blogs={blogs.blogs.slice(0, 2)} retros={retros} mentalModels={mentalModels} testimonials={testimonials} />;
+  return (
+    <HomeView
+      projects={projects.projects.sort((a, b) => b.views - a.views)}
+      blogs={blogs.blogs.sort((a, b) => b.views - a.views).slice(0, 2)}
+      retros={retros}
+      mentalModels={mentalModels}
+      testimonials={testimonials}
+    />
+  );
 }
 
 Home.DisplayName = "Home";
