@@ -18,7 +18,8 @@
     "start": "next start",
     "lint": "next lint",
     "cli": "./content-manager",
-    "postinstall": "fumadocs-mdx"
+    "postinstall": "fumadocs-mdx",
+    "prepare": "husky"
   },
   "prisma": {
     "seed": "bun prisma/seed.ts"
@@ -88,6 +89,7 @@
     "eslint-config-next": "^15.1.5",
     "glob": "^11.0.3",
     "gray-matter": "^4.0.3",
+    "husky": "^9.1.7",
     "postcss": "^8",
     "tailwindcss": "^4.3.4",
     "tsx": "^4.23.15",
