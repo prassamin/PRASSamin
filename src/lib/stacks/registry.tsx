@@ -248,6 +248,7 @@ export const Appwrite = {
 
 export const Astro = {
   name: "Astro",
+  ext: ["astro"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -418,6 +419,7 @@ export const Bun = {
 
 export const C = {
   name: "C",
+  ext: ["c", "h"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -986,6 +988,7 @@ export const Codex = {
 
 export const Cplusplus = {
   name: "C++",
+  ext: ["cpp", "cc", "cxx", "hpp", "hh"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1004,6 +1007,7 @@ export const Cplusplus = {
 
 export const Css3 = {
   name: "CSS3",
+  ext: ["css"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1039,6 +1043,7 @@ export const Cursor = {
 
 export const Dart = {
   name: "Dart",
+  ext: ["dart"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1404,6 +1409,7 @@ export const Flask = {
 
 export const Flutter = {
   name: "Flutter",
+  ext: ["dart"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1526,6 +1532,7 @@ export const Gitlab = {
 
 export const Go = {
   name: "Go",
+  ext: ["go"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1544,6 +1551,7 @@ export const Go = {
 
 export const Godot = {
   name: "Godot",
+  ext: ["gd", "tscn"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1565,6 +1573,7 @@ export const Godot = {
 
 export const Googlecolab = {
   name: "Google Colab",
+  ext: ["ipynb"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1582,6 +1591,7 @@ export const Googlecolab = {
 
 export const Graphql = {
   name: "GraphQL",
+  ext: ["graphql", "gql"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1637,6 +1647,7 @@ export const Hono = {
 
 export const Html5 = {
   name: "HTML5",
+  ext: ["html", "htm"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1674,6 +1685,7 @@ export const Huggingface = {
 
 export const Javascript = {
   name: "JavaScript",
+  ext: ["js", "jsx", "mjs", "cjs"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1705,6 +1717,7 @@ export const Jest = {
 
 export const Jinja = {
   name: "Jinja",
+  ext: ["jinja", "jinja2"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -1754,6 +1767,7 @@ export const Jira = {
 
 export const Json = {
   name: "JSON",
+  ext: ["json", "jsonc"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -2693,6 +2707,7 @@ export const Lynxjs = {
 
 export const Mariadb = {
   name: "MariaDB",
+  ext: ["sql"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -2708,6 +2723,7 @@ export const Mariadb = {
 
 export const Markdown = {
   name: "Markdown",
+  ext: ["md", "markdown", "mdx"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -2785,6 +2801,7 @@ export const Motion = {
 
 export const Mysql = {
   name: "MySQL",
+  ext: ["sql"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3104,6 +3121,7 @@ export const Pnpm = {
 
 export const Postgresql = {
   name: "PostgreSQL",
+  ext: ["sql", "psql"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3192,6 +3210,7 @@ export const Prasmoid = {
 
 export const Prisma = {
   name: "Prisma",
+  ext: ["prisma"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3231,6 +3250,7 @@ export const Pypi = {
 
 export const Python = {
   name: "Python",
+  ext: ["py", "pyw", "pyi"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3321,6 +3341,7 @@ export const Railway = {
 
 export const React = {
   name: "React",
+  ext: ["tsx", "jsx"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3424,6 +3445,7 @@ export const Render = {
 
 export const Rust = {
   name: "Rust",
+  ext: ["rs"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3530,6 +3552,7 @@ export const Sqlalchemy = {
 
 export const Sqlite = {
   name: "SQLite",
+  ext: ["sqlite", "sqlite3"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3596,6 +3619,7 @@ export const Supabase = {
 
 export const Svelte = {
   name: "Svelte",
+  ext: ["svelte"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3612,6 +3636,7 @@ export const Svelte = {
 
 export const Swift = {
   name: "Swift",
+  ext: ["swift"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3721,6 +3746,7 @@ export const Threejs = {
 
 export const Toml = {
   name: "TOML",
+  ext: ["toml"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3815,6 +3841,7 @@ export const Twitter = {
 
 export const Typescript = {
   name: "TypeScript",
+  ext: ["ts", "tsx", "mts", "cts"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3948,6 +3975,7 @@ export const Vitest = {
 
 export const Vuejs = {
   name: "Vue.js",
+  ext: ["vue"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -3965,6 +3993,7 @@ export const Vuejs = {
 
 export const Wasm = {
   name: "WebAssembly",
+  ext: ["wasm"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -4321,6 +4350,7 @@ export const Xcode = {
 
 export const Xml = {
   name: "XML",
+  ext: ["xml"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}
@@ -4339,6 +4369,7 @@ export const Xml = {
 
 export const Yaml = {
   name: "YAML",
+  ext: ["yaml", "yml"],
   icon: ({ size, className, ...props }: SVGProps) => (
     <svg
       {...props}

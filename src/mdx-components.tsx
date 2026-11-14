@@ -50,6 +50,18 @@ import { InlineTooltip as MdxInlineTooltip } from "@/components/ui/inline-toolti
 import { MdxAccordion, MdxAccordionItem } from "./components/mdx/mdx-accordion";
 import { MdxCard, MdxCards } from "./components/mdx/mdx-card";
 import { MdxCodeBlock } from "./components/mdx/mdx-code-block";
+import {
+  CodeBlockTabs,
+  CodeBlockTabsList,
+  CodeBlockTabsTrigger,
+  CodeBlockTab,
+} from "./components/code-block";
+export {
+  CodeBlockTabs,
+  CodeBlockTabsList,
+  CodeBlockTabsTrigger,
+  CodeBlockTab,
+};
 
 type HeadProps = React.ComponentProps<typeof Heading>;
 const Head = ({ className, ...props }: HeadProps) => (
@@ -536,6 +548,10 @@ export const mdxComponents = {
   Accordions: MdxAccordion,
   Tabs: MdxTabs,
   Tab: TabsComponents.Tab,
+  CodeBlockTabs,
+  CodeBlockTabsList,
+  CodeBlockTabsTrigger,
+  CodeBlockTab,
   Callout: MdxCallout,
   pre: MdxCodeBlock,
   table: MdxTable,
@@ -585,6 +601,10 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     Accordion: MdxAccordion,
     AccordionItem: MdxAccordionItem,
     Accordions: MdxAccordion,
+    CodeBlockTabs,
+    CodeBlockTabsList,
+    CodeBlockTabsTrigger,
+    CodeBlockTab,
     pre: MdxCodeBlock,
     ...components,
   };
