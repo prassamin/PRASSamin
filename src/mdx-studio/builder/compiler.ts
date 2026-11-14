@@ -298,6 +298,34 @@ export function blocksToMdx(
         break;
       }
 
+      case "codeBlockTabs": {
+        const tabs: any[] = props.tabs || [];
+        const defaultVal =
+          props.defaultValue || tabs[0]?.value || tabs[0]?.label || "npm";
+
+        const triggers = tabs
+          .map(
+            (t) =>
+              `    <CodeBlockTabsTrigger value="${t.value || t.label}">${t.label || t.value}</CodeBlockTabsTrigger>`,
+          )
+          .join("\n");
+
+        const tabContents = tabs
+          .map((t) => {
+            const val = t.value || t.label;
+            const lang = t.language || "bash";
+            const titleAttr = t.title ? ` title="${t.title}"` : "";
+            const rawCode = t.code || "";
+            return `  <CodeBlockTab value="${val}">\n\n    \`\`\`${lang}${titleAttr}\n${rawCode}\n    \`\`\`\n\n  </CodeBlockTab>`;
+          })
+          .join("\n\n");
+
+        segments.push(
+          `<CodeBlockTabs defaultValue="${defaultVal}">\n  <CodeBlockTabsList>\n${triggers}\n  </CodeBlockTabsList>\n\n${tabContents}\n</CodeBlockTabs>`,
+        );
+        break;
+      }
+
       case "chipGroup": {
         const chips = props.chips || [];
         const color = props.color || "accent";
@@ -565,13 +593,26 @@ export function blocksToMdx(
   return segments.join("\n\n");
 }
 
+export function dedentCode(code: string): string {
+  const lines = code.split(/\r?\n/);
+  const nonEmpty = lines.filter((l) => l.trim().length > 0);
+  if (nonEmpty.length === 0) return code;
+  const minIndent = Math.min(
+    ...nonEmpty.map((l) => l.match(/^[ \t]*/)?.[0].length || 0),
+  );
+  if (minIndent === 0) return code;
+  return lines
+    .map((l) => (l.trim().length === 0 ? "" : l.slice(minIndent)))
+    .join("\n");
+}
+
 export function splitMdxIntoBlocks(mdx: string): string[] {
   const blocks: string[] = [];
   let remaining = mdx.trim();
 
   while (remaining.length > 0) {
-    // Code blocks (```...```)
-    const codeMatch = remaining.match(/^```[\s\S]*?```/);
+    // Code blocks (```...```) - support leading whitespace/indentation
+    const codeMatch = remaining.match(/^[ \t]*```[\s\S]*?\r?\n[ \t]*```/);
     if (codeMatch) {
       blocks.push(codeMatch[0]);
       remaining = remaining.slice(codeMatch[0].length).trim();
@@ -593,6 +634,26 @@ export function splitMdxIntoBlocks(mdx: string): string[] {
     if (tabsMatch) {
       blocks.push(tabsMatch[0]);
       remaining = remaining.slice(tabsMatch[0].length).trim();
+      continue;
+    }
+
+    // CodeBlockTabs blocks (<CodeBlockTabs...>...</CodeBlockTabs>)
+    const codeBlockTabsMatch = remaining.match(
+      /^<CodeBlockTabs[\s\S]*?<\/CodeBlockTabs>/i,
+    );
+    if (codeBlockTabsMatch) {
+      blocks.push(codeBlockTabsMatch[0]);
+      remaining = remaining.slice(codeBlockTabsMatch[0].length).trim();
+      continue;
+    }
+
+    // CodeBlock component blocks (<CodeBlock...>...</CodeBlock>)
+    const codeBlockCompMatch = remaining.match(
+      /^<CodeBlock[\s\S]*?<\/CodeBlock>/i,
+    );
+    if (codeBlockCompMatch) {
+      blocks.push(codeBlockCompMatch[0]);
+      remaining = remaining.slice(codeBlockCompMatch[0].length).trim();
       continue;
     }
 
@@ -750,14 +811,17 @@ export function splitMdxIntoBlocks(mdx: string): string[] {
     }
 
     // Regular markdown (paragraphs, headings, dividers, etc.) up to next double newline or start of a block
-    const nextCode = remaining.search(/\n\n```/);
+    const nextCode = remaining.search(/\n\n[ \t]*```/);
     const nextAcc = remaining.search(/\n\n<(?:Accordion|Accordions)/i);
+    const nextCodeBlockTabs = remaining.search(/\n\n<CodeBlockTabs/i);
+    const nextCodeBlockComp = remaining.search(/\n\n<CodeBlock\b/i);
     const nextTabs = remaining.search(/\n\n<Tabs/i);
     const nextCards = remaining.search(/\n\n<Cards/i);
     const nextCard = remaining.search(/\n\n<Card/i);
     const nextCallout = remaining.search(/\n\n<Callout/i);
     const nextBanner = remaining.search(/\n\n<Banner/i);
     const nextSteps = remaining.search(/\n\n<Steps/i);
+    const nextFiles = remaining.search(/\n\n[ \t]*<Files/i);
     const nextTable = remaining.search(
       /\n\n\|[^\n]+\|\r?\n\|(?:\s*:?-+:?\s*\|)+/,
     );
@@ -773,12 +837,15 @@ export function splitMdxIntoBlocks(mdx: string): string[] {
     const splitCandidates = [
       nextCode,
       nextAcc,
+      nextCodeBlockTabs,
+      nextCodeBlockComp,
       nextTabs,
       nextCards,
       nextCard,
       nextCallout,
       nextBanner,
       nextSteps,
+      nextFiles,
       nextTable,
       nextQuote,
       nextList,
@@ -1218,14 +1285,14 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
       continue;
     }
 
-    // Code Block (```lang [meta] ... ```)
+    // Code Block (```lang [meta] ... ```) - tolerant to leading indentation on fences & body
     const codeMatch = trimmed.match(
-      /^```([a-zA-Z0-9_#-]+)?([^\n]*)\n([\s\S]*?)\n```$/,
+      /^[ \t]*```([a-zA-Z0-9_#-]+)?([^\n]*)\r?\n([\s\S]*?)\r?\n[ \t]*```$/,
     );
     if (codeMatch) {
       const language = codeMatch[1] || "typescript";
       const meta = codeMatch[2] || "";
-      const code = codeMatch[3] || "";
+      const code = dedentCode(codeMatch[3] || "");
 
       const titleMatch = meta.match(/title=["']([^"']+)["']/);
       const title = titleMatch ? titleMatch[1] : "";
@@ -1370,7 +1437,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
       if (tabItemMatches.length > 0) {
         const parsedTabs = tabItemMatches.map((m) => {
           const title = m[1].trim();
-          const innerContent = m[2].trim();
+          const innerContent = dedentCode(m[2]);
           const nested = mdxToBlocks(innerContent);
           return {
             id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
@@ -1383,6 +1450,86 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
           };
         });
         blocks.push(createBlock("tabs", { tabs: parsedTabs }));
+        continue;
+      }
+    }
+
+    // CodeBlockTabs Container (<CodeBlockTabs ...> ... </CodeBlockTabs>)
+    const codeBlockTabsMatch = trimmed.match(
+      /^<CodeBlockTabs\b([\s\S]*?)<\/CodeBlockTabs>$/i,
+    );
+    if (codeBlockTabsMatch) {
+      const wholeContent = codeBlockTabsMatch[0];
+      const defMatch = wholeContent.match(/defaultValue=["']([^"']*)["']/i);
+      const defaultValue = defMatch ? defMatch[1] : undefined;
+
+      // Extract triggers from <CodeBlockTabsList>
+      const triggersMap = new Map<string, string>();
+      const triggerMatches = [
+        ...wholeContent.matchAll(
+          /<CodeBlockTabsTrigger\s+value=["']([^"']*)["'][^>]*>([\s\S]*?)<\/CodeBlockTabsTrigger>/gi,
+        ),
+      ];
+      for (const tm of triggerMatches) {
+        triggersMap.set(tm[1].trim(), tm[2].trim());
+      }
+
+      // Extract each <CodeBlockTab value="...">
+      const tabMatches = [
+        ...wholeContent.matchAll(
+          /<CodeBlockTab\s+value=["']([^"']*)["'][^>]*>([\s\S]*?)<\/CodeBlockTab>/gi,
+        ),
+      ];
+
+      const parsedTabs: any[] = [];
+      for (const tm of tabMatches) {
+        const val = tm[1].trim();
+        const inner = tm[2].trim();
+        const label = triggersMap.get(val) || val;
+
+        // Parse code block inside (handling indented markdown code fences)
+        const trimmedInner = inner.trim();
+        const codeFenceMatch = trimmedInner.match(
+          /^```([a-zA-Z0-9_#-]+)?([^\n]*)\r?\n([\s\S]*?)\r?\n[ \t]*```$/,
+        );
+
+        if (codeFenceMatch) {
+          const language = codeFenceMatch[1] || "bash";
+          const meta = codeFenceMatch[2] || "";
+          const code = dedentCode(codeFenceMatch[3] || "");
+          const titleMatch = meta.match(/title=["']([^"']+)["']/);
+
+          parsedTabs.push({
+            id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            value: val,
+            label,
+            language,
+            title: titleMatch ? titleMatch[1] : "",
+            code,
+          });
+        } else {
+          const cleaned = dedentCode(
+            trimmedInner
+              .replace(/^[ \t]*```[^\n]*\r?\n/, "")
+              .replace(/\r?\n[ \t]*```$/, ""),
+          );
+          parsedTabs.push({
+            id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            value: val,
+            label,
+            language: "bash",
+            code: cleaned,
+          });
+        }
+      }
+
+      if (parsedTabs.length > 0) {
+        blocks.push(
+          createBlock("codeBlockTabs", {
+            defaultValue: defaultValue || parsedTabs[0]?.value,
+            tabs: parsedTabs,
+          }),
+        );
         continue;
       }
     }

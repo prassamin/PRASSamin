@@ -84,6 +84,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   const activeScrollInitiatorRef = useRef<
     "canvas" | "preview" | "monaco" | null
   >(null);
+  const isPointerOverPreviewRef = useRef(false);
   const scrollEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
     null,
   );
@@ -204,13 +205,16 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
 
   // Synchronize internal blocks and code editor when external value prop changes
   useEffect(() => {
+    // Only accept external value replacement when NOT actively in visual builder mode,
+    // or when the canvas is empty, to avoid resetting block state and scroll position mid-keystroke.
+    if (mode === "builder" && blocks.length > 0) return;
     if (value !== lastSyncedValueRef.current) {
       lastSyncedValueRef.current = value;
       const nextBlocks = mdxToBlocks(value);
       resetBlocks(nextBlocks);
       setCodeValue(value);
     }
-  }, [value, resetBlocks]);
+  }, [value, resetBlocks, mode, blocks.length]);
 
   // Synchronize compiled MDX whenever blocks change (when in visual builder mode)
   useEffect(() => {
@@ -226,7 +230,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
 
   // Auto-scroll the preview to the active block when user explicitly selects or adds a block
   useEffect(() => {
-    // If user is currently actively scrolling either pane, do not interrupt them with scrollIntoView!
+    // If user is currently actively scrolling either pane, do not interrupt them!
     if (
       mode !== "builder" ||
       !activeBlockId ||
@@ -256,7 +260,10 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
         targetRect.bottom <= containerRect.bottom - 30;
 
       if (!isInView) {
-        target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        // Confine scrolling strictly to the preview container (avoid window / canvas scroll jumping)
+        const relativeTop =
+          targetRect.top - containerRect.top + container.scrollTop;
+        container.scrollTo({ top: Math.max(0, relativeTop - 30), behavior: "smooth" });
       }
     }, 60);
 
@@ -401,6 +408,9 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
         });
       }
     } else if (mode === "builder") {
+      // Only sync scroll to canvas if the user is explicitly hovering over or interacting with the preview pane!
+      // This prevents layout recalculations/re-renders of the preview from jumping canvas to the top.
+      if (!isPointerOverPreviewRef.current) return;
       if (!claimScrollInitiator("preview")) return;
       const canvas = canvasScrollRef.current;
       const preview = previewScrollRef.current;
@@ -880,6 +890,12 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
             {/* Preview Content */}
             <div
               ref={previewScrollRef}
+              onMouseEnter={() => {
+                isPointerOverPreviewRef.current = true;
+              }}
+              onMouseLeave={() => {
+                isPointerOverPreviewRef.current = false;
+              }}
               onScroll={handlePreviewScroll}
               className="flex-1 overflow-y-auto p-6 sm:p-7"
             >

@@ -18,7 +18,8 @@ export type MdxBlockType =
   | "blockquote"
   | "divider"
   | "break"
-  | "list";
+  | "list"
+  | "codeBlockTabs";
 
 export type ListType = "bullet" | "ordered" | "task";
 
@@ -198,6 +199,38 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     description: "Syntax highlighted code block",
     category: "Code & Media",
     defaultProps: {},
+  },
+  {
+    type: "codeBlockTabs",
+    label: "Code Tabs",
+    description: "Multi-tab code block switcher (npm, pnpm, etc.)",
+    category: "Code & Media",
+    defaultProps: {
+      defaultValue: "npm",
+      tabs: [
+        {
+          id: "tab-npm",
+          value: "npm",
+          label: "npm",
+          language: "bash",
+          code: "npm install package-name",
+        },
+        {
+          id: "tab-pnpm",
+          value: "pnpm",
+          label: "pnpm",
+          language: "bash",
+          code: "pnpm add package-name",
+        },
+        {
+          id: "tab-yarn",
+          value: "yarn",
+          label: "yarn",
+          language: "bash",
+          code: "yarn add package-name",
+        },
+      ],
+    },
   },
   {
     type: "image",

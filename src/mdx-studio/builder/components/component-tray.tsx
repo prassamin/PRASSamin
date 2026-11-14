@@ -25,6 +25,7 @@ import {
   LuCornerDownLeft,
   LuSearch,
   LuX,
+  LuTerminal,
 } from "react-icons/lu";
 import {
   COMPONENT_TRAY_ITEMS,
@@ -59,6 +60,7 @@ const ICONS: Record<MdxBlockType, React.ReactNode> = {
   profile: <LuCircleUser className="w-4 h-4 text-cyan-400" />,
   blockquote: <LuQuote className="w-4 h-4 text-emerald-400" />,
   break: <LuCornerDownLeft className="w-4 h-4 text-neutral-400" />,
+  codeBlockTabs: <LuTerminal className="w-4 h-4 text-cyan-400" />,
 };
 
 export const ComponentTray: React.FC<ComponentTrayProps> = ({

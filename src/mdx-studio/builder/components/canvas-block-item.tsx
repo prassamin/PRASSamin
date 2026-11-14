@@ -47,6 +47,7 @@ import {
   LuLink as LinkIcon,
   LuQuote as Quote,
   LuCornerDownLeft as CornerDownLeft,
+  LuTerminal as Terminal,
 } from "react-icons/lu";
 import {
   MdxBlock,
@@ -121,6 +122,7 @@ const BLOCK_ICONS: Record<MdxBlockType, React.ReactNode> = {
   blockquote: <Quote className="w-3.5 h-3.5 text-emerald-400" />,
   break: <CornerDownLeft className="w-3.5 h-3.5 text-neutral-400" />,
   list: <LuList className="w-3.5 h-3.5 text-emerald-400" />,
+  codeBlockTabs: <Terminal className="w-3.5 h-3.5 text-cyan-400" />,
 };
 
 const BLOCK_TITLES: Record<MdxBlockType, string> = {
@@ -144,6 +146,7 @@ const BLOCK_TITLES: Record<MdxBlockType, string> = {
   blockquote: "Blockquote",
   break: "Line Break",
   list: "List / Checklist",
+  codeBlockTabs: "Code Tabs",
 };
 
 export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
@@ -761,6 +764,50 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
     if (tabsList.length <= 1) return;
     const updated = tabsList.filter((_: any, i: number) => i !== tIdx);
     updateTabsList(updated);
+    setActiveTabIdx(Math.max(0, tIdx - 1));
+  };
+
+  // CodeBlockTabs helpers
+  const codeTabsList = props.tabs || [];
+  const safeCodeTabIdx = Math.min(
+    activeTabIdx,
+    Math.max(0, codeTabsList.length - 1),
+  );
+  const currentCodeTab = codeTabsList[safeCodeTabIdx] || {
+    id: "tab-1",
+    value: "npm",
+    label: "npm",
+    language: "bash",
+    code: "",
+  };
+
+  const updateCodeTabsList = (newTabs: any[]) => {
+    updateProp("tabs", newTabs);
+  };
+
+  const handleUpdateCodeTab = (tIdx: number, patch: Partial<any>) => {
+    const updated = [...codeTabsList];
+    updated[tIdx] = { ...updated[tIdx], ...patch };
+    updateCodeTabsList(updated);
+  };
+
+  const handleAddCodeTab = () => {
+    const newIdx = codeTabsList.length;
+    const newTab = {
+      id: `tab-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      value: `tab${newIdx + 1}`,
+      label: `Tab ${newIdx + 1}`,
+      language: "bash",
+      code: "",
+    };
+    updateCodeTabsList([...codeTabsList, newTab]);
+    setActiveTabIdx(newIdx);
+  };
+
+  const handleRemoveCodeTab = (tIdx: number) => {
+    if (codeTabsList.length <= 1) return;
+    const updated = codeTabsList.filter((_: any, i: number) => i !== tIdx);
+    updateCodeTabsList(updated);
     setActiveTabIdx(Math.max(0, tIdx - 1));
   };
 
@@ -2631,6 +2678,112 @@ export const CanvasBlockItem: React.FC<CanvasBlockItemProps> = ({
                 }}
                 className="w-full text-xs bg-white/3 9.5 border border-white/10 text-white min-w-35"
               />
+            </div>
+          </div>
+        )}
+
+        {/* CodeBlockTabs Container */}
+        {type === "codeBlockTabs" && (
+          <div className="space-y-4">
+            {/* Top Tab Bar Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-2 border-b border-white/8 select-none">
+              {codeTabsList.map((tab: any, tIdx: number) => {
+                const isActive = safeCodeTabIdx === tIdx;
+
+                return (
+                  <div
+                    key={tab.id || tIdx}
+                    onClick={() => setActiveTabIdx(tIdx)}
+                    className={cn(
+                      "px-3 py-1.5 rounded-xl text-xs font-medium transition-all flex items-center gap-2 cursor-pointer shrink-0 border",
+                      isActive
+                        ? "bg-cyan-500/15 border-cyan-500/40 text-cyan-300 font-semibold shadow-xs"
+                        : "bg-white/3 border-white/8 text-neutral-400 hover:text-white hover:bg-white/6",
+                    )}
+                  >
+                    <span>{tab.label || tab.value || `Tab ${tIdx + 1}`}</span>
+                    {codeTabsList.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveCodeTab(tIdx);
+                        }}
+                        title="Remove Tab"
+                        className="text-neutral-500 hover:text-red-400 p-0.5 rounded transition-colors"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
+
+              <button
+                type="button"
+                onClick={handleAddCodeTab}
+                className="px-3 py-1.5 rounded-xl text-xs font-medium text-neutral-300 hover:text-white bg-white/4 hover:bg-white/8 border border-dashed border-white/20 transition-colors flex items-center gap-1 shrink-0 cursor-pointer"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span>Add Tab</span>
+              </button>
+            </div>
+
+            {/* Active Code Tab Configuration & Code Area */}
+            <div className="p-4 rounded-xl bg-white/2 border border-white/6 space-y-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div>
+                  <label className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block mb-1 font-medium">
+                    Tab Label:
+                  </label>
+                  <Input
+                    type="text"
+                    value={currentCodeTab.label || currentCodeTab.value || ""}
+                    onChange={(e) =>
+                      handleUpdateCodeTab(safeCodeTabIdx, {
+                        label: e.target.value,
+                        value:
+                          currentCodeTab.value || e.target.value.toLowerCase(),
+                      })
+                    }
+                    placeholder="e.g. npm, yarn, pnpm..."
+                    className="w-full text-xs h-10 bg-white/4 border border-white/10 text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block mb-1 font-medium">
+                    Language:
+                  </label>
+                  <Select
+                    options={CODE_LANGUAGES}
+                    value={currentCodeTab.language || "bash"}
+                    onChange={(val) =>
+                      handleUpdateCodeTab(safeCodeTabIdx, { language: val })
+                    }
+                    placeholder="Select Language..."
+                  />
+                </div>
+              </div>
+
+              {/* Code Textarea Editor */}
+              <div>
+                <label className="text-[10px] font-mono text-neutral-400 uppercase tracking-wider block mb-1 font-medium">
+                  Code:
+                </label>
+                <textarea
+                  data-format-role="plain"
+                  value={currentCodeTab.code || ""}
+                  onChange={(e) =>
+                    handleUpdateCodeTab(safeCodeTabIdx, {
+                      code: e.target.value,
+                    })
+                  }
+                  placeholder={`Enter ${currentCodeTab.language || "code"} commands or script for this tab...`}
+                  rows={6}
+                  className="w-full text-xs bg-white/4 border border-white/10 rounded-2xl font-mono text-emerald-400 p-3 min-h-65 leading-relaxed resize-y focus:outline-none placeholder:text-neutral-600 block"
+                />
+              </div>
             </div>
           </div>
         )}

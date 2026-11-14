@@ -82,7 +82,7 @@ function getMdxPromise(content: string) {
       } catch (err: any) {
         // Safe resilient fallback component to prevent studio crash during active typing
         const ErrorFallback: React.FC<{ components?: any }> = () => (
-          <div className="rounded-xl border border-amber-500/20 bg-amber-500/6 p-3 text-xs text-amber-300 font-mono my-2 select-none">
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/6 p-3 text-xs text-amber-300 font-mono my-2">
             <span className="font-semibold block text-[11px] uppercase tracking-wider text-amber-400 mb-1">
               Markdown Formatting Notice
             </span>
