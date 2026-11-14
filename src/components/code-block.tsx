@@ -37,6 +37,22 @@ export const CodeBlockTabsContext = createContext<{
  * Props Interface
  * ──────────────────────────────────────────────────────────────── */
 
+/**
+ * A span of code text to turn into a link.
+ */
+export interface CodeLink {
+  /** Exact text — or RegExp — to find inside the code. */
+  match: string | RegExp;
+  /** Destination href. */
+  href: string;
+  /** Custom link text (defaults to the matched text). */
+  label?: string;
+  /** Extra class(es) for the anchor element. */
+  className?: string;
+  /** Link target (e.g. "_blank"). */
+  target?: string;
+}
+
 export interface CodeBlockProps extends Omit<
   ComponentProps<"figure">,
   "title"
@@ -58,6 +74,18 @@ export interface CodeBlockProps extends Omit<
   showLineNumbers?: boolean;
   highlightLines?: string;
   wrap?: boolean;
+  /**
+   * Linkable spans inside the code. Any text matching one of these is
+   * rendered as an inline anchor — a generic way to link any text inside
+   * highlighted code to anything.
+   *
+   * @example
+   * <CodeBlock
+   *   code="... Bearer <YOUR_MCP_TOKEN> ..."
+   *   links={[{ match: "<YOUR_MCP_TOKEN>", href: "/admin/mcp/tokens" }]}
+   * />
+   */
+  links?: CodeLink[];
   Actions?: (props: { className?: string; children?: ReactNode }) => ReactNode;
   children?: ReactNode;
   [key: `data-${string}`]: any;
@@ -744,6 +772,8 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props) => {
     codeProps["data-highlight"] ||
     "";
 
+  const links = props.links ?? [];
+
   // Shiki AST Transformers
   const transformers = useMemo(() => {
     let codeHasFocus = false;
@@ -826,8 +856,103 @@ export const CodeBlock: React.FC<CodeBlockProps> = (props) => {
       });
     }
 
+    // Generic code-links: turn any matching text inside the code into an
+    // inline anchor — reusable for any placeholder/domain.
+    if (links.length > 0) {
+      const resolvedLinks = links.map((link) => ({
+        exact: typeof link.match === "string" ? link.match : null,
+        pattern:
+          link.match instanceof RegExp
+            ? new RegExp(link.match.source, link.match.flags.includes("g") ? link.match.flags : link.match.flags + "g")
+            : null,
+        href: link.href,
+        label: link.label,
+        className: link.className,
+        target: link.target,
+      }));
+
+      const applyLink = (children: any[], link: (typeof resolvedLinks)[number]): any[] => {
+        const next: any[] = [];
+        for (const child of children) {
+          if (child.type === "text" && typeof child.value === "string") {
+            if (link.exact !== null) {
+              if (!child.value.includes(link.exact)) {
+                next.push(child);
+                continue;
+              }
+              const parts = child.value.split(link.exact);
+              parts.forEach((part: string, i: number) => {
+                if (part) next.push({ type: "text", value: part });
+                if (i < parts.length - 1) {
+                  next.push({
+                    type: "element",
+                    tagName: "a",
+                    properties: {
+                      href: link.href,
+                      ...(link.className ? { className: [link.className] } : {}),
+                      ...(link.target ? { target: link.target } : {}),
+                    },
+                    children: [{ type: "text", value: link.label ?? link.exact }],
+                  });
+                }
+              });
+            } else if (link.pattern) {
+              link.pattern.lastIndex = 0;
+              let matched = false;
+              let lastIdx = 0;
+              let m: RegExpExecArray | null;
+              while ((m = link.pattern.exec(child.value)) !== null) {
+                matched = true;
+                if (m.index > lastIdx) {
+                  next.push({ type: "text", value: child.value.slice(lastIdx, m.index) });
+                }
+                next.push({
+                  type: "element",
+                  tagName: "a",
+                  properties: {
+                    href: link.href,
+                    ...(link.className ? { className: [link.className] } : {}),
+                    ...(link.target ? { target: link.target } : {}),
+                  },
+                  children: [{ type: "text", value: link.label ?? m[0] }],
+                });
+                lastIdx = m.index + m[0].length;
+                if (m[0].length === 0) break;
+              }
+              if (matched) {
+                if (lastIdx < child.value.length) {
+                  next.push({ type: "text", value: child.value.slice(lastIdx) });
+                }
+              } else {
+                next.push(child);
+              }
+            } else {
+              next.push(child);
+            }
+          } else {
+            if (child.type === "element") {
+              child.children = applyLink(child.children ?? [], link);
+            }
+            next.push(child);
+          }
+        }
+        return next;
+      };
+
+      list.push({
+        name: "code-links",
+        line(node: any) {
+          let children = node.children ?? [];
+          for (const link of resolvedLinks) {
+            children = applyLink(children, link);
+          }
+          node.children = children;
+        },
+      });
+    }
+
     return list;
-  }, [highlightStr]);
+  }, [highlightStr, links]);
 
   const cleanCode = rawCode.replace(/\n$/, "");
 
