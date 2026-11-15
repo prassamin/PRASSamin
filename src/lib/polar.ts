@@ -1,4 +1,4 @@
-import { NODE_ENV, POLAR_ACCESS_TOKEN } from "@/constants/env";
+import { NODE_ENV, POLAR_ACCESS_TOKEN } from "@/config/env";
 import { Polar } from "@polar-sh/sdk";
 
 export const polar = new Polar({

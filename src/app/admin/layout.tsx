@@ -1,6 +1,6 @@
-import { AUTH_PUBLIC_KEY } from "@/constants/env";
+import { AUTH_PUBLIC_KEY } from "@/config/env";
 import { AdminLayout } from "./components/admin-layout";
-import { SESSION_COOKIE_NAME } from "@/constants";
+import { SESSION_COOKIE_NAME } from "@/config";
 import { cookies } from "next/headers";
 import { UserType } from "@/types";
 import jwt from "jsonwebtoken";

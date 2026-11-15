@@ -1,5 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { SESSION_COOKIE_NAME } from "@/constants";
+import { SESSION_COOKIE_NAME } from "@/config";
 
 export async function POST(request: NextRequest) {
   const { redirect } = await request.json();

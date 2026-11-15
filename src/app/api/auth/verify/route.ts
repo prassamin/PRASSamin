@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { AUTH_PUBLIC_KEY } from "@/constants/env";
-import { SESSION_COOKIE_NAME } from "@/constants";
+import { AUTH_PUBLIC_KEY } from "@/config/env";
+import { SESSION_COOKIE_NAME } from "@/config";
 
 export async function POST(request: NextRequest) {
   const token = request.cookies.get(SESSION_COOKIE_NAME)?.value;

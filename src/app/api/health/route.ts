@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { APP_NAME } from "@/constants";
+import { APP_NAME } from "@/config";
 import { db } from "@/lib/db";
 
 /**

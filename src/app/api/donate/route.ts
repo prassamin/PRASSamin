@@ -5,7 +5,7 @@ import {
   isDonationEnabled,
   POLAR_DONATION_PRODUCT_ID,
   POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID,
-} from "@/constants/env";
+} from "@/config/env";
 import { CheckoutCreate } from "@polar-sh/sdk/models/components/checkoutcreate";
 
 export async function POST(req: Request) {

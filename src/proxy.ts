@@ -1,7 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
 import { createRouteMatcher } from "./lib/route-matcher";
-import { CURRENT_URL_HEADER, ORIGIN_HEADER, SESSION_COOKIE_NAME } from "./constants";
-import { isDonationEnabled, NODE_ENV } from "./constants/env";
+import {
+  CURRENT_URL_HEADER,
+  ORIGIN_HEADER,
+  SESSION_COOKIE_NAME,
+} from "./config";
+import { isDonationEnabled, NODE_ENV } from "./config/env";
 
 const isAdminRoute = createRouteMatcher([
   "/admin",

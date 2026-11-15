@@ -1,14 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { geolocation } from "@vercel/functions";
-import { NODE_ENV } from "@/constants/env";
+import { NODE_ENV } from "@/config/env";
 import { source, projectSource } from "@/lib/source";
 
 const THREE_MINUTES = 3 * 60 * 1000;
 
 /** Slugs must exist in the published content sources. */
 function slugExists(type: "blog" | "project", slug: string): boolean {
-  const pages = type === "project" ? projectSource.getPages() : source.getPages();
+  const pages =
+    type === "project" ? projectSource.getPages() : source.getPages();
   return pages.some((p) => p.slugs.join("/") === slug);
 }
 
@@ -46,9 +47,7 @@ export async function POST(req: NextRequest) {
       // geolocation is Vercel-only; ignore elsewhere.
     }
     const location =
-      country && flag
-        ? `${country} ${flag}`
-        : country || flag || "Unknown";
+      country && flag ? `${country} ${flag}` : country || flag || "Unknown";
 
     const threeMinutesAgo = new Date(Date.now() - THREE_MINUTES);
 

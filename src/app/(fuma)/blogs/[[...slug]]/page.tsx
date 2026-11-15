@@ -14,7 +14,7 @@ import Footer from "@/components/footer";
 import BlogsView from "../view";
 import { getBlogs } from "@/lib/get-blogs";
 import { getOwnerCached, toPublicOwner } from "@/lib/github";
-import { TWITTER_USERNAME } from "@/constants";
+import { TWITTER_USERNAME } from "@/config";
 import { getOrigin } from "@/lib/url";
 
 type Props = Promise<{ slug?: string[] }>;

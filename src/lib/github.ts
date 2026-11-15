@@ -1,4 +1,4 @@
-import { GITHUB_API_KEY } from "@/constants/env";
+import { GITHUB_API_KEY } from "@/config/env";
 
 export interface GithubOwner {
   login: string;
@@ -21,7 +21,9 @@ export interface GithubOwnerPublic {
 }
 
 /** Slice a full owner into its public fields. */
-export function toPublicOwner(owner: GithubOwner | undefined | null): GithubOwnerPublic | null {
+export function toPublicOwner(
+  owner: GithubOwner | undefined | null,
+): GithubOwnerPublic | null {
   if (!owner) return null;
   return {
     username: owner.login,

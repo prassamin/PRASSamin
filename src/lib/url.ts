@@ -1,4 +1,4 @@
-import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "@/constants";
+import { CURRENT_URL_HEADER, ORIGIN_HEADER } from "@/config";
 import { headers } from "next/headers";
 
 /**

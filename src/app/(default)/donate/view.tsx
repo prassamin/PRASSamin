@@ -6,7 +6,7 @@ import { Reveal } from "@/components/reveal";
 import { PenSwoopUnderline } from "@/components/pen-swoop-underline";
 import { Tape } from "@/components/tape";
 import { SupportWatermark } from "./components/watermark";
-import { DONATION_MODES } from "@/constants/env";
+import { DONATION_MODES } from "@/config/env";
 import { cn } from "@heroui/react";
 import { motion } from "framer-motion";
 import { metatag } from "@/lib/metatag";
@@ -14,12 +14,9 @@ import { metatag } from "@/lib/metatag";
 const PRESET_AMOUNTS = [5, 10, 25, 50];
 type DonationMode = "once" | "monthly";
 
-const DEFAULT_MODE: DonationMode = DONATION_MODES.monthly
-  ? "monthly"
-  : "once";
+const DEFAULT_MODE: DonationMode = DONATION_MODES.monthly ? "monthly" : "once";
 
-interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   required?: boolean;
   error?: string;
@@ -46,7 +43,8 @@ function Input({
           className={cn(
             "peer w-full h-12 rounded-xl bg-white/3 border border-white/6 px-4 text-sm text-foreground outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/30",
             "placeholder:text-transparent",
-            error && "border-red-500/60 focus:border-red-500 focus:ring-red-500/30",
+            error &&
+              "border-red-500/60 focus:border-red-500 focus:ring-red-500/30",
             className,
           )}
         />
@@ -379,7 +377,10 @@ export default function DonatePageView() {
                       ease: "linear",
                     }}
                   >
-                    <span>Donate ${displayAmount || "0"}{mode === "monthly" ? "/mo" : ""}</span>
+                    <span>
+                      Donate ${displayAmount || "0"}
+                      {mode === "monthly" ? "/mo" : ""}
+                    </span>
                   </motion.p>
 
                   {/* Glass Icon with Arrow */}

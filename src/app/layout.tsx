@@ -1,9 +1,15 @@
 import "./globals.css";
-import { poppins, rethinkSans, inter } from "@/constants/fonts";
+import { poppins, rethinkSans, inter } from "@/config/fonts";
 import { Metadata } from "next";
 import { RootProviders } from "@/providers/root-providers";
 import { getOwnerCached, toPublicOwner } from "@/lib/github";
-import { APP_NAME, CREATOR, CREATOR_LINK, META_DESCRIPTION, PUBLISHER } from "@/constants";
+import {
+  APP_NAME,
+  CREATOR,
+  CREATOR_LINK,
+  META_DESCRIPTION,
+  PUBLISHER,
+} from "@/config";
 
 export const viewport = {
   width: "device-width",

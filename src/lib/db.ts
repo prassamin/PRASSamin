@@ -1,6 +1,6 @@
 import { PrismaClient } from "~/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { NODE_ENV } from "@/constants/env";
+import { NODE_ENV } from "@/config/env";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 

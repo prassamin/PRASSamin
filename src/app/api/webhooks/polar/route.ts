@@ -4,7 +4,7 @@ import {
   POLAR_WEBHOOK_SECRET,
   POLAR_DONATION_PRODUCT_ID,
   POLAR_DONATION_SUBSCRIPTION_PRODUCT_ID,
-} from "@/constants/env";
+} from "@/config/env";
 import { db } from "@/lib/db";
 
 /**
@@ -239,8 +239,7 @@ export const POST = POLAR_WEBHOOK_SECRET
         const now = Date.now();
         const coversActivePeriod = (order.items ?? []).some(
           (item) =>
-            item.end_timestamp &&
-            new Date(item.end_timestamp).getTime() > now,
+            item.end_timestamp && new Date(item.end_timestamp).getTime() > now,
         );
 
         if (coversActivePeriod) {
@@ -293,7 +292,10 @@ export const POST = POLAR_WEBHOOK_SECRET
 
         const email = subscription.customer?.email || null;
         if (!email) {
-          console.warn("Skipping cycled without customer email:", subscription.id);
+          console.warn(
+            "Skipping cycled without customer email:",
+            subscription.id,
+          );
           return;
         }
 

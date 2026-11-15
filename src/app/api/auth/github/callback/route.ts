@@ -3,10 +3,10 @@ import {
   GITHUB_AUTH_CLIENT_ID,
   GITHUB_AUTH_CLIENT_SECRET,
   NODE_ENV,
-} from "@/constants/env";
+} from "@/config/env";
 import { NextRequest, NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
-import { SESSION_COOKIE_NAME } from "@/constants";
+import { SESSION_COOKIE_NAME } from "@/config";
 import axios from "axios";
 import { isTokenOwner } from "@/lib/github";
 
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
           client_secret: GITHUB_AUTH_CLIENT_SECRET,
           code,
         },
-      }
+      },
     );
 
     if (!tbody?.access_token) {

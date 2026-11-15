@@ -7,7 +7,7 @@
  */
 
 import axios, { type AxiosRequestConfig } from "axios";
-import { CLOUDINARY_NAME, CLOUDINARY_PRESET } from "@/constants/env";
+import { CLOUDINARY_NAME, CLOUDINARY_PRESET } from "@/config/env";
 import {
   isImageMime,
   isAudioMime,
