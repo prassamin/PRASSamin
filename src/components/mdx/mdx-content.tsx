@@ -29,7 +29,7 @@ import { MdxAccordion, MdxAccordionItem } from "./mdx-accordion";
 import { MdxCard, MdxCards } from "./mdx-card";
 import { MdxCodeBlock } from "./mdx-code-block";
 import { cn } from "@heroui/react";
-import { NODE_ENV } from "@/constants/env";
+import { NODE_ENV } from "@/config/env";
 
 // Map to deduplicate compilation promises for React with LRU eviction
 const MAX_MDX_CACHE = 50;

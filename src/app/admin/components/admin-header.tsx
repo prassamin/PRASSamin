@@ -4,23 +4,44 @@ import React, { useMemo } from "react";
 import {
   LuMenu,
   LuPanelLeftClose,
-  LuPanelLeftOpen
+  LuPanelLeftOpen,
 } from "react-icons/lu";
 import { UserType } from "@/types";
+import { useAnimatedSidebar } from "@/components/ui/animated-sidebar";
 
 interface AdminHeaderProps {
   user: UserType | null;
-  isCollapsed: boolean;
-  onToggleCollapse: () => void;
-  onOpenMobileDrawer: () => void;
+  isCollapsed?: boolean;
+  onToggleCollapse?: () => void;
+  onOpenMobileDrawer?: () => void;
 }
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
   user,
-  isCollapsed,
+  isCollapsed: propIsCollapsed,
   onToggleCollapse,
   onOpenMobileDrawer,
 }) => {
+  const sidebar = useAnimatedSidebar();
+  const isCollapsed =
+    propIsCollapsed !== undefined ? propIsCollapsed : !sidebar.open;
+
+  const handleToggle = () => {
+    if (onToggleCollapse) {
+      onToggleCollapse();
+    } else {
+      sidebar.setOpen(!sidebar.open);
+    }
+  };
+
+  const handleOpenMobile = () => {
+    if (onOpenMobileDrawer) {
+      onOpenMobileDrawer();
+    } else {
+      sidebar.setOpenMobile(true);
+    }
+  };
+
   const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour < 12) return "Good morning";
@@ -37,9 +58,9 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         {/* Mobile Only: Hamburger Menu Button for Sidedrawer */}
         <button
           type="button"
-          onClick={onOpenMobileDrawer}
+          onClick={handleOpenMobile}
           aria-label="Open Menu Drawer"
-          className="flex lg:hidden rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
+          className="flex md:hidden rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
         >
           <LuMenu className="size-5" />
         </button>
@@ -47,10 +68,10 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
         {/* Desktop Only: Expand / Collapse Toggle Button */}
         <button
           type="button"
-          onClick={onToggleCollapse}
+          onClick={handleToggle}
           aria-label={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
-          className="hidden lg:flex rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
+          className="hidden md:flex rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground transition-colors cursor-pointer"
         >
           {isCollapsed ? (
             <LuPanelLeftOpen className="size-5" />

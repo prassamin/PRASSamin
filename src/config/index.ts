@@ -11,3 +11,7 @@ export const CURRENT_URL_HEADER = "x-current-url";
 export const ORIGIN_HEADER = "x-origin";
 
 export const TWITTER_USERNAME = "prassami";
+
+// MCP Server Config
+export const MCP_SERVER_ENDPOINT = "/mcp";
+export const MCP_SERVER_NAME = "portfolio".replace(/[^a-zA-Z0-9]+/g, "");
