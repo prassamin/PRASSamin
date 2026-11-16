@@ -115,6 +115,7 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
           : "New Blog Post",
       initialMdx: initialBody,
       includeMetadata: true,
+      initialMetadata: initialMeta,
       getMetadata: buildMeta,
       onMetadataChange: (newMeta) => {
         setMeta((prev) => ({

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMdxStudio } from "@/mdx-studio";
 import { LuArrowRight } from "react-icons/lu";
 import {
@@ -29,18 +29,81 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
   initialData,
   onChange,
 }) => {
-  const { goToTab } = useMdxStudio();
+  const {
+    goToTab,
+    metadata,
+    setMetadata: setStudioMetadata,
+    setCustomFrontmatter,
+  } = useMdxStudio();
 
   const [form, setForm] = useState<ProjectFormData>(() => ({
-    title: initialData?.title || "",
-    description: initialData?.description || "",
-    category: initialData?.category || "",
-    tools: initialData?.tools || "",
-    github: initialData?.github || "",
-    live: initialData?.live || "",
-    thumbnail: initialData?.thumbnail || "",
-    banner: initialData?.banner || "",
+    title: (metadata?.title as string) || initialData?.title || "",
+    description:
+      (metadata?.description as string) || initialData?.description || "",
+    category: (metadata?.category as string) || initialData?.category || "",
+    tools: Array.isArray(metadata?.tools)
+      ? metadata.tools.join(", ")
+      : (metadata?.tools as string) || initialData?.tools || "",
+    github: (metadata?.github as string) || initialData?.github || "",
+    live: (metadata?.live as string) || initialData?.live || "",
+    thumbnail: (metadata?.thumbnail as string) || initialData?.thumbnail || "",
+    banner: (metadata?.banner as string) || initialData?.banner || "",
   }));
+
+  useEffect(() => {
+    if (!metadata || Object.keys(metadata).length === 0) return;
+    setForm((prev) => {
+      const nextTitle =
+        typeof metadata.title === "string" ? metadata.title : prev.title;
+      const nextDesc =
+        typeof metadata.description === "string"
+          ? metadata.description
+          : prev.description;
+      const nextCategory =
+        typeof metadata.category === "string"
+          ? metadata.category
+          : prev.category;
+      const nextTools = Array.isArray(metadata.tools)
+        ? metadata.tools.join(", ")
+        : typeof metadata.tools === "string"
+          ? metadata.tools
+          : prev.tools;
+      const nextGithub =
+        typeof metadata.github === "string" ? metadata.github : prev.github;
+      const nextLive =
+        typeof metadata.live === "string" ? metadata.live : prev.live;
+      const nextThumb =
+        typeof metadata.thumbnail === "string"
+          ? metadata.thumbnail
+          : prev.thumbnail;
+      const nextBanner =
+        typeof metadata.banner === "string" ? metadata.banner : prev.banner;
+
+      if (
+        nextTitle === prev.title &&
+        nextDesc === prev.description &&
+        nextCategory === prev.category &&
+        nextTools === prev.tools &&
+        nextGithub === prev.github &&
+        nextLive === prev.live &&
+        nextThumb === prev.thumbnail &&
+        nextBanner === prev.banner
+      ) {
+        return prev;
+      }
+
+      return {
+        title: nextTitle,
+        description: nextDesc,
+        category: nextCategory,
+        tools: nextTools,
+        github: nextGithub,
+        live: nextLive,
+        thumbnail: nextThumb,
+        banner: nextBanner,
+      };
+    });
+  }, [metadata]);
 
   const [errors, setErrors] = useState<{ title?: string; category?: string }>(
     {},
@@ -53,6 +116,17 @@ export const ProjectForm: React.FC<ProjectFormProps> = ({
     const next = { ...form, [key]: val };
     setForm(next);
     onChange?.(next);
+    setStudioMetadata?.((prev) => ({
+      ...prev,
+      [key]:
+        key === "tools"
+          ? val
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : val,
+    }));
+    setCustomFrontmatter?.(null);
     if (key === "title" || key === "category") {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }

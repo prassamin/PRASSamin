@@ -119,6 +119,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
           : "New Project",
       initialMdx: initialBody,
       includeMetadata: true,
+      initialMetadata: initialMeta,
       getMetadata: buildMeta,
       onMetadataChange: (newMeta) => {
         setMeta((prev) => ({

@@ -665,7 +665,7 @@ export function splitMdxIntoBlocks(mdx: string): string[] {
       continue;
     }
 
-    const cardMatch = remaining.match(/^<Card\b[^>]*\/?>|^<Card[\s\S]*?<\/Card>/i);
+    const cardMatch = remaining.match(/^<Card\b[^>]*\/>|^<Card[\s\S]*?<\/Card>/i);
     if (cardMatch) {
       blocks.push(cardMatch[0]);
       remaining = remaining.slice(cardMatch[0].length).trim();
@@ -886,7 +886,7 @@ function parseCardSnippet(rawCard: string): {
   }
 
   // Self-closing prop syntax: <Card title="..." badge="..." description="..." />
-  const selfClosingMatch = rawCard.match(/^<Card\b([^>]*)\/?>$/i);
+  const selfClosingMatch = rawCard.match(/^<Card\b([^>]*?)\/>$/i);
   if (selfClosingMatch) {
     const attrs = selfClosingMatch[1] || "";
     const titleMatch = attrs.match(/title=(?:"([^"]*)"|'([^']*)'|\{`([^`]*)`\})/);
@@ -1414,8 +1414,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
       const cardsBody = cardsContainerMatch[1];
       // Match self-closing <Card ... /> and block <Card>...</Card>
       const rawCards: string[] =
-        cardsBody.match(/<Card\b[^>]*\/>/gi) ||
-        cardsBody.match(/<Card[\s\S]*?<\/Card>/gi) ||
+        cardsBody.match(/<Card\b[^>]*\/>|<Card[\s\S]*?<\/Card>/gi) ||
         [];
       if (rawCards.length > 0) {
         for (const rc of rawCards) {
@@ -1429,7 +1428,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
     }
 
     // Single Card (<Card>...</Card> or self-closing <Card ... />)
-    const cardMatch = trimmed.match(/^<Card\b[^>]*\/?>$|^<Card[\s\S]*?<\/Card>$/i);
+    const cardMatch = trimmed.match(/^<Card\b[^>]*\/>$|^<Card[\s\S]*?<\/Card>$/i);
     if (cardMatch) {
       const parsed = parseCardSnippet(trimmed);
       if (parsed) {

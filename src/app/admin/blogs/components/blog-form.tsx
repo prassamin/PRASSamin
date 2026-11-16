@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useMdxStudio } from "@/mdx-studio";
 import { LuArrowRight, LuX, LuRefreshCw } from "react-icons/lu";
 import { ImagePicker } from "@/components/image-picker";
@@ -37,6 +37,15 @@ const TagInput = ({
       .filter(Boolean),
   );
   const [input, setInput] = useState("");
+
+  useEffect(() => {
+    setTags(
+      value
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean),
+    );
+  }, [value]);
 
   const commit = (next: string[]) => {
     const clean = Array.from(new Set(next));
@@ -114,15 +123,64 @@ export const BlogForm: React.FC<BlogFormProps> = ({
   initialData,
   onChange,
 }) => {
-  const { goToTab } = useMdxStudio();
+  const {
+    goToTab,
+    metadata,
+    setMetadata: setStudioMetadata,
+    setCustomFrontmatter,
+  } = useMdxStudio();
 
   const [form, setForm] = useState<BlogFormData>(() => ({
-    title: initialData?.title || "",
-    description: initialData?.description || "",
-    tags: initialData?.tags || "",
-    thumbnail: initialData?.thumbnail || "",
-    banner: initialData?.banner || "",
+    title: (metadata?.title as string) || initialData?.title || "",
+    description:
+      (metadata?.description as string) || initialData?.description || "",
+    tags: Array.isArray(metadata?.tags)
+      ? metadata.tags.join(", ")
+      : (metadata?.tags as string) || initialData?.tags || "",
+    thumbnail: (metadata?.thumbnail as string) || initialData?.thumbnail || "",
+    banner: (metadata?.banner as string) || initialData?.banner || "",
   }));
+
+  useEffect(() => {
+    if (!metadata || Object.keys(metadata).length === 0) return;
+    setForm((prev) => {
+      const nextTitle =
+        typeof metadata.title === "string" ? metadata.title : prev.title;
+      const nextDesc =
+        typeof metadata.description === "string"
+          ? metadata.description
+          : prev.description;
+      const nextTags = Array.isArray(metadata.tags)
+        ? metadata.tags.join(", ")
+        : typeof metadata.tags === "string"
+          ? metadata.tags
+          : prev.tags;
+      const nextThumb =
+        typeof metadata.thumbnail === "string"
+          ? metadata.thumbnail
+          : prev.thumbnail;
+      const nextBanner =
+        typeof metadata.banner === "string" ? metadata.banner : prev.banner;
+
+      if (
+        nextTitle === prev.title &&
+        nextDesc === prev.description &&
+        nextTags === prev.tags &&
+        nextThumb === prev.thumbnail &&
+        nextBanner === prev.banner
+      ) {
+        return prev;
+      }
+
+      return {
+        title: nextTitle,
+        description: nextDesc,
+        tags: nextTags,
+        thumbnail: nextThumb,
+        banner: nextBanner,
+      };
+    });
+  }, [metadata]);
 
   const [errors, setErrors] = useState<{ title?: string; tags?: string }>({});
 
@@ -135,6 +193,17 @@ export const BlogForm: React.FC<BlogFormProps> = ({
     const next = { ...form, [key]: val };
     setForm(next);
     onChange?.(next);
+    setStudioMetadata?.((prev) => ({
+      ...prev,
+      [key]:
+        key === "tags"
+          ? val
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : val,
+    }));
+    setCustomFrontmatter?.(null);
     if (key === "title" || key === "tags") {
       setErrors((prev) => ({ ...prev, [key]: undefined }));
     }

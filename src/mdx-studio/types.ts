@@ -42,6 +42,10 @@ export interface OpenStudioOptions {
    */
   getMetadata?: () => Record<string, any>;
   /**
+   * Optional initial metadata object (e.g. initial form state).
+   */
+  initialMetadata?: Record<string, any>;
+  /**
    * Optional callback when metadata is edited directly inside the code editor
    * (e.g. changing title, tags, description in YAML frontmatter).
    */
@@ -76,6 +80,9 @@ export interface MdxStudioContextValue {
    */
   frontmatter: string;
   setFrontmatter: (frontmatter: string) => void;
+  metadata: Record<string, any>;
+  setMetadata: React.Dispatch<React.SetStateAction<Record<string, any>>>;
+  setCustomFrontmatter: (frontmatter: string | null) => void;
   onMetadataChange?: (metadata: Record<string, any>) => void;
 }
 

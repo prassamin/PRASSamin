@@ -54,23 +54,30 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
   const [customFrontmatter, setCustomFrontmatter] = useState<string | null>(
     null,
   );
+  const [metadata, setMetadata] = useState<Record<string, any>>({});
 
   const hasInformationTab = Boolean(informationSlot);
 
   // Pre-serialized frontmatter block when includeMetadata is enabled.
   const frontmatter = useMemo(() => {
     if (customFrontmatter !== null) return customFrontmatter;
-    if (!includeMetadataRef.current || !getMetadataRef.current) return "";
-    const meta = getMetadataRef.current();
+    if (!includeMetadataRef.current) return "";
+    const meta =
+      Object.keys(metadata).length > 0
+        ? metadata
+        : getMetadataRef.current
+          ? getMetadataRef.current()
+          : {};
     if (!meta || Object.keys(meta).length === 0) return "";
     return `---\n${stringify(meta, { lineWidth: 80 })}---`;
-  }, [mdx, activeTab, customFrontmatter]);
+  }, [metadata, customFrontmatter]);
 
   const setFrontmatter = useCallback((fm: string) => {
     setCustomFrontmatter(fm);
   }, []);
 
   const handleMetadataChange = useCallback((meta: Record<string, any>) => {
+    setMetadata(meta);
     if (onMetadataChangeRef.current) {
       onMetadataChangeRef.current(meta);
     }
@@ -81,6 +88,10 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     setDocumentName(options.documentName);
     setMdx(options.initialMdx || "");
     setCustomFrontmatter(null);
+    const initialMeta =
+      options.initialMetadata ??
+      (options.getMetadata ? options.getMetadata() : {});
+    setMetadata(initialMeta);
     setInformationSlot(
       options.informationSlot ? () => options.informationSlot : null,
     );
@@ -111,6 +122,7 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     getMetadataRef.current = null;
     onMetadataChangeRef.current = null;
     setCustomFrontmatter(null);
+    setMetadata({});
     insertBlockListenerRef.current = null;
   }, []);
 
@@ -166,6 +178,9 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     saveButton,
     frontmatter,
     setFrontmatter,
+    metadata,
+    setMetadata,
+    setCustomFrontmatter,
     onMetadataChange: handleMetadataChange,
   };
 

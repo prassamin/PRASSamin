@@ -180,13 +180,20 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   });
   const currentPreviewContent = mode === "code" ? codeValue : previewMdx;
 
-  // When in builder mode, keep Monaco's initial buffer in sync with the latest blocks and frontmatter
+  // Keep Monaco's buffer in sync with the latest blocks and frontmatter
   useEffect(() => {
     if (mode === "builder") {
       const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
       const full =
         !hasFm && frontmatter ? `${frontmatter}\n\n${compiledMdx}` : compiledMdx;
       setMonacoContent(full);
+    } else if (mode === "code" && frontmatter) {
+      // If frontmatter changed externally (e.g. from the Information tab),
+      // update Monaco while keeping the current code body intact
+      const { frontmatterBlock, body } = extractFrontmatter(monacoContent);
+      if (frontmatter !== frontmatterBlock) {
+        setMonacoContent(`${frontmatter}\n\n${body}`);
+      }
     }
   }, [frontmatter, mode, compiledMdx]);
 
