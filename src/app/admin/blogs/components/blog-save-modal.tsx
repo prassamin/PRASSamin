@@ -41,6 +41,9 @@ export const BlogSaveModal: React.FC<BlogSaveModalProps> = ({
 
   // Recompose on every open so latest form state is reflected.
   const fullDoc = React.useMemo(() => {
+    if (!isOpen) return "";
+    const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(mdx);
+    if (hasFm) return mdx;
     if (buildDocument) return buildDocument(mdx);
     return frontmatter ? `${frontmatter}\n\n${mdx}` : mdx;
   }, [isOpen, mdx, frontmatter, buildDocument]);

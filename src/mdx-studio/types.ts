@@ -42,6 +42,11 @@ export interface OpenStudioOptions {
    */
   getMetadata?: () => Record<string, any>;
   /**
+   * Optional callback when metadata is edited directly inside the code editor
+   * (e.g. changing title, tags, description in YAML frontmatter).
+   */
+  onMetadataChange?: (metadata: Record<string, any>) => void;
+  /**
    * Called when user saves from the studio header or via controller.save().
    * Receives the compiled MDX string.
    */
@@ -70,6 +75,8 @@ export interface MdxStudioContextValue {
    * metadata when `includeMetadata` is enabled. Empty string otherwise.
    */
   frontmatter: string;
+  setFrontmatter: (frontmatter: string) => void;
+  onMetadataChange?: (metadata: Record<string, any>) => void;
 }
 
 export interface MdxStudioModalProps {

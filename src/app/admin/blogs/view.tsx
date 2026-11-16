@@ -116,6 +116,28 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
       initialMdx: initialBody,
       includeMetadata: true,
       getMetadata: buildMeta,
+      onMetadataChange: (newMeta) => {
+        setMeta((prev) => ({
+          ...prev,
+          ...(newMeta.title !== undefined ? { title: String(newMeta.title) } : {}),
+          ...(newMeta.description !== undefined
+            ? { description: String(newMeta.description) }
+            : {}),
+          ...(newMeta.tags !== undefined
+            ? {
+                tags: Array.isArray(newMeta.tags)
+                  ? newMeta.tags.join(", ")
+                  : String(newMeta.tags),
+              }
+            : {}),
+          ...(newMeta.thumbnail !== undefined
+            ? { thumbnail: String(newMeta.thumbnail) }
+            : {}),
+          ...(newMeta.banner !== undefined
+            ? { banner: String(newMeta.banner) }
+            : {}),
+        }));
+      },
       saveButton: (controller) => {
         const current = metaRef.current;
 
@@ -134,8 +156,12 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
               );
             }}
             buildDocument={(body) => {
-              const yaml = stringify(buildMeta(), YAML_OPTIONS);
-              return `---\n${yaml}---\n\n${body}`;
+              const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(body);
+              if (hasFm) return body;
+              const fm =
+                controller?.frontmatter ||
+                `---\n${stringify(buildMeta(), YAML_OPTIONS)}---`;
+              return `${fm}\n\n${body}`;
             }}
           />
         );

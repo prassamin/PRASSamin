@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { MdxBlockType } from "./types";
 import { createBlock, blocksToMdx, mdxToBlocks } from "./compiler";
@@ -26,6 +26,30 @@ import { toast } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createPortal } from "react-dom";
+import { parse as parseYaml } from "yaml";
+
+function extractFrontmatter(doc: string): {
+  hasFrontmatter: boolean;
+  frontmatterBlock: string;
+  frontmatterYaml: string;
+  body: string;
+} {
+  const match = doc.match(/^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/);
+  if (match) {
+    return {
+      hasFrontmatter: true,
+      frontmatterBlock: match[0].trim(),
+      frontmatterYaml: match[1],
+      body: doc.slice(match[0].length).replace(/^\r?\n+/, ""),
+    };
+  }
+  return {
+    hasFrontmatter: false,
+    frontmatterBlock: "",
+    frontmatterYaml: "",
+    body: doc,
+  };
+}
 
 const MonacoEditor = dynamic(() => import("@monaco-editor/react"), {
   ssr: false,
@@ -48,6 +72,8 @@ export interface MdxBuilderProps {
    * MDX code editor and include when copying. Empty string to disable.
    */
   frontmatter?: string;
+  onFrontmatterChange?: (newFrontmatter: string) => void;
+  onMetadataChange?: (metadata: Record<string, any>) => void;
   onRegisterInsertBlock?: (
     fn: (type: MdxBlockType, props?: Record<string, any>) => void,
   ) => void;
@@ -63,6 +89,8 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   title = "Mdx Builder",
   documentName,
   frontmatter = "",
+  onFrontmatterChange,
+  onMetadataChange,
   onRegisterInsertBlock,
 }) => {
   const { blocks, setBlocks, resetBlocks, undo, redo, canUndo, canRedo } =
@@ -144,7 +172,23 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   );
 
   const [codeValue, setCodeValue] = useState(compiledMdx);
+  const [monacoContent, setMonacoContent] = useState<string>(() => {
+    const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
+    return !hasFm && frontmatter
+      ? `${frontmatter}\n\n${compiledMdx}`
+      : compiledMdx;
+  });
   const currentPreviewContent = mode === "code" ? codeValue : previewMdx;
+
+  // When in builder mode, keep Monaco's initial buffer in sync with the latest blocks and frontmatter
+  useEffect(() => {
+    if (mode === "builder") {
+      const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
+      const full =
+        !hasFm && frontmatter ? `${frontmatter}\n\n${compiledMdx}` : compiledMdx;
+      setMonacoContent(full);
+    }
+  }, [frontmatter, mode, compiledMdx]);
 
   // Live mouse-drag resizer for both left block panel and right preview panel
   useEffect(() => {
@@ -274,12 +318,16 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   const handleModeChange = (newMode: BuilderMode) => {
     if (newMode === "code") {
       // Refresh code editor content with current blocks
-      setCodeValue(blocksToMdx(blocks));
+      const body = blocksToMdx(blocks);
+      setCodeValue(body);
+      const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(body);
+      const full = !hasFm && frontmatter ? `${frontmatter}\n\n${body}` : body;
+      setMonacoContent(full);
     } else if (
       mode === "code" &&
       (newMode === "builder" || newMode === "preview")
     ) {
-      // Parse any edits made in Monaco back into blocks
+      // Parse any edits made in Monaco back into blocks (codeValue contains clean body)
       try {
         const nextBlocks = mdxToBlocks(codeValue);
         setBlocks(nextBlocks);
@@ -292,81 +340,209 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
 
   const handleEditorChange = (val: string | undefined) => {
     const nextVal = val ?? "";
+    // Keep Monaco's internal state identical to editor to avoid cursor jumping
+    setMonacoContent(nextVal);
 
-    // Strip the known frontmatter prefix so only the body is stored/parsed.
-    let body = nextVal;
-    if (frontmatter && nextVal.startsWith(frontmatter + "\n\n")) {
-      body = nextVal.slice((frontmatter + "\n\n").length);
-    }
+    const { hasFrontmatter, frontmatterBlock, frontmatterYaml, body } =
+      extractFrontmatter(nextVal);
 
     setCodeValue(body);
+    lastSyncedValueRef.current = body;
     onChange?.(body);
-  };
 
-  // Single unified document shown inside Monaco: frontmatter + body.
-  const visibleCodeValue = useMemo(
-    () => (frontmatter ? `${frontmatter}\n\n${codeValue}` : codeValue),
-    [frontmatter, codeValue],
-  );
+    if (hasFrontmatter) {
+      onFrontmatterChange?.(frontmatterBlock);
+      try {
+        const parsed = parseYaml(frontmatterYaml);
+        if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+          onMetadataChange?.(parsed);
+        }
+      } catch {
+        // Ignore YAML syntax errors while typing
+      }
+    }
+  };
 
   // Synchronize Monaco Editor scrolling and cursor changes with Live Preview
-  const handleMonacoMount = (editor: any) => {
-    monacoEditorRef.current = editor;
-
-    editor.onDidScrollChange(() => {
-      if (mode !== "code" || !isPreviewExpanded) return;
-      if (!claimScrollInitiator("monaco")) return;
-
-      const preview = previewScrollRef.current;
-      if (!preview) return;
-
+  const getCodeScrollMarkers = useCallback(
+    (
+      editor: any,
+      preview: HTMLElement,
+      rawContent: string,
+    ): { monacoTop: number; previewTop: number }[] => {
       const scrollHeight = editor.getScrollHeight();
       const clientHeight = editor.getLayoutInfo().height;
-      const maxScroll = scrollHeight - clientHeight;
-      if (maxScroll <= 0) return;
-
-      const ratio = Math.max(0, Math.min(1, editor.getScrollTop() / maxScroll));
-      const previewMaxScroll = preview.scrollHeight - preview.clientHeight;
-      if (previewMaxScroll > 0) {
-        if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-        scrollRafRef.current = requestAnimationFrame(() => {
-          preview.scrollTop = ratio * previewMaxScroll;
-        });
-      }
-    });
-
-    editor.onDidChangeCursorPosition((e: any) => {
-      if (mode !== "code" || !isPreviewExpanded) return;
-      if (!claimScrollInitiator("monaco")) return;
-
-      const line = e.position.lineNumber;
-      const totalLines = editor.getModel()?.getLineCount() || 1;
-      const ratio = Math.max(
+      const monacoMax = Math.max(0, scrollHeight - clientHeight);
+      const previewMax = Math.max(
         0,
-        Math.min(1, (line - 1) / Math.max(1, totalLines - 1)),
+        preview.scrollHeight - preview.clientHeight,
       );
 
-      const preview = previewScrollRef.current;
-      if (!preview) return;
-      const previewMaxScroll = preview.scrollHeight - preview.clientHeight;
-      if (previewMaxScroll > 0) {
-        if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-        scrollRafRef.current = requestAnimationFrame(() => {
-          preview.scrollTo({
-            top: ratio * previewMaxScroll,
-            behavior: "smooth",
-          });
-        });
+      const markers: { monacoTop: number; previewTop: number }[] = [];
+      markers.push({ monacoTop: 0, previewTop: 0 });
+
+      // 1. Frontmatter offset:
+      const fmMatch = rawContent.match(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/);
+      if (fmMatch) {
+        const fmLines = fmMatch[0].split("\n").length;
+        const contentStartLine = fmLines + 1;
+        const fmEndTop = editor.getTopForLineNumber(contentStartLine);
+        if (fmEndTop > 0 && fmEndTop < monacoMax) {
+          markers.push({ monacoTop: fmEndTop, previewTop: 0 });
+        }
       }
-    });
-  };
 
-  // Synchronize scrolling from Canvas to Live Preview in Builder mode (Zero loop/jitter)
-  const handleCanvasScroll = (e: React.UIEvent<HTMLDivElement>) => {
-    if (mode !== "builder" || !isPreviewExpanded) return;
-    if (!claimScrollInitiator("canvas")) return;
+      // 2. Headings in Markdown:
+      const lines = rawContent.split("\n");
+      const markdownHeadings: { line: number; text: string }[] = [];
+      for (let i = 0; i < lines.length; i++) {
+        const match = lines[i].match(/^#{1,6}\s+(.+)$/);
+        if (match) {
+          const clean = match[1]
+            .replace(/[*_`]/g, "")
+            .replace(/\[(.*?)\]\(.*?\)/g, "$1")
+            .trim()
+            .toLowerCase()
+            .replace(/[^a-z0-9]/g, "");
+          if (clean) {
+            markdownHeadings.push({ line: i + 1, text: clean });
+          }
+        }
+      }
 
-    const canvas = e.currentTarget;
+      if (markdownHeadings.length > 0) {
+        const previewHeadings = Array.from(
+          preview.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6"),
+        );
+        const pContainerRect = preview.getBoundingClientRect();
+
+        let lastPreviewIdx = 0;
+        for (const mh of markdownHeadings) {
+          for (let j = lastPreviewIdx; j < previewHeadings.length; j++) {
+            const ph = previewHeadings[j];
+            const pClean = (ph.textContent || "")
+              .trim()
+              .toLowerCase()
+              .replace(/[^a-z0-9]/g, "");
+
+            if (
+              pClean &&
+              (pClean === mh.text ||
+                pClean.includes(mh.text) ||
+                mh.text.includes(pClean))
+            ) {
+              const mTop = editor.getTopForLineNumber(mh.line);
+              const pRect = ph.getBoundingClientRect();
+              const pTop = pRect.top - pContainerRect.top + preview.scrollTop;
+
+              const lastMarker = markers[markers.length - 1];
+              if (mTop > lastMarker.monacoTop && pTop >= lastMarker.previewTop) {
+                markers.push({ monacoTop: mTop, previewTop: pTop });
+                lastPreviewIdx = j + 1;
+                break;
+              }
+            }
+          }
+        }
+      }
+
+      const last = markers[markers.length - 1];
+      if (monacoMax > last.monacoTop || previewMax > last.previewTop) {
+        markers.push({ monacoTop: monacoMax, previewTop: previewMax });
+      }
+
+      return markers;
+    },
+    [],
+  );
+
+  const syncMonacoToPreview = useCallback(() => {
+    const editor = monacoEditorRef.current;
+    const preview = previewScrollRef.current;
+    if (!editor || !preview) return;
+
+    const scrollHeight = editor.getScrollHeight();
+    const clientHeight = editor.getLayoutInfo().height;
+    const monacoMax = scrollHeight - clientHeight;
+    const previewMax = preview.scrollHeight - preview.clientHeight;
+    if (monacoMax <= 0 || previewMax <= 0) return;
+
+    const monacoTop = editor.getScrollTop();
+    if (monacoTop <= 2) {
+      preview.scrollTop = 0;
+      return;
+    }
+    if (monacoTop >= monacoMax - 2) {
+      preview.scrollTop = previewMax;
+      return;
+    }
+
+    const markers = getCodeScrollMarkers(editor, preview, monacoContent);
+    let lower = markers[0];
+    let upper = markers[markers.length - 1];
+
+    for (let i = 0; i < markers.length - 1; i++) {
+      if (
+        monacoTop >= markers[i].monacoTop &&
+        monacoTop <= markers[i + 1].monacoTop
+      ) {
+        lower = markers[i];
+        upper = markers[i + 1];
+        break;
+      }
+    }
+
+    const monacoRange = upper.monacoTop - lower.monacoTop;
+    const t = monacoRange > 0 ? (monacoTop - lower.monacoTop) / monacoRange : 0;
+    const targetScroll =
+      lower.previewTop + t * (upper.previewTop - lower.previewTop);
+
+    preview.scrollTop = Math.max(0, Math.min(previewMax, targetScroll));
+  }, [getCodeScrollMarkers, monacoContent]);
+
+  const syncPreviewToMonaco = useCallback(() => {
+    const editor = monacoEditorRef.current;
+    const preview = previewScrollRef.current;
+    if (!editor || !preview) return;
+
+    const scrollHeight = editor.getScrollHeight();
+    const clientHeight = editor.getLayoutInfo().height;
+    const monacoMax = scrollHeight - clientHeight;
+    const previewMax = preview.scrollHeight - preview.clientHeight;
+    if (monacoMax <= 0 || previewMax <= 0) return;
+
+    const pTop = preview.scrollTop;
+    if (pTop <= 2) {
+      editor.setScrollTop(0);
+      return;
+    }
+    if (pTop >= previewMax - 2) {
+      editor.setScrollTop(monacoMax);
+      return;
+    }
+
+    const markers = getCodeScrollMarkers(editor, preview, monacoContent);
+    let lower = markers[0];
+    let upper = markers[markers.length - 1];
+
+    for (let i = 0; i < markers.length - 1; i++) {
+      if (pTop >= markers[i].previewTop && pTop <= markers[i + 1].previewTop) {
+        lower = markers[i];
+        upper = markers[i + 1];
+        break;
+      }
+    }
+
+    const previewRange = upper.previewTop - lower.previewTop;
+    const t = previewRange > 0 ? (pTop - lower.previewTop) / previewRange : 0;
+    const targetScroll =
+      lower.monacoTop + t * (upper.monacoTop - lower.monacoTop);
+
+    editor.setScrollTop(Math.max(0, Math.min(monacoMax, targetScroll)));
+  }, [getCodeScrollMarkers, monacoContent]);
+
+  const syncCanvasToPreview = useCallback(() => {
+    const canvas = canvasScrollRef.current;
     const preview = previewScrollRef.current;
     if (!canvas || !preview) return;
 
@@ -374,57 +550,197 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     const previewMax = preview.scrollHeight - preview.clientHeight;
     if (canvasMax <= 0 || previewMax <= 0) return;
 
-    const ratio = Math.max(0, Math.min(1, canvas.scrollTop / canvasMax));
+    if (canvas.scrollTop <= 2) {
+      preview.scrollTop = 0;
+      return;
+    }
+    if (canvas.scrollTop >= canvasMax - 2) {
+      preview.scrollTop = previewMax;
+      return;
+    }
+
+    const canvasRect = canvas.getBoundingClientRect();
+    const canvasItems = canvas.querySelectorAll<HTMLElement>(
+      "[data-canvas-block-id]",
+    );
+    if (canvasItems.length === 0) {
+      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
+      return;
+    }
+
+    const targetY = canvasRect.top + 40;
+    let activeItem: HTMLElement | null = null;
+    let progressInBlock = 0;
+
+    for (let i = 0; i < canvasItems.length; i++) {
+      const item = canvasItems[i];
+      const rect = item.getBoundingClientRect();
+      if (rect.top <= targetY && rect.bottom >= targetY) {
+        activeItem = item;
+        const height = rect.height || 1;
+        progressInBlock = Math.max(
+          0,
+          Math.min(1, (targetY - rect.top) / height),
+        );
+        break;
+      }
+    }
+
+    if (!activeItem) {
+      if (canvasItems[0].getBoundingClientRect().top > targetY) {
+        activeItem = canvasItems[0];
+        progressInBlock = 0;
+      } else {
+        activeItem = canvasItems[canvasItems.length - 1];
+        progressInBlock = 1;
+      }
+    }
+
+    const blockId = activeItem.getAttribute("data-canvas-block-id");
+    if (!blockId) {
+      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
+      return;
+    }
+
+    const previewEl = preview.querySelector<HTMLElement>(
+      `[data-block-id="${blockId}"]`,
+    );
+    if (!previewEl) {
+      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
+      return;
+    }
+
+    const pRect = previewEl.getBoundingClientRect();
+    const pContainerRect = preview.getBoundingClientRect();
+    const pRelTop = pRect.top - pContainerRect.top + preview.scrollTop;
+    const targetScroll = pRelTop + progressInBlock * pRect.height - 40;
+
+    preview.scrollTop = Math.max(0, Math.min(previewMax, targetScroll));
+  }, []);
+
+  const syncPreviewToCanvas = useCallback(() => {
+    const canvas = canvasScrollRef.current;
+    const preview = previewScrollRef.current;
+    if (!canvas || !preview) return;
+
+    const canvasMax = canvas.scrollHeight - canvas.clientHeight;
+    const previewMax = preview.scrollHeight - preview.clientHeight;
+    if (canvasMax <= 0 || previewMax <= 0) return;
+
+    if (preview.scrollTop <= 2) {
+      canvas.scrollTop = 0;
+      return;
+    }
+    if (preview.scrollTop >= previewMax - 2) {
+      canvas.scrollTop = canvasMax;
+      return;
+    }
+
+    const previewRect = preview.getBoundingClientRect();
+    const previewItems =
+      preview.querySelectorAll<HTMLElement>("[data-block-id]");
+    if (previewItems.length === 0) {
+      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
+      return;
+    }
+
+    const targetY = previewRect.top + 40;
+    let activeItem: HTMLElement | null = null;
+    let progressInBlock = 0;
+
+    for (let i = 0; i < previewItems.length; i++) {
+      const item = previewItems[i];
+      const rect = item.getBoundingClientRect();
+      if (rect.top <= targetY && rect.bottom >= targetY) {
+        activeItem = item;
+        const height = rect.height || 1;
+        progressInBlock = Math.max(
+          0,
+          Math.min(1, (targetY - rect.top) / height),
+        );
+        break;
+      }
+    }
+
+    if (!activeItem) {
+      if (previewItems[0].getBoundingClientRect().top > targetY) {
+        activeItem = previewItems[0];
+        progressInBlock = 0;
+      } else {
+        activeItem = previewItems[previewItems.length - 1];
+        progressInBlock = 1;
+      }
+    }
+
+    const blockId = activeItem.getAttribute("data-block-id");
+    if (!blockId) {
+      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
+      return;
+    }
+
+    const canvasEl = canvas.querySelector<HTMLElement>(
+      `[data-canvas-block-id="${blockId}"]`,
+    );
+    if (!canvasEl) {
+      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
+      return;
+    }
+
+    const cRect = canvasEl.getBoundingClientRect();
+    const cContainerRect = canvas.getBoundingClientRect();
+    const cRelTop = cRect.top - cContainerRect.top + canvas.scrollTop;
+    const targetScroll = cRelTop + progressInBlock * cRect.height - 40;
+
+    canvas.scrollTop = Math.max(0, Math.min(canvasMax, targetScroll));
+  }, []);
+
+  const handleMonacoMount = (editor: any) => {
+    monacoEditorRef.current = editor;
+
+    editor.onDidScrollChange(() => {
+      if (mode !== "code" || !isPreviewExpanded) return;
+      if (isPointerOverPreviewRef.current) return;
+      if (!claimScrollInitiator("monaco")) return;
+
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = requestAnimationFrame(syncMonacoToPreview);
+    });
+
+    editor.onDidChangeCursorPosition(() => {
+      if (mode !== "code" || !isPreviewExpanded) return;
+      if (isPointerOverPreviewRef.current) return;
+      if (!claimScrollInitiator("monaco")) return;
+
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = requestAnimationFrame(syncMonacoToPreview);
+    });
+  };
+
+  // Synchronize scrolling from Canvas to Live Preview in Builder mode (Zero loop/jitter)
+  const handleCanvasScroll = (_e: React.UIEvent<HTMLDivElement>) => {
+    if (mode !== "builder" || !isPreviewExpanded) return;
+    if (isPointerOverPreviewRef.current) return;
+    if (!claimScrollInitiator("canvas")) return;
 
     if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-    scrollRafRef.current = requestAnimationFrame(() => {
-      preview.scrollTop = ratio * previewMax;
-    });
+    scrollRafRef.current = requestAnimationFrame(syncCanvasToPreview);
   };
 
   const handlePreviewScroll = () => {
     if (!isPreviewExpanded) return;
+    // Only synchronize scroll from preview back to editor/canvas when the user
+    // is explicitly hovering over or interacting with the preview pane.
+    // This prevents layout recalculations or programmatic scrolls from echoing back.
+    if (!isPointerOverPreviewRef.current) return;
 
     if (mode === "code") {
       if (!claimScrollInitiator("preview")) return;
-      const editor = monacoEditorRef.current;
-      const preview = previewScrollRef.current;
-      if (!editor || !preview) return;
-
-      const previewMaxScroll = preview.scrollHeight - preview.clientHeight;
-      if (previewMaxScroll <= 0) return;
-
-      const ratio = Math.max(
-        0,
-        Math.min(1, preview.scrollTop / previewMaxScroll),
-      );
-      const scrollHeight = editor.getScrollHeight();
-      const clientHeight = editor.getLayoutInfo().height;
-      const maxScroll = scrollHeight - clientHeight;
-      if (maxScroll > 0) {
-        if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-        scrollRafRef.current = requestAnimationFrame(() => {
-          editor.setScrollTop(ratio * maxScroll);
-        });
-      }
-    } else if (mode === "builder") {
-      // Only sync scroll to canvas if the user is explicitly hovering over or interacting with the preview pane!
-      // This prevents layout recalculations/re-renders of the preview from jumping canvas to the top.
-      if (!isPointerOverPreviewRef.current) return;
-      if (!claimScrollInitiator("preview")) return;
-      const canvas = canvasScrollRef.current;
-      const preview = previewScrollRef.current;
-      if (!canvas || !preview) return;
-
-      const canvasMax = canvas.scrollHeight - canvas.clientHeight;
-      const previewMax = preview.scrollHeight - preview.clientHeight;
-      if (canvasMax <= 0 || previewMax <= 0) return;
-
-      const ratio = Math.max(0, Math.min(1, preview.scrollTop / previewMax));
       if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = requestAnimationFrame(() => {
-        canvas.scrollTop = ratio * canvasMax;
-      });
+      scrollRafRef.current = requestAnimationFrame(syncPreviewToMonaco);
+    } else if (mode === "builder") {
+      if (!claimScrollInitiator("preview")) return;
+      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = requestAnimationFrame(syncPreviewToCanvas);
     }
   };
 
@@ -543,8 +859,16 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   // Copy compiled MDX (includes frontmatter when present)
   const handleCopyCode = async () => {
     try {
-      const body = mode === "code" ? codeValue : compiledMdx;
-      const textToCopy = frontmatter ? `${frontmatter}\n\n${body}` : body;
+      let textToCopy = "";
+      if (mode === "code") {
+        textToCopy = monacoContent;
+      } else {
+        const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
+        textToCopy =
+          !hasFm && frontmatter
+            ? `${frontmatter}\n\n${compiledMdx}`
+            : compiledMdx;
+      }
       await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       toast.success("MDX code copied to clipboard!");
@@ -796,14 +1120,22 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
             </>
           ) : (
             /* Mode 2: Full Monaco MDX Code Editor */
-            <div className="flex-1 flex flex-col h-full overflow-hidden bg-[#1e1e1e]">
+            <div
+              className="flex-1 flex flex-col h-full overflow-hidden bg-[#1e1e1e]"
+              onMouseEnter={() => {
+                isPointerOverPreviewRef.current = false;
+              }}
+              onTouchStart={() => {
+                isPointerOverPreviewRef.current = false;
+              }}
+            >
               {/* Monaco Editor Container */}
               <div className="flex-1 min-h-0 relative">
                 <MonacoEditor
                   height="100%"
                   language="markdown"
                   theme="vs-dark"
-                  value={visibleCodeValue}
+                  value={monacoContent}
                   onChange={handleEditorChange}
                   onMount={handleMonacoMount}
                   options={{
@@ -895,6 +1227,14 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
               }}
               onMouseLeave={() => {
                 isPointerOverPreviewRef.current = false;
+              }}
+              onTouchStart={() => {
+                isPointerOverPreviewRef.current = true;
+              }}
+              onTouchEnd={() => {
+                setTimeout(() => {
+                  isPointerOverPreviewRef.current = false;
+                }, 300);
               }}
               onScroll={handlePreviewScroll}
               className="flex-1 overflow-y-auto p-6 sm:p-7"

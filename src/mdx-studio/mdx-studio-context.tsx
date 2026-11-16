@@ -44,28 +44,47 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
   const onCloseRef = useRef<(() => void) | null>(null);
   const includeMetadataRef = useRef(false);
   const getMetadataRef = useRef<(() => Record<string, any>) | null>(null);
+  const onMetadataChangeRef = useRef<
+    ((metadata: Record<string, any>) => void) | null
+  >(null);
   const insertBlockListenerRef = useRef<
     ((type: MdxBlockType, props?: Record<string, any>) => void) | null
   >(null);
+
+  const [customFrontmatter, setCustomFrontmatter] = useState<string | null>(
+    null,
+  );
 
   const hasInformationTab = Boolean(informationSlot);
 
   // Pre-serialized frontmatter block when includeMetadata is enabled.
   const frontmatter = useMemo(() => {
+    if (customFrontmatter !== null) return customFrontmatter;
     if (!includeMetadataRef.current || !getMetadataRef.current) return "";
     const meta = getMetadataRef.current();
     if (!meta || Object.keys(meta).length === 0) return "";
     return `---\n${stringify(meta, { lineWidth: 80 })}---`;
-  }, [mdx, activeTab]);
+  }, [mdx, activeTab, customFrontmatter]);
+
+  const setFrontmatter = useCallback((fm: string) => {
+    setCustomFrontmatter(fm);
+  }, []);
+
+  const handleMetadataChange = useCallback((meta: Record<string, any>) => {
+    if (onMetadataChangeRef.current) {
+      onMetadataChangeRef.current(meta);
+    }
+  }, []);
 
   const openStudio = useCallback((options: OpenStudioOptions) => {
     setTitle(options.title || "MDX Studio");
     setDocumentName(options.documentName);
     setMdx(options.initialMdx || "");
+    setCustomFrontmatter(null);
     setInformationSlot(
       options.informationSlot ? () => options.informationSlot : null,
     );
-    setSaveButton(
+    setSaveButton(() =>
       typeof options.saveButton === "function" || options.saveButton
         ? options.saveButton
         : null,
@@ -74,6 +93,7 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     onCloseRef.current = options.onClose || null;
     includeMetadataRef.current = Boolean(options.includeMetadata);
     getMetadataRef.current = options.getMetadata || null;
+    onMetadataChangeRef.current = options.onMetadataChange || null;
     setIsSaving(false);
     // If informationSlot is provided, open to "details" first; otherwise directly to "builder"
     setActiveTab(options.informationSlot ? "details" : "builder");
@@ -89,6 +109,8 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     onCloseRef.current = null;
     includeMetadataRef.current = false;
     getMetadataRef.current = null;
+    onMetadataChangeRef.current = null;
+    setCustomFrontmatter(null);
     insertBlockListenerRef.current = null;
   }, []);
 
@@ -111,8 +133,9 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       let compiled = mdx;
 
-      // Optional: prepend YAML frontmatter from the info form metadata.
-      if (frontmatter) {
+      // Optional: prepend YAML frontmatter if not already present
+      const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(mdx);
+      if (!hasFm && frontmatter) {
         compiled = `${frontmatter}\n\n${mdx}`;
       }
 
@@ -142,6 +165,8 @@ export const MdxStudioProvider: React.FC<{ children: React.ReactNode }> = ({
     openStudio,
     saveButton,
     frontmatter,
+    setFrontmatter,
+    onMetadataChange: handleMetadataChange,
   };
 
   return (

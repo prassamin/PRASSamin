@@ -120,6 +120,31 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
       initialMdx: initialBody,
       includeMetadata: true,
       getMetadata: buildMeta,
+      onMetadataChange: (newMeta) => {
+        setMeta((prev) => ({
+          ...prev,
+          ...(newMeta.title !== undefined ? { title: String(newMeta.title) } : {}),
+          ...(newMeta.description !== undefined
+            ? { description: String(newMeta.description) }
+            : {}),
+          ...(newMeta.category !== undefined
+            ? { category: String(newMeta.category) }
+            : {}),
+          ...(newMeta.tools !== undefined
+            ? {
+                tools: Array.isArray(newMeta.tools)
+                  ? newMeta.tools.join(", ")
+                  : String(newMeta.tools),
+              }
+            : {}),
+          ...(newMeta.github !== undefined ? { github: String(newMeta.github) } : {}),
+          ...(newMeta.live !== undefined ? { live: String(newMeta.live) } : {}),
+          ...(newMeta.thumbnail !== undefined
+            ? { thumbnail: String(newMeta.thumbnail) }
+            : {}),
+          ...(newMeta.banner !== undefined ? { banner: String(newMeta.banner) } : {}),
+        }));
+      },
       saveButton: (controller) => {
         const current = metaRef.current;
 
@@ -135,8 +160,12 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
               );
             }}
             buildDocument={(body) => {
-              const yaml = stringify(buildMeta(), YAML_OPTIONS);
-              return `---\n${yaml}---\n\n${body}`;
+              const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(body);
+              if (hasFm) return body;
+              const fm =
+                controller?.frontmatter ||
+                `---\n${stringify(buildMeta(), YAML_OPTIONS)}---`;
+              return `${fm}\n\n${body}`;
             }}
           />
         );

@@ -129,6 +129,8 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
                   value={mdx}
                   onChange={setMdx}
                   frontmatter={frontmatter}
+                  onFrontmatterChange={studio.setFrontmatter}
+                  onMetadataChange={studio.onMetadataChange}
                   className="rounded-none border-none shadow-none h-full"
                   minHeight="100%"
                   onRegisterInsertBlock={(fn) => {
