@@ -11,6 +11,7 @@ import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@heroui/react";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { LuX } from "react-icons/lu";
 
 export type DrawerPlacement = "right" | "left" | "top" | "bottom";
 
@@ -36,7 +37,10 @@ function useDrawerContext() {
 
 const PLACEMENT_PANEL: Record<
   DrawerPlacement,
-  { initial: Record<string, number | string>; exit: Record<string, number | string> }
+  {
+    initial: Record<string, number | string>;
+    exit: Record<string, number | string>;
+  }
 > = {
   right: { initial: { x: "100%" }, exit: { x: "100%" } },
   left: { initial: { x: "-100%" }, exit: { x: "-100%" } },
@@ -159,13 +163,13 @@ const DrawerRoot: React.FC<DrawerProps> = ({
               "fixed z-1001 flex flex-col overflow-hidden shadow-2xl outline-none",
               PANEL_POSITION[effectivePlacement],
               effectivePlacement === "right" &&
-                "rounded-l-2xl border-l border-white/6 bg-neutral-900/85 backdrop-blur-2xl w-full sm:w-104 sm:max-w-[calc(100vw-2rem)]",
+                "rounded-l-2xl border-l border-white/4 bg-neutral-900/85 backdrop-blur-2xl w-full sm:w-120 sm:max-w-[calc(100vw-2rem)]",
               effectivePlacement === "left" &&
-                "rounded-r-2xl border-r border-white/6 bg-neutral-900/85 backdrop-blur-2xl w-full sm:w-104 sm:max-w-[calc(100vw-2rem)]",
+                "rounded-r-2xl border-r border-white/4 bg-neutral-900/85 backdrop-blur-2xl w-full sm:w-120 sm:max-w-[calc(100vw-2rem)]",
               effectivePlacement === "top" &&
-                "rounded-b-2xl border-b border-white/6 bg-neutral-900/85 backdrop-blur-2xl w-full max-h-[85dvh]",
+                "rounded-b-2xl border-b border-white/4 bg-neutral-900/85 backdrop-blur-2xl w-full max-h-[85dvh]",
               effectivePlacement === "bottom" &&
-                "rounded-t-2xl border-t border-white/6 bg-neutral-900/85 backdrop-blur-2xl w-full max-h-[85dvh]",
+                "rounded-t-2xl border-t border-white/4 bg-neutral-900/85 backdrop-blur-2xl w-full max-h-[85dvh]",
               className,
             )}
             initial={{ ...panel.initial }}
@@ -175,14 +179,31 @@ const DrawerRoot: React.FC<DrawerProps> = ({
             drag={dragToClose ? dragAxis : undefined}
             dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
             dragElastic={
-              dragAxis === "x" ? { left: 0, right: 0.3 } : { top: 0, bottom: 0.3 }
+              effectivePlacement === "left"
+                ? { left: 0.3, right: 0 }
+                : dragAxis === "x"
+                  ? { left: 0, right: 0.3 }
+                  : { top: 0, bottom: 0.3 }
             }
             onDragEnd={(_, info) => {
               if (dragAxis === "x") {
-                if (info.offset.x > dragThreshold || info.velocity.x > dragVelocity) {
+                if (effectivePlacement === "left") {
+                  if (
+                    info.offset.x < -dragThreshold ||
+                    info.velocity.x < -dragVelocity
+                  ) {
+                    onClose();
+                  }
+                } else if (
+                  info.offset.x > dragThreshold ||
+                  info.velocity.x > dragVelocity
+                ) {
                   onClose();
                 }
-              } else if (info.offset.y > dragThreshold || info.velocity.y > dragVelocity) {
+              } else if (
+                info.offset.y > dragThreshold ||
+                info.velocity.y > dragVelocity
+              ) {
                 onClose();
               }
             }}
@@ -213,7 +234,7 @@ const DrawerHeader: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 }) => (
   <div
     className={cn(
-      "flex shrink-0 items-center justify-between gap-3 border-b border-white/5 px-4 py-3 bg-white/3",
+      "flex shrink-0 items-center justify-between gap-3 border-b border-white/3 px-4 py-3 bg-white/3",
       className,
     )}
     {...props}
@@ -228,7 +249,10 @@ const DrawerBody: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => (
   <div
-    className={cn("min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5", className)}
+    className={cn(
+      "min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-5",
+      className,
+    )}
     {...props}
   >
     {children}
@@ -241,7 +265,10 @@ const DrawerFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
   ...props
 }) => (
   <div
-    className={cn("flex shrink-0 items-center gap-2 border-t border-white/5 px-4 py-3", className)}
+    className={cn(
+      "flex shrink-0 items-center gap-2 border-t border-white/3 px-4 py-3",
+      className,
+    )}
     {...props}
   >
     {children}
@@ -250,8 +277,9 @@ const DrawerFooter: React.FC<React.HTMLAttributes<HTMLDivElement>> = ({
 
 const DrawerCloseButton: React.FC<
   React.ButtonHTMLAttributes<HTMLButtonElement>
-> = ({ className, ...props }) => {
+> = ({ className, children, ...props }) => {
   const { onClose } = useDrawerContext();
+  const child = children ? children : <LuX />;
   return (
     <button
       type="button"
@@ -262,7 +290,9 @@ const DrawerCloseButton: React.FC<
         className,
       )}
       {...props}
-    />
+    >
+      {child}
+    </button>
   );
 };
 
