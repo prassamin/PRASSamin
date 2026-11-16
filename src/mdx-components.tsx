@@ -14,7 +14,7 @@ import * as TabsComponents from "fumadocs-ui/components/tabs";
 import * as StepsComponents from "fumadocs-ui/components/steps";
 import type { MDXComponents } from "mdx/types";
 import * as luIcons from "react-icons/lu";
-import * as siIcons from "react-icons/si";
+import * as fa6Icons from "react-icons/fa6";
 import { Link } from "@/components/link";
 import { Banner } from "fumadocs-ui/components/banner";
 import {
@@ -569,7 +569,7 @@ export const mdxComponents = {
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
   return {
     ...(luIcons as unknown as MDXComponents),
-    ...(siIcons as unknown as MDXComponents),
+    ...(fa6Icons as unknown as MDXComponents),
     ...defaultMdxComponents,
     ...mdxComponents,
     Heading: MdxHeading,

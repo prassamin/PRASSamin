@@ -12,7 +12,7 @@ import {
 } from "@heroui/react";
 import { LuSearch, LuX } from "react-icons/lu";
 import * as luIcons from "react-icons/lu";
-import * as siIcons from "react-icons/si";
+import * as fa6Icons from "react-icons/fa6";
 import { useIconPicker } from "./icon-picker-context";
 import { cn } from "@heroui/react";
 
@@ -26,12 +26,12 @@ const ALL_ICONS_MAP: Record<
   }>
 > = {
   ...luIcons,
-  ...siIcons,
+  ...fa6Icons,
 };
 
 const ALL_ICON_NAMES = [
   ...Object.keys(luIcons).filter((name) => name.startsWith("Lu")),
-  ...Object.keys(siIcons).filter((name) => name.startsWith("Si")),
+  ...Object.keys(fa6Icons).filter((name) => name.startsWith("Fa")),
 ];
 
 const COLOR_PRESETS = [
