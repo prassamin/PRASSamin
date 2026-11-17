@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { LuArrowRight as ArrowRight, LuLink as LinkIcon } from "react-icons/lu";
@@ -136,12 +134,10 @@ export default function ProjectCard({
             <div className="relative flex size-full flex-col items-center justify-between overflow-hidden rounded-xl bg-black max-lg:pt-2 lg:rounded-2xl from-black/20 to-black/45 transition-colors duration-300 hover:from-black/20 lg:from-black/35 bg-linear-to-b">
               {/* Landscape Thumbnail */}
               {project?.thumbnail ? (
-                <Image
+                <img
                   src={project.thumbnail}
                   alt={project.title}
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
+                  className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-neutral-950">

@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 import { Link } from "@/components/link";
 import { LuClock, LuEye, LuChevronRight } from "react-icons/lu";
 import { motion, type Variants } from "framer-motion";
@@ -125,12 +124,10 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
                 <div className="flex flex-col gap-5 md:flex-row-reverse md:gap-8 md:items-center">
                   {/* Thumbnail Image */}
                   <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full md:w-56 aspect-5/3 shadow-md transition-colors">
-                    <Image
+                    <img
                       src={blog.thumbnail}
                       alt={blog.title}
-                      fill
-                      className="h-full w-full object-cover transition-transform duration-500 ease-out"
-                      sizes="(max-width: 768px) 100vw, 224px"
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out"
                     />
                   </figure>
 

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import {
   LuArrowUpRight,
@@ -38,12 +37,10 @@ export const BlogCard: React.FC<{
         {/* Thumbnail */}
         <figure className="relative shrink-0 overflow-hidden rounded-xl border border-white/6 bg-neutral-950 w-full sm:w-40 aspect-5/3">
           {blog.thumbnail ? (
-            <Image
+            <img
               src={blog.thumbnail}
               alt={blog.title}
-              fill
-              className="h-full w-full object-cover"
-              sizes="(max-width: 640px) 100vw, 160px"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           ) : (
             <div className="h-full w-full bg-linear-to-br from-white/4 to-transparent" />
