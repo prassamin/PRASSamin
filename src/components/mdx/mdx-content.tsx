@@ -24,6 +24,8 @@ import {
   AvatarGroup,
   Profile,
   Blockquote,
+  MdxTabs,
+  MdxTab,
 } from "@/mdx-components";
 import { MdxAccordion, MdxAccordionItem } from "./mdx-accordion";
 import { MdxCard, MdxCards } from "./mdx-card";
@@ -41,6 +43,41 @@ const resolvedCache = new Map<
   string,
   React.ComponentType<{ components?: any }>
 >();
+
+class MDXErrorBoundary extends React.Component<
+  { fallback?: React.ReactNode; children: React.ReactNode },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    if (NODE_ENV !== "production") {
+      console.warn("MDX runtime render error caught:", error, errorInfo);
+    }
+  }
+  render() {
+    if (this.state.hasError) {
+      return (
+        this.props.fallback || (
+          <div className="rounded-xl border border-amber-500/20 bg-amber-500/6 p-3 text-xs text-amber-300 font-mono my-2">
+            <span className="font-semibold block text-[11px] uppercase tracking-wider text-amber-400 mb-1">
+              Markdown Rendering Notice
+            </span>
+            <span className="opacity-80 block truncate">
+              {this.state.error?.message || "Render error in MDX preview"}
+            </span>
+          </div>
+        )
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export function clearMDXPromiseCache() {
   promiseMap.clear();
@@ -174,6 +211,8 @@ export const MDXContent: React.FC<MDXContentProps> = ({
     Accordions: MdxAccordion,
     Card: MdxCard,
     Cards: MdxCards,
+    Tabs: MdxTabs,
+    Tab: MdxTab,
     pre: MdxCodeBlock,
     table: MdxTable,
     thead: MdxThead,
@@ -205,7 +244,9 @@ export const MDXContent: React.FC<MDXContentProps> = ({
         className,
       )}
     >
-      <RenderedComponent components={mergedComponents} />
+      <MDXErrorBoundary key={content} fallback={fallback}>
+        <RenderedComponent components={mergedComponents} />
+      </MDXErrorBoundary>
     </div>
   );
 };

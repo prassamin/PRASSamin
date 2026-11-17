@@ -46,6 +46,7 @@ const ICONS: Record<MdxBlockType, React.ReactNode> = {
   divider: <LuMinus className="w-4 h-4 text-neutral-400" />,
   callout: <LuLightbulb className="w-4 h-4 text-accent" />,
   card: <LuCreditCard className="w-4 h-4 text-emerald-400" />,
+  cards: <LuLayers className="w-4 h-4 text-emerald-400" />,
   accordion: <LuCircleHelp className="w-4 h-4 text-purple-400" />,
   steps: <LuListOrdered className="w-4 h-4 text-orange-400" />,
   tabs: <LuLayers className="w-4 h-4 text-amber-400" />,

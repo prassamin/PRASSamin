@@ -3,6 +3,7 @@ export type MdxBlockType =
   | "paragraph"
   | "callout"
   | "card"
+  | "cards"
   | "accordion"
   | "steps"
   | "tabs"
@@ -139,6 +140,13 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     type: "card",
     label: "Card",
     description: "Elevated showcase container card",
+    category: "Interactive",
+    defaultProps: {},
+  },
+  {
+    type: "cards",
+    label: "Cards Group",
+    description: "A group of nested cards in a responsive grid",
     category: "Interactive",
     defaultProps: {},
   },

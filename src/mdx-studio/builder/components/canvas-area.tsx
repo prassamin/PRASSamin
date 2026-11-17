@@ -24,6 +24,22 @@ interface CanvasAreaProps {
   onDelete: (index: number) => void;
   onReorder: (sourceIndex: number, targetIndex: number) => void;
   onDropNewBlock: (type: MdxBlockType, targetIndex?: number) => void;
+  onAdoptBlock: (
+    rootIndex: number,
+    groupIndex: number,
+    targetCardIndex?: number,
+  ) => void;
+  onExtractCard?: (
+    groupBlockIndex: number,
+    cardIndex: number,
+    targetRootIndex: number,
+  ) => void;
+  onMoveCardBetweenGroups?: (
+    srcGroupIndex: number,
+    srcCardIndex: number,
+    targetGroupIndex: number,
+    targetCardIndex?: number,
+  ) => void;
 }
 
 export const CanvasArea: React.FC<CanvasAreaProps> = ({
@@ -39,6 +55,9 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   onDelete,
   onReorder,
   onDropNewBlock,
+  onAdoptBlock,
+  onExtractCard,
+  onMoveCardBetweenGroups,
 }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [isDropTargetActive, setIsDropTargetActive] = useState(false);
@@ -99,7 +118,27 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
 
     const targetIndex = position === "top" ? index : index + 1;
 
-    // Case 1: Reordering existing blocks
+    // Case 1: Extracting a nested card from a group onto the root canvas
+    const cardExtractRaw = e.dataTransfer.getData(
+      "application/mdx-card-extract",
+    );
+    if (cardExtractRaw) {
+      try {
+        const data = JSON.parse(cardExtractRaw);
+        if (
+          typeof data.groupBlockIndex === "number" &&
+          typeof data.cardIndex === "number" &&
+          onExtractCard
+        ) {
+          onExtractCard(data.groupBlockIndex, data.cardIndex, targetIndex);
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to parse card extract data:", err);
+      }
+    }
+
+    // Case 2: Reordering existing blocks
     const reorderData = e.dataTransfer.getData(
       "application/mdx-canvas-reorder",
     );
@@ -131,6 +170,26 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     isNestedDragActiveRef.current = false;
     setDropIndicator(null);
     setIsDropTargetActive(false);
+
+    // Case 1: Extracting a nested card from a group onto the root canvas (at the end)
+    const cardExtractRaw = e.dataTransfer.getData(
+      "application/mdx-card-extract",
+    );
+    if (cardExtractRaw) {
+      try {
+        const data = JSON.parse(cardExtractRaw);
+        if (
+          typeof data.groupBlockIndex === "number" &&
+          typeof data.cardIndex === "number" &&
+          onExtractCard
+        ) {
+          onExtractCard(data.groupBlockIndex, data.cardIndex, blocks.length);
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to parse card extract data:", err);
+      }
+    }
 
     const reorderData = e.dataTransfer.getData(
       "application/mdx-canvas-reorder",
@@ -222,6 +281,11 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                     onDelete={onDelete}
                     onDragStart={handleDragStart}
                     onNestedDragChange={handleNestedDragChange}
+                    onAdoptBlock={(rootIdx, targetCardIdx) =>
+                      onAdoptBlock(rootIdx, index, targetCardIdx)
+                    }
+                    onExtractCard={onExtractCard}
+                    onMoveCardBetweenGroups={onMoveCardBetweenGroups}
                   />
 
                   {/* Drop Indicator (Insert Below) */}

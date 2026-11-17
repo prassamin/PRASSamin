@@ -9,7 +9,7 @@ import {
 } from "./types";
 
 function slugify(text: string): string {
-  return text
+  return String(text || "")
     .toLowerCase()
     .replace(/[^\w\s-]/g, "")
     .replace(/[\s_-]+/g, "-")
@@ -185,7 +185,7 @@ export function blocksToMdx(
       }
 
       case "callout": {
-        const rawType = (props.calloutType || "info").toLowerCase();
+        const rawType = String(props.calloutType || "info").toLowerCase();
         const calloutType =
           rawType === "danger" || rawType === "error"
             ? "danger"
@@ -230,6 +230,27 @@ export function blocksToMdx(
             bodyContent || "Card details, key points, and description."
           }\n\n</Card>`,
         );
+        break;
+      }
+
+      case "cards": {
+        const cards: any[] = props.cards || [];
+        const cardSnippets = cards
+          .map((card) => {
+            const titleAttr = card.title
+              ? ` title="${String(card.title).replace(/"/g, "&quot;")}"`
+              : "";
+            const badgeAttr = card.badge
+              ? ` badge="${String(card.badge).replace(/"/g, "&quot;")}"`
+              : "";
+            const bodyContent = (card.content || "").trim();
+            return `  <Card${titleAttr}${badgeAttr}>\n\n${
+              bodyContent || "Card details, key points, and description."
+            }\n\n  </Card>`;
+          })
+          .join("\n\n");
+
+        segments.push(`<Cards>\n${cardSnippets}\n</Cards>`);
         break;
       }
 
@@ -1227,7 +1248,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
       const typeMatch = attrs.match(/type="([^"]*)"/i);
       const titleMatch = attrs.match(/title="([^"]*)"/i);
 
-      const rawType = (typeMatch ? typeMatch[1] : "").toLowerCase();
+      const rawType = String(typeMatch ? typeMatch[1] : "").toLowerCase();
       const calloutType =
         rawType === "error" || rawType === "danger"
           ? "danger"
@@ -1247,7 +1268,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
 
     const calloutMatch = trimmed.match(/^>\s*\[!([A-Z]+)\]\n?([\s\S]*)$/i);
     if (calloutMatch) {
-      const typeStr = calloutMatch[1].toLowerCase();
+      const typeStr = String(calloutMatch[1] || "").toLowerCase();
       const body = calloutMatch[2]
         .split("\n")
         .map((l) => l.replace(/^>\s?/, ""))
@@ -1392,7 +1413,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
         createBlock("image", {
           src: srcMatch ? srcMatch[1] : "",
           alt: altMatch ? altMatch[1] : "Image",
-          zoomable: tagName.toLowerCase() === "imagezoom",
+          zoomable: String(tagName || "").toLowerCase() === "imagezoom",
           size,
           align,
           aspectRatio,
@@ -1417,12 +1438,19 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
         cardsBody.match(/<Card\b[^>]*\/>|<Card[\s\S]*?<\/Card>/gi) ||
         [];
       if (rawCards.length > 0) {
-        for (const rc of rawCards) {
-          const parsed = parseCardSnippet(rc.trim());
-          if (parsed) {
-            blocks.push(createBlock("card", parsed));
-          }
-        }
+        const parsedCards = rawCards
+          .map((rc) => {
+            const parsed = parseCardSnippet(rc.trim());
+            if (!parsed) return null;
+            return {
+              id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+              title: parsed.title,
+              badge: parsed.badge,
+              content: parsed.content,
+            };
+          })
+          .filter(Boolean);
+        blocks.push(createBlock("cards", { cards: parsedCards }));
         continue;
       }
     }
@@ -1848,7 +1876,7 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
           hasTask = true;
           items.push({
             id: `li-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-            checked: taskMatch[1].toLowerCase() === "x",
+            checked: String(taskMatch[1] || "").toLowerCase() === "x",
             text: taskMatch[2] || "",
           });
           continue;

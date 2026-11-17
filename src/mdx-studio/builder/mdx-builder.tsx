@@ -1,8 +1,14 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useMemo,
+  useCallback,
+} from "react";
 import dynamic from "next/dynamic";
-import { MdxBlockType } from "./types";
+import { MdxBlockType, MdxBlock } from "./types";
 import { createBlock, blocksToMdx, mdxToBlocks } from "./compiler";
 import { ComponentTray } from "./components/component-tray";
 import { CanvasArea } from "./components/canvas-area";
@@ -185,7 +191,9 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     if (mode === "builder") {
       const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
       const full =
-        !hasFm && frontmatter ? `${frontmatter}\n\n${compiledMdx}` : compiledMdx;
+        !hasFm && frontmatter
+          ? `${frontmatter}\n\n${compiledMdx}`
+          : compiledMdx;
       setMonacoContent(full);
     } else if (mode === "code" && frontmatter) {
       // If frontmatter changed externally (e.g. from the Information tab),
@@ -314,7 +322,10 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
         // Confine scrolling strictly to the preview container (avoid window / canvas scroll jumping)
         const relativeTop =
           targetRect.top - containerRect.top + container.scrollTop;
-        container.scrollTo({ top: Math.max(0, relativeTop - 30), behavior: "smooth" });
+        container.scrollTo({
+          top: Math.max(0, relativeTop - 30),
+          behavior: "smooth",
+        });
       }
     }, 60);
 
@@ -405,7 +416,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       for (let i = 0; i < lines.length; i++) {
         const match = lines[i].match(/^#{1,6}\s+(.+)$/);
         if (match) {
-          const clean = match[1]
+          const clean = String(match[1] || "")
             .replace(/[*_`]/g, "")
             .replace(/\[(.*?)\]\(.*?\)/g, "$1")
             .trim()
@@ -427,7 +438,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
         for (const mh of markdownHeadings) {
           for (let j = lastPreviewIdx; j < previewHeadings.length; j++) {
             const ph = previewHeadings[j];
-            const pClean = (ph.textContent || "")
+            const pClean = String(ph.textContent || "")
               .trim()
               .toLowerCase()
               .replace(/[^a-z0-9]/g, "");
@@ -443,7 +454,10 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
               const pTop = pRect.top - pContainerRect.top + preview.scrollTop;
 
               const lastMarker = markers[markers.length - 1];
-              if (mTop > lastMarker.monacoTop && pTop >= lastMarker.previewTop) {
+              if (
+                mTop > lastMarker.monacoTop &&
+                pTop >= lastMarker.previewTop
+              ) {
                 markers.push({ monacoTop: mTop, previewTop: pTop });
                 lastPreviewIdx = j + 1;
                 break;
@@ -771,7 +785,6 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       }
       return [...prev, newBlock];
     });
-    toast.success(`Added ${newBlock.type} block to canvas`);
 
     // Smoothly scroll both the canvas area and preview down to the newly added block
     setTimeout(() => {
@@ -844,13 +857,11 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       next.splice(index + 1, 0, clone);
       return next;
     });
-    toast.success(`Duplicated ${original.type} block`);
   };
 
   // Delete Block
   const handleDelete = (index: number) => {
     setBlocks((prev) => prev.filter((_, i) => i !== index));
-    toast.info("Block removed");
   };
 
   // Reorder via drag & drop
@@ -859,6 +870,189 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       const next = [...prev];
       const [moved] = next.splice(srcIdx, 1);
       next.splice(targetIdx, 0, moved);
+      return next;
+    });
+  };
+
+  /**
+   * Adopt a top-level block as a new card in a Cards Group.
+   *
+   * Cards Group semantics: a standalone Card block becomes a new entry in
+   * the group's flat list (title/badge/content preserved). Any other block
+   * becomes a card whose content is a readable description.
+   */
+  const handleAdoptBlock = (
+    rootIndex: number,
+    groupIndex: number,
+    targetCardIndex?: number,
+  ) => {
+    setBlocks((prev) => {
+      const group = prev[groupIndex];
+      if (!group || group.type !== "cards") return prev;
+      const source = prev[rootIndex];
+      if (!source) return prev;
+
+      const cards = Array.isArray(group.props.cards)
+        ? [...group.props.cards]
+        : [];
+
+      let newCard: Record<string, any>;
+      if (source.type === "card") {
+        newCard = {
+          id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          title: source.props.title || `Card ${cards.length + 1}`,
+          badge: source.props.badge || "",
+          content:
+            typeof source.props.content === "string" &&
+            source.props.content.trim()
+              ? source.props.content
+              : "Card content",
+        };
+      } else {
+        newCard = {
+          id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+          title: `Card ${cards.length + 1}`,
+          badge: "",
+          content: `This card contains a ${source.type} block.`,
+        };
+      }
+
+      if (
+        typeof targetCardIndex === "number" &&
+        targetCardIndex >= 0 &&
+        targetCardIndex <= cards.length
+      ) {
+        cards.splice(targetCardIndex, 0, newCard);
+      } else {
+        cards.push(newCard);
+      }
+
+      const nextRoot = [...prev];
+      nextRoot[groupIndex] = {
+        ...group,
+        props: { ...group.props, cards },
+      };
+      // Remove the adopted block from its original root position.
+      return nextRoot.filter((_, i) => i !== rootIndex);
+    });
+  };
+
+  /**
+   * Extract a card from a Cards Group and place it outside on the root canvas.
+   */
+  const handleExtractCard = (
+    groupBlockIndex: number,
+    cardIndex: number,
+    targetRootIndex: number,
+  ) => {
+    setBlocks((prev) => {
+      const group = prev[groupBlockIndex];
+      if (!group || group.type !== "cards") return prev;
+      const cards = Array.isArray(group.props.cards)
+        ? [...group.props.cards]
+        : [];
+      if (cardIndex < 0 || cardIndex >= cards.length) return prev;
+
+      // Extract the card
+      const [extractedCard] = cards.splice(cardIndex, 1);
+
+      // Create a standalone Card block
+      const newBlock: MdxBlock = createBlock("card", {
+        title: extractedCard.title || "",
+        badge: extractedCard.badge || "",
+        content: extractedCard.content || "",
+      });
+
+      const next = [...prev];
+
+      if (cards.length === 0) {
+        // If the group had only this 1 card, remove the now-empty Cards Group
+        next.splice(groupBlockIndex, 1);
+        const finalTarget =
+          groupBlockIndex < targetRootIndex
+            ? targetRootIndex - 1
+            : targetRootIndex;
+        const boundedTarget = Math.max(0, Math.min(finalTarget, next.length));
+        next.splice(boundedTarget, 0, newBlock);
+      } else {
+        // Keep group with remaining cards
+        next[groupBlockIndex] = {
+          ...group,
+          props: { ...group.props, cards },
+        };
+        const boundedTarget = Math.max(
+          0,
+          Math.min(targetRootIndex, next.length),
+        );
+        next.splice(boundedTarget, 0, newBlock);
+      }
+
+      return next;
+    });
+  };
+
+  /**
+   * Move a card from one Cards Group to another Cards Group.
+   */
+  const handleMoveCardBetweenGroups = (
+    srcGroupIndex: number,
+    srcCardIndex: number,
+    targetGroupIndex: number,
+    targetCardIndex?: number,
+  ) => {
+    setBlocks((prev) => {
+      const srcGroup = prev[srcGroupIndex];
+      const tgtGroup = prev[targetGroupIndex];
+      if (
+        !srcGroup ||
+        srcGroup.type !== "cards" ||
+        !tgtGroup ||
+        tgtGroup.type !== "cards"
+      ) {
+        return prev;
+      }
+
+      const srcCards = Array.isArray(srcGroup.props.cards)
+        ? [...srcGroup.props.cards]
+        : [];
+      const tgtCards = Array.isArray(tgtGroup.props.cards)
+        ? [...tgtGroup.props.cards]
+        : [];
+      if (srcCardIndex < 0 || srcCardIndex >= srcCards.length) return prev;
+
+      const [movedCard] = srcCards.splice(srcCardIndex, 1);
+      if (
+        typeof targetCardIndex === "number" &&
+        targetCardIndex >= 0 &&
+        targetCardIndex <= tgtCards.length
+      ) {
+        tgtCards.splice(targetCardIndex, 0, movedCard);
+      } else {
+        tgtCards.push(movedCard);
+      }
+
+      const next = [...prev];
+      if (srcCards.length === 0) {
+        next.splice(srcGroupIndex, 1);
+        const adjustedTgtIndex =
+          srcGroupIndex < targetGroupIndex
+            ? targetGroupIndex - 1
+            : targetGroupIndex;
+        next[adjustedTgtIndex] = {
+          ...tgtGroup,
+          props: { ...tgtGroup.props, cards: tgtCards },
+        };
+      } else {
+        next[srcGroupIndex] = {
+          ...srcGroup,
+          props: { ...srcGroup.props, cards: srcCards },
+        };
+        next[targetGroupIndex] = {
+          ...tgtGroup,
+          props: { ...tgtGroup.props, cards: tgtCards },
+        };
+      }
+
       return next;
     });
   };
@@ -893,7 +1087,6 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       )
     ) {
       setBlocks([]);
-      toast.info("Canvas cleared");
     }
   };
 
@@ -1122,6 +1315,9 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                   onDropNewBlock={(type, targetIdx) =>
                     handleAddBlock(type, targetIdx)
                   }
+                  onAdoptBlock={handleAdoptBlock}
+                  onExtractCard={handleExtractCard}
+                  onMoveCardBetweenGroups={handleMoveCardBetweenGroups}
                 />
               </div>
             </>
@@ -1297,7 +1493,6 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
                     onAddBlock={(blockType) => {
                       handleAddBlock(blockType);
                       setIsFloatingTrayOpen(false);
-                      toast.success("Block added to canvas");
                     }}
                   />
                 </div>

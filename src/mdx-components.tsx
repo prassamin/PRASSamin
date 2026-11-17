@@ -247,11 +247,51 @@ Object.assign(MdxChip, Chip);
 
 export { MdxAccordion, MdxAccordionItem, MdxCard, MdxCards };
 
-// Fumadocs Tabs with compound compatibility fallbacks (e.g. Tabs.List, Tabs.Tab, Tabs.Panel)
+// Safe wrapper for Fumadocs Tabs with compound compatibility fallbacks (e.g. Tabs.List, Tabs.Tab, Tabs.Panel)
+export const MdxTab = (props: any) => {
+  const safeValue = props.value != null ? String(props.value) : "tab";
+  return <TabsComponents.Tab {...props} value={safeValue} />;
+};
+
 export const MdxTabs = Object.assign(
-  (props: any) => <TabsComponents.Tabs {...props} />,
+  ({ items, defaultIndex = 0, defaultValue, ...props }: any) => {
+    const safeItems = Array.isArray(items)
+      ? items
+          .filter(
+            (it: any) =>
+              it != null && typeof it === "string" && it.trim().length > 0,
+          )
+          .map((it: string) => String(it))
+      : undefined;
+
+    const hasItems = Boolean(safeItems && safeItems.length > 0);
+    const safeDefaultIndex =
+      hasItems &&
+      typeof defaultIndex === "number" &&
+      defaultIndex >= 0 &&
+      safeItems &&
+      defaultIndex < safeItems.length
+        ? defaultIndex
+        : 0;
+
+    const safeDefaultValue =
+      defaultValue != null
+        ? String(defaultValue).toLowerCase().replace(/\s+/g, "-")
+        : hasItems && safeItems
+          ? safeItems[safeDefaultIndex]?.toLowerCase().replace(/\s+/g, "-")
+          : undefined;
+
+    return (
+      <TabsComponents.Tabs
+        items={hasItems ? safeItems : undefined}
+        defaultIndex={safeDefaultIndex}
+        defaultValue={safeDefaultValue}
+        {...props}
+      />
+    );
+  },
   {
-    Tab: TabsComponents.Tab,
+    Tab: MdxTab,
     Content: TabsComponents.TabsContent,
     List: TabsComponents.TabsList,
     Trigger: TabsComponents.TabsTrigger,
@@ -547,7 +587,7 @@ export const mdxComponents = {
   AccordionItem: MdxAccordionItem,
   Accordions: MdxAccordion,
   Tabs: MdxTabs,
-  Tab: TabsComponents.Tab,
+  Tab: MdxTab,
   CodeBlockTabs,
   CodeBlockTabsList,
   CodeBlockTabsTrigger,
@@ -585,7 +625,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     ...TabsComponents,
     ...StepsComponents,
     Tabs: MdxTabs,
-    Tab: TabsComponents.Tab,
+    Tab: MdxTab,
     Callout: MdxCallout,
     ImageZoom: mdxComponents.ImageZoom,
     Banner,
