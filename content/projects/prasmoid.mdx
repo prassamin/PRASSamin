@@ -1,129 +1,235 @@
 ---
 title: "Prasmoid"
-category: "KDE Software"
-description: "The All in One Development Toolkit for KDE Plasmoids."
+category: "Developer Tools"
+description: "The all-in-one modern CLI toolkit for KDE Plasmoid development.
+  Scaffold in seconds, preview with hot-reload, automate i18n, and run custom JS
+  tasks, all powered by a blazing-fast, zero-dependency Go binary."
 tools:
   - "GO"
+  - "Linux"
+  - "Qt"
+  - "JavaScript"
 links:
   github: "https://github.com/PRASSamin/prasmoid"
 thumbnail: "https://res.cloudinary.com/dee5yihmx/image/upload/v1754930423/pras/\
   portfolio/projects/prasmoid.png"
-createdAt: "2026-11-14T04:49:35.251Z"
-updatedAt: "2026-11-14T06:32:25.834Z"
+createdAt: "2025-08-11T16:23:24.000Z"
+updatedAt: "2026-11-17T13:52:55.671Z"
 ---
 
 
-When I started developing Plasmoid(widget) for the first time for the KDE Plasma desktop, I was excited by the possibilities but found the process itself to be fragmented. The documentation was scattered, and I had to piece together a workflow from various sources just to handle basic tasks like project setup, packaging, and previewing changes.
+Building a desktop widget for KDE Plasma should feel creative and rewarding. You're crafting native desktop experiences that live directly on users' panels and desktops across millions of Linux machines.
 
-The constant need to manually restart `plasmaviewer` just to see a small UI tweak was particularly tedious. This experience made it clear that a dedicated, all in one tool was needed to streamline the entire development lifecycle.
+Yet for years, the developer experience was notoriously fragmented. Documentation was scattered across legacy wikis. Scaffolding required stitching boilerplate together by hand. Even something as simple as adjusting 4 pixels of padding meant manually killing and restarting `plasmoidviewer` dozens of times an hour. Packaging, symlinking into KDE's system paths, and compiling `gettext` translation catalogs were entirely manual chores.
 
-I built Prasmoid to be that tool. It's a command line interface, written in Go, designed to handle all the boilerplate and repetitive tasks, allowing a developer to focus on the creative work of building the plasmoid itself. It automates everything from project initialization to the final build, providing a smooth and efficient workflow.
+**Prasmoid changes that.** It is an all-in-one command-line toolkit written in Go that turns KDE Plasmoid development into a modern, frictionless workflow. Think of it as the Vite or Turbopack for the KDE desktop ecosystem.
+
+![Prasmoid Banner](https://res.cloudinary.com/dee5yihmx/image/upload/v1754930423/pras/portfolio/projects/prasmoid.png)
 
 ---
 
-### A Seamless Workflow from Start to Finish
+### Why Prasmoid?
 
-Let's walk through how Prasmoid transforms the development experience.
+Prasmoid replaces fragile shell scripts and manual steps with a unified, developer-first toolchain engineered specifically for Qt/QML widgets.
 
-<Tabs items={["Initialize","Develop & Preview","Ship It"]}>
+<Cards>
+  <Card
+    title="Instant Scaffolding"
+    badge="CLI"
+    description="Interactive project wizard that sets up battle-tested metadata, QML directory structures, and configurations in under five seconds."
+  />
+  <Card
+    title="Hot-Reload Live Preview"
+    badge="DX"
+    description="Live preview window powered by plasmoidviewer that automatically watches your files and re-launches the instant you hit save."
+  />
+  <Card
+    title="Embedded JS Engine"
+    badge="Architecture"
+    description="Write custom build and deploy commands using JavaScript with full TypeScript types—running natively inside Go with zero Node.js dependencies."
+  />
+  <Card
+    title="Automated Localization"
+    badge="i18n"
+    description="One-command translation pipeline that handles string extraction (.pot), translation syncing (.po), and binary compilation (.mo) seamlessly."
+  />
+  <Card
+    title="Direct Desktop Symlinking"
+    badge="Testing"
+    description="Instantly mount or unmount your development widget directly into KDE Plasma's local registry for real desktop testing without manual copying."
+  />
+  <Card
+    title="Production Bundling"
+    badge="Release"
+    description="Compile, format, and package your project into standard .plasmoid archives ready for direct installation or distribution on the KDE Store."
+  />
+</Cards>
+
+---
+
+### The Workflow Upgrade
+
+Here is how development feels before and after introducing Prasmoid:
+
+| Workflow Step | The Legacy Way | The Prasmoid Way |
+| :--- | :--- | :--- |
+| **Project Setup** | Manual directory creation, copying boilerplate `metadata.json` | `prasmoid init` with an interactive, validated wizard |
+| **UI Tweaking** | Save file → switch terminal → kill viewer → restart viewer | `prasmoid preview --watch` with auto-restart on save |
+| **In-Desktop Testing** | Manually copying directories to `~/.local/share/plasma/plasmoids` | `prasmoid link` (and `prasmoid unlink` when done) |
+| **Code Formatting** | Inconsistent styling or manual `qmlformat` invocations | `prasmoid format --watch` watches and tidies QML on the fly |
+| **Translations (i18n)** | Tedious `xgettext` flags, manual directory setup, `msgfmt` steps | `prasmoid i18n extract` & `prasmoid i18n compile` |
+| **Extensibility** | Messy bash glue scripts or heavy Node.js npm tooling | Lightweight JavaScript scripts executed via embedded Goja runtime |
+
+---
+
+### The Development Lifecycle
+
+Prasmoid accompanies you across the entire journey—from an empty folder to a published widget.
+
+<Tabs items={["Initialize","Develop & Preview","Test in Plasma","Localize & Polish","Ship Archive"]}>
   <Tab value="Initialize">
-  Kickstart your project with a single command.
+  Generate a complete, standard-compliant Plasmoid project in seconds:
 
   ```bash
-  prasmoid init
+  prasmoid init -n MyAwesomeWidget
   ```
 
-  Prasmoid's interactive wizard will ask for your project's details and generate a complete, ready to code structure.
+  Prasmoid prompts for your widget metadata (ID, version, description, author) and bootstraps a clean project layout:
 
   <Files>
-    <Folder name="MyAwesomePlasmoid" defaultOpen>
+    <Folder name="MyAwesomeWidget" defaultOpen>
       <Folder name="contents" defaultOpen>
-        <Folder name="ui">
+        <Folder name="ui" defaultOpen>
           <File name="main.qml" />
+          <File name="CompactRepresentation.qml" />
+          <File name="FullRepresentation.qml" />
         </Folder>
         <Folder name="config">
           <File name="main.xml" />
         </Folder>
         <Folder name="icons">
-          <File name="prasmoid.svg" />
+          <File name="icon.svg" />
         </Folder>
       </Folder>
       <File name="metadata.json" />
       <File name="prasmoid.config.js" />
+      <File name="CHANGELOG.md" />
       <File name=".gitignore" />
     </Folder>
   </Files>
   </Tab>
 
   <Tab value="Develop & Preview">
-  See your changes live. Run the preview command with the watch flag:
+  Say goodbye to manual viewer restarts. Run the preview command with file watching enabled:
 
   ```bash
   prasmoid preview --watch
   ```
 
-  This opens your plasmoid in `plasmaviewer` window that automatically restarts whenever you save a file. You can focus purely on writing your QML code.
-  </Tab>
+  Prasmoid launches `plasmoidviewer` in an isolated test window. The moment you save any `.qml`, `.js`, or configuration file, the process automatically restarts and reloads your widget with zero downtime.
 
-  <Tab value="Ship It">
-  Ready to share your creation? First, handle translations with ease.
+  Need to keep your code pristine? Run the automatic formatter side-by-side:
 
   ```bash
-  # Extract all translatable strings
+  prasmoid format --watch
+  ```
+  </Tab>
+
+  <Tab value="Test in Plasma">
+  Isolated viewers are great, but widgets need to be tested inside real Plasma panels, system trays, and desktop grids.
+
+  Instead of manually copying build folders into system directories, use symlink management:
+
+  ```bash
+  # Symlink project into ~/.local/share/plasma/plasmoids/
+  prasmoid link
+
+  # Clean up when testing finishes
+  prasmoid unlink
+  ```
+
+  Your widget immediately shows up in KDE Plasma's **"Add Widgets..."** panel for real-world stress testing.
+  </Tab>
+
+  <Tab value="Localize & Polish">
+  Localizing KDE applications used to mean remembering complex `gettext` command flags and folder structures. Prasmoid automates the whole pipeline:
+
+  ```bash
+  # 1. Scan your QML files and extract translatable strings into .pot templates
   prasmoid i18n extract
 
-  # Compile translations for use in the plasmoid
+  # 2. Compile translated .po files into optimized binary .mo catalogs
   prasmoid i18n compile
   ```
 
-  Then, package your project into a `.plasmoid` file, ready for installation or uploading to the KDE Store.
+  Track version increments and changelog updates painlessly:
 
   ```bash
-  prasmoid build
+  prasmoid changeset
   ```
+  </Tab>
+
+  <Tab value="Ship Archive">
+  When your widget is ready for the world, compile and package it into a pristine `.plasmoid` archive:
+
+  ```bash
+  prasmoid build --output ./dist
+  ```
+
+  Prasmoid validates the directory structure, ignores dev-only artifacts, and compresses the project into a release-ready package ready for installation or uploading to **store.kde.org**.
   </Tab>
 </Tabs>
 
-### Adding Custom Deployment Scripts
+---
 
-Create a new deployment command by adding a JavaScript file in the `.prasmoid/commands/` directory. For example, to create a `deploy` command:
+### Architectural Highlight: Scriptability Without Node.js
+
+One of the proudest architectural decisions in Prasmoid is how custom tasks are handled.
+
+Developers love the flexibility of JavaScript for writing project-specific workflows (such as deploying to a remote test machine, syncing assets, or triggering webhooks). However, requiring users to install **Node.js, npm, and hundreds of megabytes of node_modules** just to run a helper script defeats the purpose of a lightweight Go binary.
+
+<Callout type="info">
+  **Embedded Runtime:** Prasmoid embeds a pure **ECMAScript 5.1+** JavaScript engine written in Go. You get full JavaScript scripting capabilities and rich TypeScript autocompletion (`prasmoid.d.ts`) natively, without needing Node.js or any external runtime installed on your system.
+</Callout>
+
+To generate a new custom command:
 
 ```bash
 prasmoid command add -n deploy
 ```
 
-This will generate a template file at `.prasmoid/commands/deploy.js` where you can define your deployment logic. Here's an example implementation that builds the project and deploys it to a remote server:
+This creates `.prasmoid/commands/deploy.js` with complete typings and the built-in `prasmoid` API:
 
-```typescript title=".prasmoid/commands/deploy.js"
+```javascript title=".prasmoid/commands/deploy.js"
 /// <reference path="../../prasmoid.d.ts" />
 const prasmoid = require("prasmoid");
 const { execSync } = require("child_process");
 const path = require("path");
 
 prasmoid.Command({
+  short: "Builds and deploys the plasmoid to a remote test machine.",
   run: (ctx) => {
-    console.green("Starting custom deployment...");
+    console.green("🚀 Starting automated deployment...");
 
-    // 1. Build the project
-    execSync("prasmoid build");
-    console.log("Build complete.");
+    // 1. Trigger internal build
+    execSync("prasmoid build -o ./build");
 
-    // 2. Copy to server
-    const plasmoidId = prasmoid.getMetadata("Id");
+    // 2. Extract metadata
+    const id = prasmoid.getMetadata("Id");
     const version = prasmoid.getMetadata("Version");
-    const archive = path.join("build", `${plasmoidId}-${version}.plasmoid`);
-    const remote = "user@server:/path/to/plasmoids/";
+    const packagePath = path.join("build", `${id}-${version}.plasmoid`);
+    const remoteTarget = "deck@steamdeck.local:/home/deck/widgets/";
 
-    console.log(`Copying ${archive} to ${remote}`);
-    execSync(`scp ${archive} ${remote}`);
+    // 3. Transfer package via scp
+    console.log(`📦 Shipping ${packagePath} -> ${remoteTarget}`);
+    execSync(`scp ${packagePath} ${remoteTarget}`);
 
-    console.green("Deployment finished!");
+    console.green("✨ Deployment completed successfully!");
   },
-  short: "Builds and deploys the plasmoid.",
 });
 ```
 
-To execute your deployment command, simply run:
+You can now run your custom command directly through the CLI:
 
 ```bash
 prasmoid deploy
@@ -131,31 +237,16 @@ prasmoid deploy
 
 ---
 
-### Built for the Community
+### Built With & For the Community
 
-Prasmoid was born from a personal need, but it has grown with the help of the KDE community. A special thanks to contributors like <Link href="https://github.com/clorteau" target="_blank">**clorteau**</Link> for packaging Prasmoid for Arch, Debian, and Fedora, making it accessible to a wider audience.
+Prasmoid began as a tool to solve my own development headaches, but the open-source community quickly took notice and helped elevate it:
 
-Features like comprehensive `i18n` support have been added based directly on community feedback. This project is a testament to the collaborative spirit of open source, and contributions are always welcome, whether it's code, documentation, or new ideas.
+- **Cross-Distribution Packaging:** Thanks to contributors like <Link href="https://github.com/clorteau" target="_blank">**clorteau**</Link>, Prasmoid is packaged and distributed across **Arch Linux (AUR)**, **Debian**, and **Fedora**, making installation as simple as a single package manager command.
+- **Built-in Upgrades:** With `prasmoid upgrade`, users on direct binary installations can fetch the latest release with one keystroke.
+- **Community-Driven Features:** Features like the multi-locale i18n manager and automatic QML formatting were developed directly in response to feedback from real Plasmoid creators.
 
-### The Road Ahead
-
-The journey for Prasmoid is just beginning. The goal is to make it the undisputed standard for modern Plasmoid development. Here are some of the ideas on the roadmap:
-
-- **Advanced Scaffolding:**
-  Introducing templates for different types of plasmoids, so you can start with more
-  than just a basic structure.
-- **Richer JavaScript API:**
-  Expanding the `prasmoid` module available in custom commands to allow for even
-  deeper integration with the build process.
-- **Automated Publishing:**
-  Adding commands to help automate the process of publishing your plasmoid to the
-  KDE Store.
+---
 
 <Banner variant="rainbow">
-  **Prasmoid is open source!** Check out the code, contribute, or file an issue
-    on{" "}
-    <Link href="https://github.com/PRASSamin/prasmoid" target="_blank">
-      GitHub
-    </Link>
-    .
+  **Prasmoid is 100% Free & Open Source.** Star the repository, report an issue, or contribute to the project on <Link href="https://github.com/PRASSamin/prasmoid" target="_blank">**GitHub**</Link>.
 </Banner>

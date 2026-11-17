@@ -1,87 +1,154 @@
 ---
-category: Web App
-createdAt: '2026-03-26T13:33:34.824Z'
-description: >-
-  A free, open source media downloader for Instagram, TikTok, Facebook, and
-  YouTube. Paste a link, pick what you want, download.
+category: "Web App"
+createdAt: "2026-03-26T13:33:34.824Z"
+description: "An ad-free, open-source media extractor engineered to bypass
+  scraper traps across Instagram, TikTok, YouTube, and Facebook. Ephemeral edge
+  proxying via Cloudflare Workers and Upstash."
 links:
-  github: 'https://github.com/PRASSamin/Fetchy'
-  live: 'https://gofetchy.app'
-thumbnail: >-
-  https://res.cloudinary.com/dee5yihmx/image/upload/v1774532278/pras/portfolio/projects/Fetchy.png
-title: Fetchy
+  github: "https://github.com/PRASSamin/Fetchy"
+  live: "https://gofetchy.app"
+thumbnail: "https://res.cloudinary.com/dee5yihmx/image/upload/v1794830830/pras/\
+  portfolio/images/prettyshot_export_4k_2026-11-16_12-06-33_1794830829342.webp"
+title: "Fetchy"
 tools:
-  - NextJs
-  - Redis
-  - Tailwind
-  - Typescript
-  - Vercel
-updatedAt: '2026-11-04T17:45:44.692Z'
+  - "Nextjs"
+  - "Typescript"
+  - "Tailwindcss"
+  - "Redis"
+  - "Vercel"
+updatedAt: "2026-11-17T13:52:55.671Z"
 ---
 
 
-Fetchy started as a simple Node.js project back when I was learning web development. It could download videos from YouTube and Instagram, and that was about it. The UI was basic, the code was messy, and it did the job.
+The web utilities we use daily shouldn't feel like a hostage situation.
 
-But I kept using it myself. And every time I needed to grab a TikTok video or a Facebook reel, I'd think about what Fetchy could be if I actually rebuilt it properly. So I did. Three times.
+If you search for a video downloader today, you are greeted by one of the scummiest corners of the modern internet. Deceptive green "DOWNLOAD NOW" buttons hiding trojans. Aggressive full-page redirect cascades. Unskippable countdown timers designed to juice display ad impressions. By the time you get your 10-second video, your browser has stored fifty tracking cookies and prompted you three times to enable push notifications.
 
-The current version, codenamed **Neon**, is a full rewrite with a proper architecture, a plugin system for tools, and support for Instagram, TikTok, Facebook, and YouTube. It's free, open source, and has no signup requirement.
+**Fetchy was born as an act of defiance.** No ads. No telemetry. No account creation. No artificial wait timers. Just an open-source, edge-accelerated extraction engine that pulls pristine, full-bitrate media and gets out of your way in under two seconds.
 
----
-
-### How it works
-
-Paste a link from any supported platform, and Fetchy extracts the media for you. Videos, photos, reels, stories, carousels, slideshows. You pick the quality and format, then download.
-
-<Tabs items={["Instagram", "TikTok", "Facebook"]}>
-  <Tab value="Instagram">
-    Download posts, reels, carousels, stories, and highlights. Fetchy handles both public and private-looking pages that require session context on Instagram's end. You get the full resolution media, not a compressed preview.
-  </Tab>
-  <Tab value="TikTok">
-    Download videos with or without watermark, extract audio as MP3, and handle slideshows. Paste the TikTok link, and Fetchy pulls everything it can find.
-  </Tab>
-  <Tab value="Facebook">
-    Download videos, reels, stories, and highlights from Facebook. Supports both public posts and pages that normally require login to view.
-  </Tab>
-</Tabs>
+![Fetchy Interface](https://res.cloudinary.com/dee5yihmx/image/upload/v1794830830/pras/portfolio/images/prettyshot_export_4k_2026-11-16_12-06-33_1794830829342.webp)
 
 ---
 
-### The evolution
+### The Cat-and-Mouse Game: Reverse-Engineering Big Tech
 
-Fetchy has gone through three major rewrites. Each version taught me something new about building software.
+Social media platforms treat media extraction as an adversarial battleground. Trillion-dollar platforms like Meta and ByteDance constantly alter internal APIs, obfuscate JSON payloads, and deploy bot-fingerprinting firewalls.
 
-<Steps>
-  <Step>
-    **v1** was a Node.js + Express app with server-rendered EJS templates. Basic video downloading for YouTube and Instagram. It worked, but the codebase was rough.
-  </Step>
-  <Step>
-    **v2** moved to Next.js with Tailwind CSS. Added rate limiting, better error handling, and a cleaner UI. But the architecture was still tightly coupled.
-  </Step>
-  <Step>
-    **v3 (Neon)** is the current version. Full rewrite with Next.js 15, a custom plugin system for tool metadata, FumaDocs-powered blog, i18n support, and a unified API response format across all download endpoints.
-  </Step>
-</Steps>
+Here is how Fetchy negotiates the extraction mechanics across each platform:
 
-Starting with v3, each major release is named after an element from the periodic table. Neon, Argon, Zinc, Copper, and so on.
+<Accordion type="single">
+  <AccordionItem title="Instagram: The Private GraphQL & Carousel Graph">
+    Instagram does not serve public video URLs in simple `<video>` tags. Instead, their web client queries internal GraphQL endpoints (`/api/v1/media/{id}/info/`) protected by dynamic CSRF tokens and internal App-ID headers.
+
+    - **Carousel Reconstruction:** A single Instagram post can contain a mix of 10 images and videos. Fetchy recursively unpacks the `carousel_media` node tree, normalizing resolutions so users can pick individual slides or grab the whole album.
+    - **Session Emulation:** For stories and posts from private-looking edge nodes, Fetchy utilizes an ephemeral session pool with rotating user agents to retrieve high-resolution assets without triggering account checkpoint locks.
+  </AccordionItem>
+  <AccordionItem title="TikTok: Stripping the Server-Side Watermark">
+    ByteDance serves two distinct video streams for every TikTok: a watermarked render (with moving username badges injected during server transcode) and a raw upstream master stream.
+
+    - **Bypassing the Transcode:** Fetchy queries TikTok's internal mobile video detail API rather than scraping the desktop DOM. This exposes the unbranded `play_addr` CDN link directly.
+    - **Audio Separation:** The raw audio track is decoupled into a standalone 320kbps MP3 stream, allowing creators to extract trending sounds cleanly.
+  </AccordionItem>
+  <AccordionItem title="YouTube: Adaptive DASH Manifest Negotiation">
+    YouTube does not store 1080p, 1440p, or 4K videos with combined audio. They use **DASH (Dynamic Adaptive Streaming over HTTP)**, splitting video and audio into distinct tracks.
+
+    - **Stream Matching:** Fetchy inspects the video's streaming manifest (`adaptiveFormats`), selecting the optimal video bitrate and linking it alongside dedicated audio tracks without needing heavy server-side ffmpeg re-encoding on small edge lambdas.
+    - **Shorts Support:** Native support for YouTube's vertical short-form manifests with instant resolution parsing.
+  </AccordionItem>
+  <AccordionItem title="Facebook: Mobile Graph API Extraction">
+    Facebook's desktop web app is a labyrinth of encrypted React bundles and obfuscated DOM nodes.
+
+    - **Mobile Endpoint Spoofing:** By querying Facebook's lightweight mobile graph interfaces, Fetchy bypasses login barriers for public videos and reels, extracting progressive MP4 URLs in both SD and Full HD bitrates.
+  </AccordionItem>
+</Accordion>
 
 ---
 
-### What powers it
+### The Core Architectural Bottleneck: Bandwidth & IP Leaks
 
-The download pipeline works like this: when you paste a URL, Fetchy's API scrapes the platform, uploads the media temporarily to Cloudinary, and generates a short-lived CDN link through a Cloudflare Worker with KV storage. The original source URL is never exposed to the user.
+When designing a media downloader, naive architecture kills you in one of two ways:
 
-<Callout type="info" title="Temporary storage only">
-  Downloaded media is cached on Cloudinary temporarily. Nothing is stored permanently. The CDN keys in Cloudflare KV expire automatically.
-</Callout>
+1. **Proxying everything through your server:** If a user downloads a 200MB 4K reel and your Next.js server streams the bytes, your bandwidth bills skyrocket and server memory bottlenecks instantly.
+2. **Handing the raw CDN link to the user:** If you simply forward Instagram's raw CDN link to the user's browser, the download fails. Meta's CDNs validate origin headers, enforce strict CORS boundaries, and token-expire links within seconds. Furthermore, exposing raw upstream URLs risks leaking the scraper proxy's network identity.
 
-Upstash Redis handles two things: logging every API call (success logs auto-expire, error logs persist until resolved) and rate limiting to prevent abuse.
+#### The Fix: Ephemeral Signed CDN Tokens on Cloudflare Workers
 
-The tool system is one of the more interesting parts. Each download tool (Instagram, TikTok, etc.) has its own `meta.ts` frontmatter file. A custom Next.js plugin collects all this metadata at build time and maps it into a central store, so adding a new platform is just a matter of creating a new folder with the right files.
+Fetchy solves this with a **zero-bandwidth edge proxy architecture**:
+
+```typescript
+[User Browser]
+      │
+      │ 1. POST /api/fetch (Target URL)
+      ▼
+[Next.js Scraper Core]
+      │
+      │ 2. Scrapes & resolves upstream media stream
+      │ 3. Signs an ephemeral access token into Cloudflare KV (TTL: 10 min)
+      │ 4. Returns signed proxy link: gofetchy.app/dl/{token}
+      ▼
+[User Browser clicks Download]
+      │
+      │ 5. GET gofetchy.app/dl/{token}
+      ▼
+[Cloudflare Edge Worker]
+      │
+      │ 6. Validates token in KV
+      │ 7. Streams media directly from upstream at 100MB/s (Rewriting headers on the fly)
+      ▼
+[User Downloads Clean MP4 at Line Speed]
+```
+
+By offloading the actual file streaming to **Cloudflare Workers** at the network edge:
+- The origin Next.js server uses virtually **0 MB of bandwidth** for media transfers.
+- Upstream platforms see Cloudflare's massive edge IP pools rather than a single predictable scraper IP.
+- The user gets full CDN line-speed downloads with proper `Content-Disposition` filename headers.
 
 ---
 
-### What I learned building this
+### Unified API Contract
 
-- **Rewriting is fine.** Each version of Fetchy was better because I understood more. v1 taught me how HTTP works, v2 taught me component architecture, v3 taught me how to build systems that scale.
-- **Plugin systems pay off.** Building the frontmatter + mapper plugin system took time upfront, but adding new tools now takes minutes instead of hours.
-- **i18n from day one.** Adding internationalization later is painful. Fetchy Neon has it baked in with `next-intl`.
+Regardless of whether Fetchy is parsing a TikTok slideshow, an Instagram Reel, or a 4K YouTube clip, the API returns a standardized response envelope:
+
+```json title="Sample API Response: POST /api/fetch"
+{
+  "success": true,
+  "platform": "instagram",
+  "author": {
+    "username": "natgeo",
+    "avatar": "https://img.gofetchy.app/proxy/avatar.jpg"
+  },
+  "title": "Chasing the Northern Lights in Tromsø",
+  "media": [
+    {
+      "type": "video",
+      "quality": "1080p",
+      "format": "mp4",
+      "size": 42105920,
+      "downloadUrl": "https://gofetchy.app/dl/7f3a9e1b-signed"
+    }
+  ],
+  "metrics": {
+    "executionTimeMs": 184
+  }
+}
+```
+
+---
+
+### The Evolution: From Naive Script to "Neon" Architecture
+
+Fetchy has been rebuilt three times, each version marking a major technical milestone:
+
+- **v1 (The Naive Monolith):** Node.js + Express with server-rendered EJS templates. Downloaded videos by buffering the entire file into server RAM before serving. Crashed whenever someone tried downloading a video longer than 3 minutes.
+- **v2 (The Framework Shift):** Rebuilt with Next.js and Tailwind CSS. Introduced client-side rendering and basic error handling, but still suffered from tight platform coupling and IP blocks.
+- **v3 (Neon - Current):** Complete architectural reboot. Next.js 15, Turbopack, Cloudflare Worker edge streaming, Upstash Redis rate limiting, and the build-time plugin compiler.
+
+---
+
+### The Retrospective
+
+- **The best feature is what you omit:** In an ecosystem plagued by ad popups and dark patterns, having the discipline to ship a clean, respectful product turns users into passionate advocates.
+- **Push bytes to the edge early:** Trying to stream heavy binary files through serverless lambdas is an anti-pattern. Putting Cloudflare Workers in front of upstream streams saved hundreds of dollars in compute and bandwidth.
+- **Design for volatility:** Scraping APIs will break—it is an inevitability, not an exception. Isolating platforms into autonomous `meta.ts` modules means a breaking change on TikTok never takes down Instagram or YouTube.
+
+Visit the live app at [gofetchy.app](https://gofetchy.app) or explore the full source code on [GitHub](https://github.com/PRASSamin/Fetchy).

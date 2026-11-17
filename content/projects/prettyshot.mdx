@@ -1,76 +1,240 @@
 ---
-category: Design Tools
-createdAt: '2026-03-26T11:52:07.424Z'
-description: >-
-  Drop any screenshot, pick a style, and export a beautiful image in seconds.
-  Free, open source, and runs entirely in your browser.
+category: "Design Tools"
+createdAt: "2026-03-26T11:52:07.424Z"
+description: "A browser-native design studio that turns raw screen captures into
+  studio-lit product shots. Real device frames, 3D tilt, procedural backdrops,
+  keyframe animation, 8K stills and 4K video - all rendered locally."
 links:
-  github: 'https://github.com/prassamin/prettyshot'
-  live: 'https://prettyshot.site'
-thumbnail: >-
-  https://res.cloudinary.com/dee5yihmx/image/upload/v1774526979/pras/portfolio/projects/PrettyShot.png
-banner: >-
-  https://res.cloudinary.com/dee5yihmx/image/upload/v1774530520/pras/portfolio/images/prettyshot_banner.png
-title: PrettyShot
+  github: "https://github.com/prassamin/prettyshot"
+  live: "https://prettyshot.site"
+thumbnail: "https://res.cloudinary.com/dee5yihmx/image/upload/v1794898733/pras/\
+  portfolio/images/prettyshot_export_4k_2026-11-17_06-54-05_1794898731437.webp"
+banner: ""
+title: "PrettyShot"
 tools:
-  - Motion
-  - NextJs
-  - Tailwind
-  - Typescript
-  - Vercel
-updatedAt: '2026-11-04T17:44:29.325Z'
+  - "Nextjs"
+  - "Typescript"
+  - "Tailwindcss"
+  - "Motion"
+  - "Supabase"
+updatedAt: "2026-11-17T13:52:55.671Z"
 ---
 
 
-I kept seeing the same thing on Twitter and product pages. People would take a plain screenshot and then spend time in Figma adding a gradient background, a nice shadow, maybe some rounded corners, just to make it look presentable. Some tools exist for this but they're either paid, require an account, or slap a watermark on your export.
+You ship hundreds of screenshots a year, and every single one is wearing a hospital gown.
 
-I wanted something I could just open in a browser, drop a screenshot, tweak a few settings, and export. No signup, no watermark, no nonsense. So I built PrettyShot.
+Think about it. You spend weeks engineering a slick feature. You polish the UI until it hurts. Then, when it's time to actually *show* it to the world, you hit `Cmd + Shift + 4`, drag a rectangle, and paste a flat, pixelated crop into Twitter, ProductHunt, or a launch thread. Harsh edges. Zero depth. Zero context.
 
-![PrettyShot](https://res.cloudinary.com/dee5yihmx/image/upload/v1774530520/pras/portfolio/images/prettyshot_banner.png)
+It completely undersells your work. And you know it.
+
+Here's the part nobody says out loud: **your product isn't average - your screenshot is.** The gap between what you built and what people see is almost never the code. It's the presentation.
+
+The "solutions" you're currently juggling are both bad:
+
+1. **The Figma time sink.** Fire up Figma, spend 25 minutes drawing rounded frames, hunting for device mockups, fiddling with gaussian blurs and gradient stops, and exporting at the wrong scale. You're a builder, not a PowerPoint artist.
+2. **The scammy online tools.** A generic web tool that slaps a watermark over your export, forces an account on you, or demands a $19/month subscription just to download 1080p. No thanks.
+
+**I built PrettyShot because every screenshot deserves to be remembered.**
+
+It's a browser-first design studio engineered to take raw screen captures and elevate them into studio-grade product showcases in seconds - with zero signups, zero server uploads, and zero watermarks. The editor runs entirely in your tab. Your pixels never leave your machine.
+
+<img src="https://res.cloudinary.com/dee5yihmx/image/upload/v1794898733/pras/portfolio/images/prettyshot_export_4k_2026-11-17_06-54-05_1794898731437.webp" alt="The PrettyShot editor - canvas, property panel, and live preview in one browser tab" width={1862} height={924} className="block mx-auto object-cover rounded-md" />
 
 ---
 
-### How it works
+### From Raw Capture to Product Shot
 
-The whole thing runs in your browser. You drop an image, customize it with the sidebar controls, and export when you're happy. Nothing gets uploaded to a server.
+The fastest way to understand PrettyShot is to watch the transformation. On the left is the *input* - a plain screenshot, exactly as it left your clipboard. On the right is the *output* - the same screen, framed, lit, and composed into a 4K product shot.
 
-<Tabs items={["Drop", "Style", "Export"]}>
-  <Tab value="Drop">
-    Drag and drop any screenshot into the editor, or click to upload. The image loads instantly into the preview canvas where you can start styling it right away.
+<div class="not-prose mt-6" style={{display: "grid",gap: "12px",gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 270px), 1fr))"}}>
+  <ImageZoom src="https://res.cloudinary.com/dee5yihmx/image/upload/v1794908519/pras/portfolio/images/image_1794908518989.webp" alt="The PrettyShot editor - canvas, property panel, and live preview in one browser tab" width={1862} height={924} className="block mx-auto object-cover rounded-md border-2" />
+
+<ImageZoom src="https://res.cloudinary.com/dee5yihmx/image/upload/v1794908471/pras/portfolio/images/prettyshot_export_4k_2026-11-10_04-51-37_1794908470162.webp" alt="The PrettyShot editor - canvas, property panel, and live preview in one browser tab" width={1862} height={924} className="block mx-auto object-cover rounded-md" />
+</div>
+
+> The PrettyShot workflow - a raw capture in, a staged 4K product shot out.
+
+Nothing was uploaded. Nothing was retouched by hand. A plain capture became a prop - in the time it takes to brew a coffee.
+
+---
+
+### What Makes PrettyShot a Studio, Not Just a Wrapper
+
+PrettyShot isn't a cookie-cutter screenshot wrapper. It's a full client-side composition engine with spatial layout tools, physical lighting models, and a real animation timeline. This is the deepest tool of its kind that runs 100% in the browser.
+
+<Cards>
+  <Card title="Authentic Hardware Geometry">
+
+iPhone, iPad, MacBook, and desktop shells with true screen aspect ratios, hardware colorways, dynamic shadows, and portrait/landscape orientation toggles.
+
+  </Card>
+
+  <Card title="Safari & Chrome Windows">
+
+Real browser chrome in dark and light, with an editable address bar. Your app inside a believable browser, not a floating rectangle.
+
+  </Card>
+
+  <Card title="Procedural Backdrops">
+
+Solid, linear, mesh, and aurora gradients - plus auto-palettes sampled directly from the dominant colors of your screenshot.
+
+  </Card>
+
+  <Card title="Physical Film Grain & Lighting">
+
+Tactile noise overlays, six light-tint presets, and a directional light pad. Frames feel like objects, not files.
+
+  </Card>
+
+  <Card title="3D Tilt & Depth">
+
+Rotate any shot on X, Y, and Z axes, control perspective, inset, and corner radius. A flat capture becomes a tangible prop.
+
+  </Card>
+
+  <Card title="Text, Annotations & Shapes">
+
+Labels, callouts, arrows, rectangles, ellipses, freehand ink, and image assets - every element stays editable after you draw it.
+
+  </Card>
+
+  <Card title="Multi-Shot Composition">
+
+Pixel-crop any capture, then compose two or three screenshots on one canvas with auto-balancing layout and elevation layering.
+
+  </Card>
+
+  <Card title="Keyframe Animation Timeline">
+
+Clip-based keyframes with easing curves. Animate zoom, tilt, shadows, and backgrounds - then export MP4 or WebM up to 4K.
+
+  </Card>
+</Cards>
+
+---
+
+### How PrettyShot Compares
+
+| Feature | PrettyShot | Manual Figma Workflow | Generic Screenshot Tools |
+| :--- | :--- | :--- | :--- |
+| **Device Frames** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **iPhone, MacBook, iPad + Safari & Chrome** | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Requires hunting for 3rd-party UI kits | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> Basic rounded rect or paid add-on |
+| **3D Tilt & Lighting** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Interactive 3D pitch/yaw + light-direction pad** | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> Complex manual isometric transforms | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Flat 2D only |
+| **Motion & Video** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Built-in keyframe timeline + MP4/WebM export** | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Requires After Effects or plugins | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Static images only |
+| **Export Fidelity** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Up to 8K stills + 1-click clipboard** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> High (manual export settings) | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> 1080p paywalled or watermarked |
+| **Privacy & Cost** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Local-first, zero uploads, free core** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> Free / Paid | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> Monthly subscription + server tracking |
+
+---
+
+<ImageZoom src="https://res.cloudinary.com/dee5yihmx/image/upload/v1794911200/pras/portfolio/images/image_1794911198591.webp" alt="image_1794911198591" className="block w-full mx-auto rounded-xl" />
+
+The browser frame catalog - Safari and Chrome, dark or light, with an editable address bar.
+
+---
+
+### The Studio Workflow
+
+<Tabs items={["Frame","Light the Stage","Spatial 3D & Depth","Animate & Export"]}>
+  <Tab value="Frame">
+  Drop any raw image or paste directly from your clipboard:
+
+  - **Device Frames:** Pixel-accurate Apple hardware - MacBook Pro, iPhone, iPad - with real bezels, camera cutouts, and color variants.
+  - **Browser Windows:** Real Safari and Chrome frames with light/dark chrome and an editable address bar that reads like a genuine browsing session.
+  - **Multi-Slot Canvases:** Compose complementary desktop and mobile shots in a single frame to showcase cross-platform responsiveness.
+  - **Aspect Ratio Presets:** 1-click framing for X/Twitter, Instagram, YouTube, LinkedIn, TikTok, Pinterest, App Store, Play Store, Open Graph, and custom dimensions.
+
+  <ImageZoom src="https://res.cloudinary.com/dee5yihmx/image/upload/v1794911801/pras/portfolio/images/image_1794911800614.webp" alt="image" className="block w-full mx-auto rounded-md" />
   </Tab>
-  <Tab value="Style">
-    The sidebar gives you full control over how your screenshot looks:
 
-    - **Background** from gradients, mesh gradients, solid colors, or upload your own
-    - **Shadow** with presets (Soft, Medium, Hard, Sharp, Elevated, Glow, etc.) and a full color picker
-    - **Noise texture** to add grain for that premium feel
-    - **3D perspective** to tilt, rotate, and angle the screenshot
-    - **Border radius** and **padding** sliders
-    - **Aspect ratio** presets for Auto, 16:9, 4:3, 1:1, and 9:16
+  <Tab value="Light the Stage">
+  Transform flat backgrounds into rich, textured environments:
+
+  - **Algorithmic Mesh & Aurora Gradients:** Complex multi-stop SVG radial gradients that blend organic color blobs and diffuse light beams.
+  - **Smart Auto-Palette:** PrettyShot analyzes your screenshot's dominant color frequencies and generates complementary palettes for you.
+  - **Film Grain & Texture:** Add tactile physical noise overlays with adjustable grain scale and opacity to kill digital gradient banding.
+  - **Shadow Physics:** Drop, soft, hard, glow, float, and layered projection styles - each with tint presets and an interactive directional lighting pad.
+  - **Light Tints:** Pure White, Sky Glow, Mint Fresh, Warm Gold, Sunset Rose, or Lavender ambient light maps.
+  - **Photo Filters:** 12 film-grade presets - B&W, Sepia, Vintage, Warm, Cool, Fade, Vivid, Noir, Dream, Mono, Invert, and Original.
   </Tab>
-  <Tab value="Export">
-    Export as PNG or JPG at 1x, 2x, or 3x scale. You can also copy the result straight to your clipboard with one click, ready to paste into Slack, Notion, or Twitter.
+
+  <Tab value="Spatial 3D & Depth">
+  Break free from the flat 2D plane:
+
+  - **Perspective Tilt:** Adjust X, Y, and Z axes to simulate isometric hero shots that make your UI look physical and tangible.
+  - **Layered Elevation:** Control padding, inner corner radius, and border lighting to make interfaces float off the canvas.
+  - **Non-Destructive Annotations:** Highlight key interactions with arrows, callout pills, numbered step badges, and freehand ink - crisp at any zoom.
+  </Tab>
+
+  <Tab value="Animate & Export">
+  Ship static assets or full cinematic motion:
+
+  - **Timeline Keyframing:** Clip-based keyframes with a built-in easing-curve editor. Pan across a dashboard, zoom into a key metric, or tilt in 3D.
+  - **Browser-Side Video Encoding:** Renders frame-by-frame in your browser and exports high-bitrate **MP4** or **WebM** clips ready for social feeds - up to **4K**.
+  - **Stills up to 8K:** Export lossless PNG, WebP, or JPEG at up to 4x (8K) resolution - or hit **Copy to Clipboard** for instant pasting into Slack or Twitter.
   </Tab>
 </Tabs>
 
 ---
 
-### Why I built it this way
+### Under the Hood: The Client-Side Rendering Pipeline
 
-Everything happens client-side using `html-to-image` for the capture and Zustand for state management. There's no backend, no file uploads, no tracking. The editor state lives in a single Zustand store so every control updates the preview in real time.
+Building an editor that handles multi-layer composition, 3D CSS transforms, and 8K rasterization without server lag required careful architectural discipline.
 
-The gradient and shadow presets are all defined in a single presets file, making it easy to add new ones. The export function supports both PNG and JPG with configurable pixel ratios, so the output is always sharp no matter where you use it.
-
-<Callout type="info" title="Privacy by default">
-  Your images never leave your browser. PrettyShot doesn't upload anything to any server. The entire rendering and export pipeline runs locally.
+<Callout type="info">
+  **The Zero-Upload Guarantee:** All image decoding, canvas manipulation, color extraction, and video rendering happen entirely inside the browser's execution thread and WebGL context. Your proprietary designs, unreleased feature screenshots, and sensitive customer data never touch a remote server.
 </Callout>
+
+```typescript
+[User Drops Screenshot]
+          │
+          ├─ Decode in-memory via OffscreenCanvas / ImageBitmap
+          ├─ Color Quantization: Extract dominant palette via Canvas 2D
+          │
+[Interactive Editor Canvas]
+          │
+          ├─ Reactive state management via Zustand (single store, zero re-render lag)
+          ├─ CSS Custom Property tokens driving real-time layout & 3D matrices
+          ├─ Procedural SVG backdrop generator (Mesh & Aurora gradient filters)
+          │
+[Export Stage]
+          │
+          ├── Static Image: High-DPI DOM clone rasterization → 8K PNG/WebP
+          └── Video Clip:   RequestAnimationFrame tick → Frame buffer capture → WebCodecs / Canvas MP4 muxer
+```
+
+#### 1. Real-Time CSS Token Architecture
+
+Instead of re-rendering heavy canvas bitmaps on every slider drag, the preview viewport relies on lightweight **CSS custom properties**. Moving a shadow slider or rotating the 3D tilt simply mutates CSS variables on the root container, keeping interactions at a silky **60 FPS** on both high-end desktops and mobile browsers.
+
+#### 2. Frame-by-Frame Browser Video Rendering
+
+Traditional video export in web apps relies on heavy server-side ffmpeg clusters. PrettyShot steps through its animation timeline keyframes sequentially, captures each rendered DOM state to an offscreen frame buffer, and encodes the stream directly using browser Web APIs. You get crisp 60fps MP4/WebM videos without queued cloud render times - and without your footage ever leaving the tab.
 
 ---
 
-### The details that matter
+### Free vs Pro: The Honest Pricing
 
-- **12 gradient presets** like Sunset, Ocean, Forest, Midnight, plus 6 mesh gradient backgrounds for more organic looks
-- **7 shadow presets** from subtle to dramatic, each with a color picker so you can match any brand
-- **3D perspective controls** with separate X, Y, and Z rotation sliders for dynamic hero shots
-- *Noise texture overlay** with an opacity slider to add film grain to backgrounds
-- **One-click clipboard copy** so you can paste directly into whatever you're working on
+Most "free" tools are free until they own your exports. PrettyShot flips the model: a genuinely capable free tier, and a **one-time Pro license** - no subscription, no watermarks after the fact, forever.
+
+| Capability | Free | Pro (one-time) |
+| :--- | :--- | :--- |
+| **Export** | PNG up to 1080p HD | PNG, JPEG & WebP up to **8K** + **4K video** |
+| **Frames** | Safari & Chrome browser frames | + Premium iPhone, MacBook & iPad frames |
+| **Backgrounds** | Solid, mesh & aurora + auto-palettes | + Custom colors, image uploads & full library |
+| **3D Tilt** | - | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> Full 3D tilt & perspective |
+| **Aspect Ratios** | Standard presets | + Social presets & fully custom ratios |
+| **Animation** | - | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> Timeline + MP4/WebM export |
+| **Cloud Sync** | Local-first autosave (IndexedDB) | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> Designs follow you across devices |
+| **Watermark** | On exports | Removed forever |
+
+---
+
+### The Verdict
+
+Your code deserves more than a boring, pixelated crop. PrettyShot bridges the gap between raw development screenshots and marketing-ready product assets - in seconds, in your browser, with zero compromise on privacy.
+
+---
+
+<Banner variant="rainbow">
+  **Try PrettyShot right now - no signup required.** Beautify your first screenshot at <Link href="https://prettyshot.site" target="_blank">**prettyshot.site**</Link> or star the project on <Link href="https://github.com/prassamin/prettyshot" target="_blank">**GitHub**</Link>.
+</Banner>

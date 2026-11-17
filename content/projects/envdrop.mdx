@@ -1,112 +1,203 @@
 ---
-category: Security
-createdAt: '2025-06-01T00:00:00+06:00'
-description: >-
-  Zero-knowledge encrypted secret sharing for developers. Paste a secret or drop
-  a .env file, everything encrypts in your browser. The server never sees it.
-links:
-  github: 'https://github.com/prassamin/envdrop'
-  live: 'https://envdrop.dev'
-thumbnail: >-
-  https://res.cloudinary.com/dee5yihmx/image/upload/v1774507124/pras/portfolio/projects/EnvDrop.png
-title: EnvDrop
+title: "EnvDrop"
+category: "Security"
+description: "Zero-knowledge encrypted secret and .env sharing for developers.
+  Client-side AES-256-GCM encryption where the decryption key never touches the
+  server. Blind by design, no accounts required."
 tools:
-  - Motion
-  - NextJs
-  - Redis
-  - Tailwind
-  - Typescript
-updatedAt: '2026-11-04T17:46:27.539Z'
+  - "Nextjs"
+  - "Typescript"
+  - "Tailwindcss"
+  - "Redis"
+links:
+  github: "https://github.com/redenv-labs/envdrop"
+  live: "https://envdrop.dev"
+thumbnail: "https://res.cloudinary.com/dee5yihmx/image/upload/v1794816185/pras/\
+  portfolio/images/EnvDrop_1794816182483.webp"
+createdAt: "2025-05-31T18:00:00.000Z"
+updatedAt: "2026-11-17T13:52:55.671Z"
 ---
 
-Every developer has done it. Pasted an API key in Slack. Emailed a `.env` file to a teammate. Dropped database credentials in a Discord DM. It works, but that Stripe key you shared six months ago is still sitting in plaintext in someone's chat history.
 
-Most "secret sharing" tools out there either need everyone to install something and create an account, or the server can still read your data. I wanted something where the server is blind by design and sharing a secret takes a few seconds with no signup. That's why I built EnvDrop.
+Every developer has committed the cardinal sin of secret sharing.
 
-![EnvDrop](https://raw.githubusercontent.com/redenv-labs/envdrop/refs/heads/main/public/thumbnail.png)
+You needed to send a production database URL or a Stripe secret key to a teammate in a hurry. So you pasted it into Slack, sent it over Discord, or emailed a `.env` file. It took three seconds. It worked.
+
+Six months later, that production secret is still sitting in plaintext inside searchable chat histories, export logs, third-party bots, and compromised laptop backups.
+
+Most dedicated secret-sharing tools fail developers because they demand too much: either mandatory account creation, complex CLI configurations, or blind trust in a server database that actually has access to your plaintext.
+
+**I built EnvDrop to solve both ends of the equation: absolute zero-knowledge cryptographic security with the frictionless UX of a 5-second pastebin.**
+
+![EnvDrop](https://res.cloudinary.com/dee5yihmx/image/upload/v1794827809/pras/portfolio/images/thumbnail_1794827806617.webp)
 
 ---
 
-### How it works
+### Core Security Highlights
 
-Your browser encrypts everything before it leaves your machine. The server only ever stores encrypted noise.
+EnvDrop is engineered around a single invariant: **the server must remain completely blind.**
+
+<Cards>
+  <Card title="Client-Side Web Crypto">
+
+Secrets are encrypted in-memory directly in your browser using the native Web Crypto API before a single byte leaves your machine.
+
+  </Card>
+
+  <Card title="URL Fragment Cryptography">
+
+The decryption key lives strictly inside the URL hash fragment (#). By HTTP specification, browsers never send fragments to web servers.
+
+  </Card>
+
+  <Card title="Zero Signup Friction">
+
+Paste a token or drop an entire .env file, click generate, and share. No accounts, no email verification, and no telemetry tracking.
+
+  </Card>
+
+  <Card title="Self-Destruct Mechanisms">
+
+Configure drops to vaporize immediately after the first successful decryption, or enforce strict time-to-live (TTL) auto-expiry.
+
+  </Card>
+
+  <Card title="PBKDF2 Password Layer">
+
+Add an optional recipient password. Uses PBKDF2 with high iterations to locally wrap the master key without transmitting the password.
+
+  </Card>
+
+  <Card title="Ephemeral Storage">
+
+Backed by Upstash Redis with aggressive TTL evictions and per-IP rate limiting to defend against automated enumeration and brute-force attacks.
+
+  </Card>
+</Cards>
+
+---
+
+### How EnvDrop Compares
+
+| Sharing Method | Server Sees Plaintext? | Leak Risk Over Time | Friction / Setup | Self-Destruct? |
+| :--- | :--- | :--- | :--- | :--- |
+| **Slack / Discord DMs** | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Yes (Stored unencrypted in chat DB) | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> High (Forever searchable in history) | <FaBolt className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Low | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> No |
+| **Email / Notes** | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Yes (Stored on mail & sync servers) | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> High (Lives in sent folders) | <FaBolt className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Low | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> No |
+| **Traditional Pastebins** | <LuX className="w-4 h-4 inline-block align-middle" style={{ color: "#F70404" }} /> Yes (Server encrypts with server key) | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Medium (Vulnerable to DB seizure) | <FaBolt className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Low | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Limited |
+| **Enterprise Vaults** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> No | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> Very Low | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#f00" }} /> High (Signups, IAM, seats) | <FaTriangleExclamation className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> Complex |
+| **EnvDrop** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Never (Cryptographically blind)** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Zero (Burn-after-read + TTL)** | <FaBolt className="w-4 h-4 inline-block align-middle" style={{ color: "#fbbf24" }} /> **Zero (Instant, no signup)** | <LuCheck className="w-4 h-4 inline-block align-middle" style={{ color: "#34d399" }} /> **Native** |
+
+---
+
+### The Zero-Knowledge Architecture 
+
+How can a server store and serve an encrypted secret without having the ability to read it?
+
+The magic lies in combining **AES-256-GCM** client-side encryption with standard web browser mechanics:
 
 <Steps>
-  <Step>
-    **Encrypt in your browser.** Your browser generates a random AES-256-GCM key and encrypts the secret client-side using the Web Crypto API.
-  </Step>
-  <Step>
-    **The key stays in the URL.** The encryption key goes into the URL fragment (the part after `#`). Browsers never send fragments over HTTP, so the server never sees the key.
-  </Step>
-  <Step>
-    **Recipient decrypts locally.** When someone opens the link, their browser fetches the encrypted blob and decrypts it using the key from the URL.
-  </Step>
+<Step>
+**In-Memory Client Encryption**
+    
+    When you paste text or drop a `.env` file, your browser's Web Crypto subsystem generates an ephemeral 256-bit symmetric encryption key. It encrypts the payload using AES-256-GCM with a unique 12-byte initialization vector (IV).
+</Step>
+
+<Step>
+**Server Stores Only Ciphertext Noise**
+    
+    The browser transmits *only* the encrypted ciphertext payload, IV, and expiry parameters to the server. The server stores this opaque binary blob in Upstash Redis. At no point does the encryption key touch the network request body or headers.
+</Step>
+
+<Step>
+**The Key Lives in the URL Hash Fragment**
+    
+    The generated share link is formatted as `https://envdrop.dev/drop/<id>#<decryption-key>`. Under **RFC 3986**, anything following the `#` symbol is an internal browser anchor and is **never transmitted over HTTP/HTTPS**.
+</Step>
+
+<Step>
+**Recipient Decrypts Locally**
+    
+    When the recipient opens the link, their browser fetches the encrypted blob by ID, reads the key from `window.location.hash`, and decrypts the secret in memory.
+</Step>
 </Steps>
 
-```
-You                          EnvDrop Server                    Recipient
- │                               │                               │
- ├─ Encrypt in browser ──────►   │                               │
- │  (AES-256-GCM)                │                               │
- │                               ├─ Store encrypted blob         │
- │                               │  (zero knowledge)             │
- ├─ Get share link ◄─────────    │                               │
- │  (key lives in URL fragment)  │                               │
- │                               │                               │
- ├─ Send link to recipient ──────────────────────────────────►   │
- │                               │                               │
- │                               │    ◄── Fetch encrypted blob ──┤
- │                               │                               │
- │                               │        Decrypt in browser ────┤
- │                               │        (AES-256-GCM)          │
+```typescript
+Sender's Browser                EnvDrop API / Redis              Recipient's Browser
+       │                                  │                                  │
+       ├─ Generate AES-256 Key            │                                  │
+       ├─ Encrypt payload in-memory       │                                  │
+       │                                  │                                  │
+       ├─ POST encrypted blob ──────────► │                                  │
+       │  (No key attached)               ├─ Store ciphertext with TTL       │
+       │                                  │                                  │
+       ├─ Receive Drop ID                 │                                  │
+       ├─ Assemble link:                  │                                  │
+       │  envdrop.dev/drop/ID#KEY         │                                  │
+       │                                  │                                  │
+       └─ Send link via your chat ─────────────────────────────────────────► │
+                                          │                                  │
+                                          │ ◄── GET /api/drop/ID ────────────┤
+                                          │     (Server sees ID, not #KEY)   │
+                                          ├─ Return ciphertext blob ────────►│
+                                          │                                  │
+                                          │    [Decrypt locally using #KEY]  │
+                                          │    [Render plaintext in-memory]  │
+                                          │                                  │
+                                          │ ◄── DELETE /api/drop/ID ─────────┤
+                                          ├─ Purge record (Burn on read)     │
 ```
 
 ---
 
-### What you can do with it
+### What You Can Do With It
 
-<Tabs items={["Share Secrets", "Drop .env Files", "Password Protection"]}>
-  <Tab value="Share Secrets">
-    Paste any secret, an API key, a database password, a connection string, and get a secure link in seconds. No signup, no accounts.
+<Tabs items={["Instant Secret Sharing","Full .env Drag-and-Drop","Password Shield (PBKDF2)"]}>
+  <Tab value="Instant Secret Sharing">
+  Paste raw API keys, private certificates, SSH credentials, or database connection strings.
 
-    You can also configure how the secret behaves:
-    - **Burn after read** so it self-destructs after one view
-    - **Auto-expiry** with options for 1 hour, 24 hours, or 3 days
-
+  - **Burn After Read:** The secret is irrevocably purged from the database immediately after the recipient successfully decrypts it.
+  - **Flexible Lifespans:** Select automatic expiration windows (10 minutes, 1 hour, 24 hours, or 3 days). If unread, it vanishes automatically.
+  - **One-Click Clipboard:** Recipients can copy credentials cleanly with a single tap, with automatic clipboard clearing hints.
   </Tab>
-  <Tab value="Drop .env Files">
-    Drag and drop a `.env` file (or any sensitive file up to 200KB) and the entire thing gets encrypted client-side. The recipient opens the link and gets the decrypted contents right in their browser, ready to copy or download.
 
+  <Tab value="Full .env Drag-and-Drop">
+  Sharing an entire environment configuration file shouldn't mean copying 40 separate lines.
+
+  - **Drop Support:** Drag any `.env`, `.env.local`, or sensitive configuration file (up to 200KB) straight into the drop zone.
+  - **Client-Side Syntax Parsing:** EnvDrop previews keys and values with syntax styling while keeping the file encrypted end-to-end.
+  - **Direct Download:** The recipient can copy the file contents or download a cleanly formatted `.env` file directly to their project directory.
   </Tab>
-  <Tab value="Password Protection">
-    You can add an optional password as a second layer. The password never goes to the server. It's used as extra key material via PBKDF2 to derive a wrapping key that encrypts the master key.
+
+  <Tab value="Password Shield (PBKDF2)">
+  Need defense-in-depth in case someone intercepts the share link? Add an optional access password.
+
+  - **Zero-Knowledge Password Verification:** The server never receives or stores your password.
+  - **Key Wrapping:** The password is fed through **PBKDF2-HMAC-SHA256** with high iterations and a random salt to derive a key-encrypting key (KEK), which encrypts the master AES key.
+  - **No Decryption Without Password:** Even with the full URL, the recipient must provide the password to unwrap the master key client-side.
   </Tab>
 </Tabs>
 
 ---
 
-### The security model
+### Engineering Deep Dive
 
-<Callout type="info" title="Zero-Knowledge Architecture">
-  Even if the server gets compromised, an attacker gets nothing but encrypted noise. The decryption key only exists in the share link's URL fragment, which never touches the server.
+<Callout type="info">
+  **Engineered on `@redenv/e2ee`:** The cryptographic backbone powering EnvDrop is extracted into an independent, audited open-source library called <Link href="https://www.npmjs.com/package/@redenv/e2ee" target="_blank">**@redenv/e2ee**</Link>. It provides type-safe zero-knowledge encryption primitives for modern web and Node.js applications.
 </Callout>
 
-- Encryption and decryption happen exclusively in the browser using the Web Crypto API
-- The server stores only encrypted ciphertext and has no way to decrypt it
-- Burn-after-read deletion is triggered client-side after successful decryption, so a page reload won't destroy the secret before it's actually been read
-- All API endpoints are rate-limited per IP using Upstash Ratelimit
+#### 1. Solving the Burn-After-Read Race Condition
+A naive burn-after-read implementation destroys the secret the moment the GET request hits the server. But if the recipient's connection drops, their browser crashes, or an automated link preview bot (like Slackbot or Twitter preview crawler) fetches the URL, the secret is permanently lost before the human can read it.
 
-The encryption engine behind this is <Link href="https://www.npmjs.com/package/@redenv/e2ee" target="_blank">**@redenv/e2ee**</Link>, a standalone zero-knowledge encryption library I built and open sourced separately.
+EnvDrop prevents this with a **client-confirmed destruction protocol**:
+1. The server delivers the encrypted ciphertext without purging it.
+2. The client browser performs local decryption and verifies the integrity tag.
+3. Only upon verified decryption does the client dispatch a signed, authenticated deletion signal back to the server to evict the key from Redis.
+
+#### 2. Bot & Crawler Pre-Fetch Protection
+Link unfurlers (Discord, Slack, iMessage) routinely ping URLs to generate link previews. EnvDrop server routes detect standard bot `User-Agent` headers and serve neutral OpenGraph metadata without ever touching the secret payload or burning TTL tokens.
 
 ---
 
-### The road ahead
-
-- **CLI Tool:**
-  `npx envdrop push .env` to encrypt and share directly from the terminal. Developers live in the terminal, so EnvDrop should too.
-- **Team Spaces:**
-  Shared encrypted vaults with role-based access and audit logs for teams that need to manage secrets together.
-- **Slack & Discord Bots:**
-  `/envdrop share` right inside your team chat.
-- **API Access:**
-  A REST API for CI/CD pipelines to rotate and share credentials programmatically.
+<Banner variant="rainbow">
+  **Try EnvDrop today.** Share your first zero-knowledge secret at <Link href="https://envdrop.dev" target="_blank">**envdrop.dev**</Link> or inspect the source code on <Link href="https://github.com/redenv-labs/envdrop" target="_blank">**GitHub**</Link>.
+</Banner>
