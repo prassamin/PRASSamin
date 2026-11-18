@@ -206,8 +206,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
               </a>
             </div>
 
-            {/* CHILD 7: Recommendations Section */}
-            <div className="mt-20">
+            {recommendations.length !== 0 && <div className="mt-20">
               <h3 className="h3 text-neutral-100 font-bold leading-snug">
                 <span>Other posts that you </span>
                 <span className="inline-flex items-center gap-2 whitespace-nowrap align-baseline">
@@ -241,7 +240,7 @@ const BlogPage = async ({ params }: { params: Props }) => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div>}
 
             {/* CHILD 8: Back to Blog Link */}
             <div className="mt-12 flex flex-col items-start gap-4">

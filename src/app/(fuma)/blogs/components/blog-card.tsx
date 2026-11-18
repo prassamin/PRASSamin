@@ -57,7 +57,6 @@ export function BlogCard({
       href={href}
       className="group block rounded-md px-2 -mx-2 transition duration-200"
     >
-      {" "}
       <div className="flex flex-col gap-5 lg:flex-row-reverse lg:gap-8 lg:items-center">
         {/* Thumbnail */}
         <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full lg:w-44 aspect-5/3 shadow-md transition-colors">

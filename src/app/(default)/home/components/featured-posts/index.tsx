@@ -7,6 +7,7 @@ import { motion, type Variants } from "framer-motion";
 import { Scribble } from "./scribble";
 import { QueryBlogs } from "@/lib/get-blogs";
 import { formatDate } from "@/lib/utils";
+import { BlogCard } from "@/app/(fuma)/blogs/components/blog-card";
 
 const sectionVariants: Variants = {
   hidden: { opacity: 0 },
@@ -117,77 +118,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
               variants={postItemVariants}
               className="w-full py-6 sm:py-7 group"
             >
-              <Link
-                href={`/blogs/${blog.slug}`}
-                className="block rounded-md px-2 -mx-2 transition duration-200"
-              >
-                <div className="flex flex-col gap-5 md:flex-row-reverse md:gap-8 md:items-center">
-                  {/* Thumbnail Image */}
-                  <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full md:w-56 aspect-5/3 shadow-md transition-colors">
-                    <img
-                      src={blog.thumbnail}
-                      alt={blog.title}
-                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out"
-                    />
-                  </figure>
-
-                  {/* Post Content */}
-                  <div className="w-full flex-1">
-                    <div className="flex items-center gap-3">
-                      <p className="b2 text-neutral-300">
-                        {formatDate(blog.createdAt, blog.updatedAt)}
-                      </p>
-                    </div>
-
-                    <h3 className="h5 mt-3 relative inline-block">
-                      <span
-                        className="bg-linear-to-r from-accent/30 via-accent/90 to-accent/30 box-decoration-clone group-hover:opacity-30 opacity-0 transition duration-200 text-transparent"
-                        style={{
-                          backgroundImage:
-                            "linear-gradient(to right, rgba(76, 255, 180, 0.3), rgba(76, 255, 180, 0.9), rgba(76, 255, 180, 0.3))",
-                        }}
-                        aria-hidden="true"
-                      >
-                        {blog.title}
-                      </span>
-                      <span className="absolute left-0 top-0 text-white font-rethink">
-                        {blog.title}
-                      </span>
-                    </h3>
-
-                    <p className="b2 text-neutral-300 mt-1 leading-relaxed max-w-2xl">
-                      {blog.description}
-                    </p>
-
-                    {/* Metadata Footer */}
-                    <div className="flex justify-between mt-5 flex-col gap-4 sm:flex-row sm:items-center">
-                      <div className="flex items-center gap-5">
-                        <div className="flex items-center gap-2">
-                          <LuClock className="size-3.5 text-accent shrink-0" />
-                          <p className="c1 text-neutral-400">
-                            {blog.readingTime}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <LuEye className="size-3.5 text-accent shrink-0" />
-                          <p className="c1 text-neutral-400">{blog.views}</p>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-x-2 gap-y-1">
-                        {blog.tags?.map((tag) => (
-                          <span
-                            key={tag}
-                            className="inline-block rounded-md px-2 py-0.5 text-xs font-mono bg-neutral-900/90 text-neutral-400 border border-neutral-800/80"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+              <BlogCard post={blog} />
             </motion.li>
           ))}
         </ul>
