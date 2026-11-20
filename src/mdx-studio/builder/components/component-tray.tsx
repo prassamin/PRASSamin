@@ -1,37 +1,13 @@
 "use client";
 
 import React, { useState, useMemo, useRef } from "react";
-import {
-  LuHeading,
-  LuAlignLeft,
-  LuMinus,
-  LuLightbulb,
-  LuCreditCard,
-  LuLayers,
-  LuCode,
-  LuImage as LuImageIcon,
-  LuTag,
-  LuMegaphone,
-  LuPlus,
-  LuCircleHelp,
-  LuList,
-  LuListOrdered,
-  LuTable as LuTableIcon,
-  LuTableProperties,
-  LuFolderTree,
-  LuCircleUser,
-  LuUsers,
-  LuQuote,
-  LuCornerDownLeft,
-  LuSearch,
-  LuX,
-  LuTerminal,
-} from "react-icons/lu";
+import { LuPlus, LuSearch, LuX } from "react-icons/lu";
 import {
   COMPONENT_TRAY_ITEMS,
   ComponentTrayItem,
   MdxBlockType,
 } from "../types";
+import { TRAY_ICONS as ICONS } from "../blocks/registry";
 import { cn } from "@heroui/react";
 
 interface ComponentTrayProps {
@@ -39,32 +15,7 @@ interface ComponentTrayProps {
   className?: string;
 }
 
-const ICONS: Record<MdxBlockType, React.ReactNode> = {
-  heading: <LuHeading className="w-4 h-4 text-sky-400" />,
-  paragraph: <LuAlignLeft className="w-4 h-4 text-neutral-300" />,
-  list: <LuList className="w-4 h-4 text-emerald-400" />,
-  divider: <LuMinus className="w-4 h-4 text-neutral-400" />,
-  callout: <LuLightbulb className="w-4 h-4 text-accent" />,
-  card: <LuCreditCard className="w-4 h-4 text-emerald-400" />,
-  cards: <LuLayers className="w-4 h-4 text-emerald-400" />,
-  accordion: <LuCircleHelp className="w-4 h-4 text-purple-400" />,
-  steps: <LuListOrdered className="w-4 h-4 text-orange-400" />,
-  tabs: <LuLayers className="w-4 h-4 text-amber-400" />,
-  chipGroup: <LuTag className="w-4 h-4 text-rose-400" />,
-  banner: <LuMegaphone className="w-4 h-4 text-pink-400" />,
-  code: <LuCode className="w-4 h-4 text-amber-400" />,
-  image: <LuImageIcon className="w-4 h-4 text-blue-400" />,
-  table: <LuTableIcon className="w-4 h-4 text-teal-400" />,
-  typeTable: <LuTableProperties className="w-4 h-4 text-emerald-400" />,
-  files: <LuFolderTree className="w-4 h-4 text-amber-400" />,
-  avatar: <LuUsers className="w-4 h-4 text-violet-400" />,
-  profile: <LuCircleUser className="w-4 h-4 text-cyan-400" />,
-  blockquote: <LuQuote className="w-4 h-4 text-emerald-400" />,
-  break: <LuCornerDownLeft className="w-4 h-4 text-neutral-400" />,
-  codeBlockTabs: <LuTerminal className="w-4 h-4 text-cyan-400" />,
-};
-
-export const ComponentTray: React.FC<ComponentTrayProps> = ({
+export const ComponentTray: React.FC<ComponentTrayProps> = React.memo(({
   onAddBlock,
   className,
 }) => {
@@ -72,6 +23,7 @@ export const ComponentTray: React.FC<ComponentTrayProps> = ({
   const [search, setSearch] = useState("");
 
   const categories: ComponentTrayItem["category"][] = [
+    "Templates",
     "Structure",
     "Interactive",
     "Code & Media",
@@ -174,7 +126,8 @@ export const ComponentTray: React.FC<ComponentTrayProps> = ({
       </div>
     </div>
   );
-};
+});
+ComponentTray.displayName = "ComponentTray";
 
 interface SquareBlockCardProps {
   item: ComponentTrayItem;

@@ -8,11 +8,12 @@ import {
   LuArrowRight,
 } from "react-icons/lu";
 import { Tabs } from "@heroui/react";
+import { useShallow } from "zustand/react/shallow";
 import { useMdxStudio } from "../mdx-studio-context";
+import { useMdxStudioStore } from "../store/use-mdx-studio-store";
 import { AnimatePresence, motion } from "framer-motion";
 
-export const StudioHeader: React.FC = () => {
-  const studio = useMdxStudio();
+export const StudioHeader: React.FC = React.memo(() => {
   const {
     isSaving,
     save,
@@ -21,7 +22,17 @@ export const StudioHeader: React.FC = () => {
     goToTab,
     hasInformationTab,
     saveButton,
-  } = studio;
+  } = useMdxStudio(
+    useShallow((s) => ({
+      isSaving: s.isSaving,
+      save: s.save,
+      closeStudio: s.closeStudio,
+      activeTab: s.activeTab,
+      goToTab: s.goToTab,
+      hasInformationTab: s.hasInformationTab,
+      saveButton: s.saveButton,
+    })),
+  );
 
   const isContinue = hasInformationTab && activeTab === "details";
 
@@ -70,7 +81,7 @@ export const StudioHeader: React.FC = () => {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {saveButton ? (
           typeof saveButton === "function" ? (
-            saveButton(studio)
+            saveButton(useMdxStudioStore.getState())
           ) : (
             saveButton
           )
@@ -121,6 +132,7 @@ export const StudioHeader: React.FC = () => {
       </div>
     </header>
   );
-};
+});
+StudioHeader.displayName = "StudioHeader";
 
 export default StudioHeader;

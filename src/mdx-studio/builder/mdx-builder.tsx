@@ -6,28 +6,26 @@ import React, {
   useRef,
   useMemo,
   useCallback,
+  useDeferredValue,
 } from "react";
 import dynamic from "next/dynamic";
 import { MdxBlockType, MdxBlock } from "./types";
-import { createBlock, blocksToMdx, mdxToBlocks } from "./compiler";
+import {
+  createBlock,
+  blocksToMdx,
+  mdxToBlocks,
+  getUniqueTemplateName,
+} from "./compiler";
+import { isInlineOnlyBlock } from "./blocks/registry";
 import { ComponentTray } from "./components/component-tray";
 import { CanvasArea } from "./components/canvas-area";
+import { BuilderLivePreview } from "./components/builder-live-preview";
+import { BuilderToolbar } from "./components/builder-toolbar";
 import { useBlockHistory } from "./hooks/use-block-history";
+import { useSmoothScrollSync } from "./hooks/use-smooth-scroll-sync";
+import { usePanelResizer } from "./hooks/use-panel-resizer";
 import MDXContent from "@/components/mdx/mdx-content";
-import { SegmentedControl } from "@/components/ui/segmented-control";
-import {
-  LuLayoutTemplate,
-  LuCode,
-  LuCopy,
-  LuCheck,
-  LuChevronLeft,
-  LuChevronRight,
-  LuUndo2,
-  LuRedo2,
-  LuEye,
-  LuMenu,
-  LuX,
-} from "react-icons/lu";
+import { LuChevronLeft, LuChevronRight, LuX } from "react-icons/lu";
 import { toast } from "@heroui/react";
 import { cn } from "@heroui/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -100,30 +98,29 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
   onRegisterInsertBlock,
 }) => {
   const { blocks, setBlocks, resetBlocks, undo, redo, canUndo, canRedo } =
-    useBlockHistory(mdxToBlocks(value));
+    useBlockHistory(() => mdxToBlocks(value));
   const lastSyncedValueRef = useRef<string>(value);
   const [mode, setMode] = useState<BuilderMode>("builder");
   const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [isFloatingTrayOpen, setIsFloatingTrayOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [trayWidth, setTrayWidth] = useState<number>(270);
-  const [isTrayExpanded, setIsTrayExpanded] = useState(true);
-  const [previewWidth, setPreviewWidth] = useState<number>(460);
-  const [isPreviewExpanded, setIsPreviewExpanded] = useState(true);
-  const [dragSide, setDragSide] = useState<"left" | "right" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const previewScrollRef = useRef<HTMLDivElement>(null);
   const canvasScrollRef = useRef<HTMLDivElement>(null);
   const monacoEditorRef = useRef<any>(null);
-  const activeScrollInitiatorRef = useRef<
-    "canvas" | "preview" | "monaco" | null
-  >(null);
-  const isPointerOverPreviewRef = useRef(false);
-  const scrollEndTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null,
-  );
-  const scrollRafRef = useRef<number | null>(null);
   const [activeBlockId, setActiveBlockId] = useState<string | null>(null);
+
+  const {
+    trayWidth,
+    isTrayExpanded,
+    setIsTrayExpanded,
+    previewWidth,
+    isPreviewExpanded,
+    setIsPreviewExpanded,
+    dragSide,
+    handleMouseDownLeft,
+    handleMouseDownRight,
+  } = usePanelResizer(containerRef);
 
   // Detect small screens (< 1024px / lg) and automatically reset preview mode if resizing to large screens
   useEffect(() => {
@@ -139,42 +136,13 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     return () => window.removeEventListener("resize", checkScreen);
   }, [mode]);
 
-  const claimScrollInitiator = (
-    source: "canvas" | "preview" | "monaco",
-  ): boolean => {
-    if (
-      activeScrollInitiatorRef.current !== null &&
-      activeScrollInitiatorRef.current !== source
-    ) {
-      return false;
-    }
+  // Defer block serialization slightly so active input keystrokes render with 0ms frame latency
+  const deferredBlocks = useDeferredValue(blocks);
 
-    activeScrollInitiatorRef.current = source;
-    if (scrollEndTimeoutRef.current) {
-      clearTimeout(scrollEndTimeoutRef.current);
-    }
-    scrollEndTimeoutRef.current = setTimeout(() => {
-      activeScrollInitiatorRef.current = null;
-    }, 120);
-
-    return true;
-  };
-
-  useEffect(() => {
-    return () => {
-      if (scrollEndTimeoutRef.current)
-        clearTimeout(scrollEndTimeoutRef.current);
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-    };
-  }, []);
-
-  // Clean compiled MDX for output / export / code editor
-  const compiledMdx = useMemo(() => blocksToMdx(blocks), [blocks]);
-
-  // Preview MDX with data-block-id wrapper elements for precise auto-scrolling
-  const previewMdx = useMemo(
-    () => blocksToMdx(blocks, { forPreview: true }),
-    [blocks],
+  // Clean compiled MDX for output / export / code editor (O(1) cached per block in compiler.ts)
+  const compiledMdx = useMemo(
+    () => blocksToMdx(deferredBlocks),
+    [deferredBlocks],
   );
 
   const [codeValue, setCodeValue] = useState(compiledMdx);
@@ -184,83 +152,16 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       ? `${frontmatter}\n\n${compiledMdx}`
       : compiledMdx;
   });
-  const currentPreviewContent = mode === "code" ? codeValue : previewMdx;
 
-  // Keep Monaco's buffer in sync with the latest blocks and frontmatter
+  // Keep Monaco's buffer in sync when actively in "code" mode and frontmatter changes externally
   useEffect(() => {
-    if (mode === "builder") {
-      const hasFm = /^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/.test(compiledMdx);
-      const full =
-        !hasFm && frontmatter
-          ? `${frontmatter}\n\n${compiledMdx}`
-          : compiledMdx;
-      setMonacoContent(full);
-    } else if (mode === "code" && frontmatter) {
-      // If frontmatter changed externally (e.g. from the Information tab),
-      // update Monaco while keeping the current code body intact
+    if (mode === "code" && frontmatter) {
       const { frontmatterBlock, body } = extractFrontmatter(monacoContent);
       if (frontmatter !== frontmatterBlock) {
         setMonacoContent(`${frontmatter}\n\n${body}`);
       }
     }
-  }, [frontmatter, mode, compiledMdx]);
-
-  // Live mouse-drag resizer for both left block panel and right preview panel
-  useEffect(() => {
-    if (!dragSide) return;
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-
-      if (dragSide === "left") {
-        const newWidth = e.clientX - rect.left;
-        const minWidth = 200;
-        const currentPreviewW = isPreviewExpanded ? previewWidth : 0;
-        const maxWidth = Math.max(minWidth, rect.width - currentPreviewW - 280);
-        const clampedWidth = Math.max(
-          minWidth,
-          Math.min(newWidth, Math.min(maxWidth, 520)),
-        );
-        setTrayWidth(clampedWidth);
-        setIsTrayExpanded(true);
-      } else if (dragSide === "right") {
-        const newWidth = rect.right - e.clientX;
-        const minWidth = 280;
-        const currentTrayW = isTrayExpanded ? trayWidth : 0;
-        const maxWidth = Math.max(minWidth, rect.width - currentTrayW - 320);
-        const clampedWidth = Math.max(minWidth, Math.min(newWidth, maxWidth));
-        setPreviewWidth(clampedWidth);
-        setIsPreviewExpanded(true);
-      }
-    };
-
-    const handleMouseUp = () => {
-      setDragSide(null);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    window.addEventListener("mouseup", handleMouseUp);
-    document.body.style.cursor = "col-resize";
-    document.body.style.userSelect = "none";
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-      document.body.style.cursor = "";
-      document.body.style.userSelect = "";
-    };
-  }, [dragSide, isPreviewExpanded, previewWidth, isTrayExpanded, trayWidth]);
-
-  const handleMouseDownLeft = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setDragSide("left");
-  };
-
-  const handleMouseDownRight = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setDragSide("right");
-  };
+  }, [frontmatter, mode, monacoContent]);
 
   // Synchronize internal blocks and code editor when external value prop changes
   useEffect(() => {
@@ -275,65 +176,49 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     }
   }, [value, resetBlocks, mode, blocks.length]);
 
-  // Synchronize compiled MDX whenever blocks change (when in visual builder mode)
+  // Synchronize compiled MDX whenever compiledMdx changes (when in visual builder mode).
+  // Reuses memoized compiledMdx instead of calling blocksToMdx a 3rd time, and debounces
+  // parent context notification so typing does not re-render the entire modal shell per keystroke.
+  const onChangeRef = useRef(onChange);
   useEffect(() => {
-    if (mode === "builder") {
-      const compiled = blocksToMdx(blocks);
-      setCodeValue(compiled);
-      if (compiled !== lastSyncedValueRef.current) {
-        lastSyncedValueRef.current = compiled;
-        onChange?.(compiled);
-      }
-    }
-  }, [blocks, mode, onChange]);
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
-  // Auto-scroll the preview to the active block when user explicitly selects or adds a block
   useEffect(() => {
-    // If user is currently actively scrolling either pane, do not interrupt them!
-    if (
-      mode !== "builder" ||
-      !activeBlockId ||
-      !isPreviewExpanded ||
-      activeScrollInitiatorRef.current !== null
-    ) {
-      return;
-    }
+    if (mode !== "builder") return;
+    if (compiledMdx === lastSyncedValueRef.current) return;
+    lastSyncedValueRef.current = compiledMdx;
 
     const timer = setTimeout(() => {
-      if (activeScrollInitiatorRef.current !== null) return;
-      const container = previewScrollRef.current;
-      if (!container) return;
+      onChangeRef.current?.(compiledMdx);
+    }, 180);
 
-      const target = container.querySelector(
-        `[data-block-id="${activeBlockId}"]`,
-      ) as HTMLElement | null;
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [compiledMdx, mode]);
 
-      if (!target) return;
+  // Smooth 120fps two-way scroll sync (Canvas <-> Preview and Monaco <-> Preview)
+  const {
+    isPointerOverPreviewRef,
+    handleCanvasScroll,
+    handlePreviewScroll,
+    handleMonacoMount,
+    captureScrollBeforeModeSwitch,
+  } = useSmoothScrollSync({
+    mode,
+    isPreviewExpanded,
+    monacoContent,
+    activeBlockId,
+    canvasScrollRef,
+    previewScrollRef,
+    monacoEditorRef,
+  });
 
-      const containerRect = container.getBoundingClientRect();
-      const targetRect = target.getBoundingClientRect();
-
-      // Check if target is comfortably within view (with 30px buffer)
-      const isInView =
-        targetRect.top >= containerRect.top + 30 &&
-        targetRect.bottom <= containerRect.bottom - 30;
-
-      if (!isInView) {
-        // Confine scrolling strictly to the preview container (avoid window / canvas scroll jumping)
-        const relativeTop =
-          targetRect.top - containerRect.top + container.scrollTop;
-        container.scrollTo({
-          top: Math.max(0, relativeTop - 30),
-          behavior: "smooth",
-        });
-      }
-    }, 60);
-
-    return () => clearTimeout(timer);
-  }, [activeBlockId, isPreviewExpanded, mode]);
-
-  // When switching modes, synchronize code <-> blocks
+  // When switching modes, synchronize code <-> blocks and preserve scroll position
   const handleModeChange = (newMode: BuilderMode) => {
+    if (newMode === mode) return;
+    captureScrollBeforeModeSwitch(newMode);
     if (newMode === "code") {
       // Refresh code editor content with current blocks
       const body = blocksToMdx(blocks);
@@ -381,421 +266,64 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     }
   };
 
-  // Synchronize Monaco Editor scrolling and cursor changes with Live Preview
-  const getCodeScrollMarkers = useCallback(
-    (
-      editor: any,
-      preview: HTMLElement,
-      rawContent: string,
-    ): { monacoTop: number; previewTop: number }[] => {
-      const scrollHeight = editor.getScrollHeight();
-      const clientHeight = editor.getLayoutInfo().height;
-      const monacoMax = Math.max(0, scrollHeight - clientHeight);
-      const previewMax = Math.max(
-        0,
-        preview.scrollHeight - preview.clientHeight,
-      );
-
-      const markers: { monacoTop: number; previewTop: number }[] = [];
-      markers.push({ monacoTop: 0, previewTop: 0 });
-
-      // 1. Frontmatter offset:
-      const fmMatch = rawContent.match(/^---\r?\n[\s\S]*?\r?\n---(?:\r?\n|$)/);
-      if (fmMatch) {
-        const fmLines = fmMatch[0].split("\n").length;
-        const contentStartLine = fmLines + 1;
-        const fmEndTop = editor.getTopForLineNumber(contentStartLine);
-        if (fmEndTop > 0 && fmEndTop < monacoMax) {
-          markers.push({ monacoTop: fmEndTop, previewTop: 0 });
-        }
-      }
-
-      // 2. Headings in Markdown:
-      const lines = rawContent.split("\n");
-      const markdownHeadings: { line: number; text: string }[] = [];
-      for (let i = 0; i < lines.length; i++) {
-        const match = lines[i].match(/^#{1,6}\s+(.+)$/);
-        if (match) {
-          const clean = String(match[1] || "")
-            .replace(/[*_`]/g, "")
-            .replace(/\[(.*?)\]\(.*?\)/g, "$1")
-            .trim()
-            .toLowerCase()
-            .replace(/[^a-z0-9]/g, "");
-          if (clean) {
-            markdownHeadings.push({ line: i + 1, text: clean });
-          }
-        }
-      }
-
-      if (markdownHeadings.length > 0) {
-        const previewHeadings = Array.from(
-          preview.querySelectorAll<HTMLElement>("h1, h2, h3, h4, h5, h6"),
-        );
-        const pContainerRect = preview.getBoundingClientRect();
-
-        let lastPreviewIdx = 0;
-        for (const mh of markdownHeadings) {
-          for (let j = lastPreviewIdx; j < previewHeadings.length; j++) {
-            const ph = previewHeadings[j];
-            const pClean = String(ph.textContent || "")
-              .trim()
-              .toLowerCase()
-              .replace(/[^a-z0-9]/g, "");
-
-            if (
-              pClean &&
-              (pClean === mh.text ||
-                pClean.includes(mh.text) ||
-                mh.text.includes(pClean))
-            ) {
-              const mTop = editor.getTopForLineNumber(mh.line);
-              const pRect = ph.getBoundingClientRect();
-              const pTop = pRect.top - pContainerRect.top + preview.scrollTop;
-
-              const lastMarker = markers[markers.length - 1];
-              if (
-                mTop > lastMarker.monacoTop &&
-                pTop >= lastMarker.previewTop
-              ) {
-                markers.push({ monacoTop: mTop, previewTop: pTop });
-                lastPreviewIdx = j + 1;
-                break;
-              }
-            }
-          }
-        }
-      }
-
-      const last = markers[markers.length - 1];
-      if (monacoMax > last.monacoTop || previewMax > last.previewTop) {
-        markers.push({ monacoTop: monacoMax, previewTop: previewMax });
-      }
-
-      return markers;
-    },
-    [],
-  );
-
-  const syncMonacoToPreview = useCallback(() => {
-    const editor = monacoEditorRef.current;
-    const preview = previewScrollRef.current;
-    if (!editor || !preview) return;
-
-    const scrollHeight = editor.getScrollHeight();
-    const clientHeight = editor.getLayoutInfo().height;
-    const monacoMax = scrollHeight - clientHeight;
-    const previewMax = preview.scrollHeight - preview.clientHeight;
-    if (monacoMax <= 0 || previewMax <= 0) return;
-
-    const monacoTop = editor.getScrollTop();
-    if (monacoTop <= 2) {
-      preview.scrollTop = 0;
-      return;
-    }
-    if (monacoTop >= monacoMax - 2) {
-      preview.scrollTop = previewMax;
-      return;
-    }
-
-    const markers = getCodeScrollMarkers(editor, preview, monacoContent);
-    let lower = markers[0];
-    let upper = markers[markers.length - 1];
-
-    for (let i = 0; i < markers.length - 1; i++) {
-      if (
-        monacoTop >= markers[i].monacoTop &&
-        monacoTop <= markers[i + 1].monacoTop
-      ) {
-        lower = markers[i];
-        upper = markers[i + 1];
-        break;
-      }
-    }
-
-    const monacoRange = upper.monacoTop - lower.monacoTop;
-    const t = monacoRange > 0 ? (monacoTop - lower.monacoTop) / monacoRange : 0;
-    const targetScroll =
-      lower.previewTop + t * (upper.previewTop - lower.previewTop);
-
-    preview.scrollTop = Math.max(0, Math.min(previewMax, targetScroll));
-  }, [getCodeScrollMarkers, monacoContent]);
-
-  const syncPreviewToMonaco = useCallback(() => {
-    const editor = monacoEditorRef.current;
-    const preview = previewScrollRef.current;
-    if (!editor || !preview) return;
-
-    const scrollHeight = editor.getScrollHeight();
-    const clientHeight = editor.getLayoutInfo().height;
-    const monacoMax = scrollHeight - clientHeight;
-    const previewMax = preview.scrollHeight - preview.clientHeight;
-    if (monacoMax <= 0 || previewMax <= 0) return;
-
-    const pTop = preview.scrollTop;
-    if (pTop <= 2) {
-      editor.setScrollTop(0);
-      return;
-    }
-    if (pTop >= previewMax - 2) {
-      editor.setScrollTop(monacoMax);
-      return;
-    }
-
-    const markers = getCodeScrollMarkers(editor, preview, monacoContent);
-    let lower = markers[0];
-    let upper = markers[markers.length - 1];
-
-    for (let i = 0; i < markers.length - 1; i++) {
-      if (pTop >= markers[i].previewTop && pTop <= markers[i + 1].previewTop) {
-        lower = markers[i];
-        upper = markers[i + 1];
-        break;
-      }
-    }
-
-    const previewRange = upper.previewTop - lower.previewTop;
-    const t = previewRange > 0 ? (pTop - lower.previewTop) / previewRange : 0;
-    const targetScroll =
-      lower.monacoTop + t * (upper.monacoTop - lower.monacoTop);
-
-    editor.setScrollTop(Math.max(0, Math.min(monacoMax, targetScroll)));
-  }, [getCodeScrollMarkers, monacoContent]);
-
-  const syncCanvasToPreview = useCallback(() => {
-    const canvas = canvasScrollRef.current;
-    const preview = previewScrollRef.current;
-    if (!canvas || !preview) return;
-
-    const canvasMax = canvas.scrollHeight - canvas.clientHeight;
-    const previewMax = preview.scrollHeight - preview.clientHeight;
-    if (canvasMax <= 0 || previewMax <= 0) return;
-
-    if (canvas.scrollTop <= 2) {
-      preview.scrollTop = 0;
-      return;
-    }
-    if (canvas.scrollTop >= canvasMax - 2) {
-      preview.scrollTop = previewMax;
-      return;
-    }
-
-    const canvasRect = canvas.getBoundingClientRect();
-    const canvasItems = canvas.querySelectorAll<HTMLElement>(
-      "[data-canvas-block-id]",
-    );
-    if (canvasItems.length === 0) {
-      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
-      return;
-    }
-
-    const targetY = canvasRect.top + 40;
-    let activeItem: HTMLElement | null = null;
-    let progressInBlock = 0;
-
-    for (let i = 0; i < canvasItems.length; i++) {
-      const item = canvasItems[i];
-      const rect = item.getBoundingClientRect();
-      if (rect.top <= targetY && rect.bottom >= targetY) {
-        activeItem = item;
-        const height = rect.height || 1;
-        progressInBlock = Math.max(
-          0,
-          Math.min(1, (targetY - rect.top) / height),
-        );
-        break;
-      }
-    }
-
-    if (!activeItem) {
-      if (canvasItems[0].getBoundingClientRect().top > targetY) {
-        activeItem = canvasItems[0];
-        progressInBlock = 0;
-      } else {
-        activeItem = canvasItems[canvasItems.length - 1];
-        progressInBlock = 1;
-      }
-    }
-
-    const blockId = activeItem.getAttribute("data-canvas-block-id");
-    if (!blockId) {
-      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
-      return;
-    }
-
-    const previewEl = preview.querySelector<HTMLElement>(
-      `[data-block-id="${blockId}"]`,
-    );
-    if (!previewEl) {
-      preview.scrollTop = (canvas.scrollTop / canvasMax) * previewMax;
-      return;
-    }
-
-    const pRect = previewEl.getBoundingClientRect();
-    const pContainerRect = preview.getBoundingClientRect();
-    const pRelTop = pRect.top - pContainerRect.top + preview.scrollTop;
-    const targetScroll = pRelTop + progressInBlock * pRect.height - 40;
-
-    preview.scrollTop = Math.max(0, Math.min(previewMax, targetScroll));
-  }, []);
-
-  const syncPreviewToCanvas = useCallback(() => {
-    const canvas = canvasScrollRef.current;
-    const preview = previewScrollRef.current;
-    if (!canvas || !preview) return;
-
-    const canvasMax = canvas.scrollHeight - canvas.clientHeight;
-    const previewMax = preview.scrollHeight - preview.clientHeight;
-    if (canvasMax <= 0 || previewMax <= 0) return;
-
-    if (preview.scrollTop <= 2) {
-      canvas.scrollTop = 0;
-      return;
-    }
-    if (preview.scrollTop >= previewMax - 2) {
-      canvas.scrollTop = canvasMax;
-      return;
-    }
-
-    const previewRect = preview.getBoundingClientRect();
-    const previewItems =
-      preview.querySelectorAll<HTMLElement>("[data-block-id]");
-    if (previewItems.length === 0) {
-      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
-      return;
-    }
-
-    const targetY = previewRect.top + 40;
-    let activeItem: HTMLElement | null = null;
-    let progressInBlock = 0;
-
-    for (let i = 0; i < previewItems.length; i++) {
-      const item = previewItems[i];
-      const rect = item.getBoundingClientRect();
-      if (rect.top <= targetY && rect.bottom >= targetY) {
-        activeItem = item;
-        const height = rect.height || 1;
-        progressInBlock = Math.max(
-          0,
-          Math.min(1, (targetY - rect.top) / height),
-        );
-        break;
-      }
-    }
-
-    if (!activeItem) {
-      if (previewItems[0].getBoundingClientRect().top > targetY) {
-        activeItem = previewItems[0];
-        progressInBlock = 0;
-      } else {
-        activeItem = previewItems[previewItems.length - 1];
-        progressInBlock = 1;
-      }
-    }
-
-    const blockId = activeItem.getAttribute("data-block-id");
-    if (!blockId) {
-      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
-      return;
-    }
-
-    const canvasEl = canvas.querySelector<HTMLElement>(
-      `[data-canvas-block-id="${blockId}"]`,
-    );
-    if (!canvasEl) {
-      canvas.scrollTop = (preview.scrollTop / previewMax) * canvasMax;
-      return;
-    }
-
-    const cRect = canvasEl.getBoundingClientRect();
-    const cContainerRect = canvas.getBoundingClientRect();
-    const cRelTop = cRect.top - cContainerRect.top + canvas.scrollTop;
-    const targetScroll = cRelTop + progressInBlock * cRect.height - 40;
-
-    canvas.scrollTop = Math.max(0, Math.min(canvasMax, targetScroll));
-  }, []);
-
-  const handleMonacoMount = (editor: any) => {
-    monacoEditorRef.current = editor;
-
-    editor.onDidScrollChange(() => {
-      if (mode !== "code" || !isPreviewExpanded) return;
-      if (isPointerOverPreviewRef.current) return;
-      if (!claimScrollInitiator("monaco")) return;
-
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = requestAnimationFrame(syncMonacoToPreview);
-    });
-
-    editor.onDidChangeCursorPosition(() => {
-      if (mode !== "code" || !isPreviewExpanded) return;
-      if (isPointerOverPreviewRef.current) return;
-      if (!claimScrollInitiator("monaco")) return;
-
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = requestAnimationFrame(syncMonacoToPreview);
-    });
-  };
-
-  // Synchronize scrolling from Canvas to Live Preview in Builder mode (Zero loop/jitter)
-  const handleCanvasScroll = (_e: React.UIEvent<HTMLDivElement>) => {
-    if (mode !== "builder" || !isPreviewExpanded) return;
-    if (isPointerOverPreviewRef.current) return;
-    if (!claimScrollInitiator("canvas")) return;
-
-    if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-    scrollRafRef.current = requestAnimationFrame(syncCanvasToPreview);
-  };
-
-  const handlePreviewScroll = () => {
-    if (!isPreviewExpanded) return;
-    // Only synchronize scroll from preview back to editor/canvas when the user
-    // is explicitly hovering over or interacting with the preview pane.
-    // This prevents layout recalculations or programmatic scrolls from echoing back.
-    if (!isPointerOverPreviewRef.current) return;
-
-    if (mode === "code") {
-      if (!claimScrollInitiator("preview")) return;
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = requestAnimationFrame(syncPreviewToMonaco);
-    } else if (mode === "builder") {
-      if (!claimScrollInitiator("preview")) return;
-      if (scrollRafRef.current) cancelAnimationFrame(scrollRafRef.current);
-      scrollRafRef.current = requestAnimationFrame(syncPreviewToCanvas);
-    }
-  };
-
   // Add block from tray or external controller
-  const handleAddBlock = (
-    type: MdxBlockType,
-    targetIndex?: number,
-    initialProps?: Record<string, any>,
-  ) => {
-    const newBlock = createBlock(type, initialProps);
-    setActiveBlockId(newBlock.id);
-    setBlocks((prev) => {
-      if (
-        targetIndex !== undefined &&
-        targetIndex >= 0 &&
-        targetIndex <= prev.length
-      ) {
-        const next = [...prev];
-        next.splice(targetIndex, 0, newBlock);
-        return next;
-      }
-      return [...prev, newBlock];
-    });
+  const handleAddBlock = useCallback(
+    (
+      type: MdxBlockType,
+      targetIndex?: number,
+      initialProps?: Record<string, any>,
+    ) => {
+      let createdBlockId = "";
+      setBlocks((prev) => {
+        let newBlock = createBlock(type, initialProps);
+        if (type === "template") {
+          newBlock.props.name = getUniqueTemplateName(
+            prev,
+            newBlock.props.name || "my-template",
+          );
+        } else if (isInlineOnlyBlock(type)) {
+          // Inline components cannot be placed independently on root canvas:
+          // automatically wrap inside an Inline Template container!
+          const inlineBlock = newBlock;
+          const baseName =
+            (inlineBlock.props.name || type)
+              .toLowerCase()
+              .replace(/[^a-z0-9_-]/g, "-")
+              .replace(/^-+|-+$/g, "") || type;
+          const tplName = getUniqueTemplateName(prev, baseName);
+          newBlock = createBlock("template", {
+            name: tplName,
+            blocks: [inlineBlock],
+          });
+        }
+        createdBlockId = newBlock.id;
+        setActiveBlockId(newBlock.id);
 
-    // Smoothly scroll both the canvas area and preview down to the newly added block
-    setTimeout(() => {
-      const el = document.querySelector(
-        `[data-canvas-block-id="${newBlock.id}"]`,
-      ) as HTMLElement | null;
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    }, 80);
-  };
+        if (
+          targetIndex !== undefined &&
+          targetIndex >= 0 &&
+          targetIndex <= prev.length
+        ) {
+          const next = [...prev];
+          next.splice(targetIndex, 0, newBlock);
+          return next;
+        }
+        return [...prev, newBlock];
+      });
+
+      // Smoothly scroll both the canvas area and preview down to the newly added block
+      setTimeout(() => {
+        if (!createdBlockId) return;
+        const el = document.querySelector(
+          `[data-canvas-block-id="${createdBlockId}"]`,
+        ) as HTMLElement | null;
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+      }, 80);
+    },
+    [setBlocks],
+  );
 
   // Register external insertBlock listener if provided by MdxStudio
   useEffect(() => {
@@ -804,75 +332,97 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
         handleAddBlock(type, undefined, props);
       });
     }
-  }, [onRegisterInsertBlock]);
+  }, [onRegisterInsertBlock, handleAddBlock]);
 
   // Update block properties (captured in history as writing/typing sessions)
-  const handleUpdateProps = (id: string, props: Record<string, any>) => {
-    setActiveBlockId(id);
-    setBlocks(
-      (prev) => prev.map((b) => (b.id === id ? { ...b, props } : b)),
-      true,
-    );
-  };
+  const handleUpdateProps = useCallback(
+    (id: string, props: Record<string, any>) => {
+      setActiveBlockId((prevId) => (prevId === id ? prevId : id));
+      setBlocks(
+        (prev) => prev.map((b) => (b.id === id ? { ...b, props } : b)),
+        true,
+      );
+    },
+    [setBlocks],
+  );
 
   // Move Up
-  const handleMoveUp = (index: number) => {
-    if (index <= 0) return;
-    const blockId = blocks[index]?.id;
-    if (blockId) setActiveBlockId(blockId);
-    setBlocks((prev) => {
-      const next = [...prev];
-      const temp = next[index - 1];
-      next[index - 1] = next[index];
-      next[index] = temp;
-      return next;
-    });
-  };
+  const handleMoveUp = useCallback(
+    (index: number) => {
+      if (index <= 0) return;
+      setBlocks((prev) => {
+        if (index <= 0 || index >= prev.length) return prev;
+        const blockId = prev[index]?.id;
+        if (blockId) setActiveBlockId(blockId);
+        const next = [...prev];
+        const temp = next[index - 1];
+        next[index - 1] = next[index];
+        next[index] = temp;
+        return next;
+      });
+    },
+    [setBlocks],
+  );
 
   // Move Down
-  const handleMoveDown = (index: number) => {
-    if (index >= blocks.length - 1) return;
-    const blockId = blocks[index]?.id;
-    if (blockId) setActiveBlockId(blockId);
-    setBlocks((prev) => {
-      const next = [...prev];
-      const temp = next[index + 1];
-      next[index + 1] = next[index];
-      next[index] = temp;
-      return next;
-    });
-  };
+  const handleMoveDown = useCallback(
+    (index: number) => {
+      setBlocks((prev) => {
+        if (index < 0 || index >= prev.length - 1) return prev;
+        const blockId = prev[index]?.id;
+        if (blockId) setActiveBlockId(blockId);
+        const next = [...prev];
+        const temp = next[index + 1];
+        next[index + 1] = next[index];
+        next[index] = temp;
+        return next;
+      });
+    },
+    [setBlocks],
+  );
 
   // Duplicate Block
-  const handleDuplicate = (index: number) => {
-    const original = blocks[index];
-    if (!original) return;
-    const clone = createBlock(
-      original.type,
-      JSON.parse(JSON.stringify(original.props)),
-    );
-    setActiveBlockId(clone.id);
-    setBlocks((prev) => {
-      const next = [...prev];
-      next.splice(index + 1, 0, clone);
-      return next;
-    });
-  };
+  const handleDuplicate = useCallback(
+    (index: number) => {
+      setBlocks((prev) => {
+        const original = prev[index];
+        if (!original) return prev;
+        const clone = createBlock(
+          original.type,
+          structuredClone(original.props),
+        );
+        if (clone.type === "template") {
+          clone.props.name = getUniqueTemplateName(prev, clone.props.name);
+        }
+        setActiveBlockId(clone.id);
+        const next = [...prev];
+        next.splice(index + 1, 0, clone);
+        return next;
+      });
+    },
+    [setBlocks],
+  );
 
   // Delete Block
-  const handleDelete = (index: number) => {
-    setBlocks((prev) => prev.filter((_, i) => i !== index));
-  };
+  const handleDelete = useCallback(
+    (index: number) => {
+      setBlocks((prev) => prev.filter((_, i) => i !== index));
+    },
+    [setBlocks],
+  );
 
   // Reorder via drag & drop
-  const handleReorder = (srcIdx: number, targetIdx: number) => {
-    setBlocks((prev) => {
-      const next = [...prev];
-      const [moved] = next.splice(srcIdx, 1);
-      next.splice(targetIdx, 0, moved);
-      return next;
-    });
-  };
+  const handleReorder = useCallback(
+    (srcIdx: number, targetIdx: number) => {
+      setBlocks((prev) => {
+        const next = [...prev];
+        const [moved] = next.splice(srcIdx, 1);
+        next.splice(targetIdx, 0, moved);
+        return next;
+      });
+    },
+    [setBlocks],
+  );
 
   /**
    * Adopt a top-level block as a new card in a Cards Group.
@@ -881,181 +431,182 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
    * the group's flat list (title/badge/content preserved). Any other block
    * becomes a card whose content is a readable description.
    */
-  const handleAdoptBlock = (
-    rootIndex: number,
-    groupIndex: number,
-    targetCardIndex?: number,
-  ) => {
-    setBlocks((prev) => {
-      const group = prev[groupIndex];
-      if (!group || group.type !== "cards") return prev;
-      const source = prev[rootIndex];
-      if (!source) return prev;
+  const handleAdoptBlock = useCallback(
+    (rootIndex: number, groupIndex: number, targetCardIndex?: number) => {
+      setBlocks((prev) => {
+        const group = prev[groupIndex];
+        if (!group || group.type !== "cards") return prev;
+        const source = prev[rootIndex];
+        if (!source) return prev;
 
-      const cards = Array.isArray(group.props.cards)
-        ? [...group.props.cards]
-        : [];
+        const cards = Array.isArray(group.props.cards)
+          ? [...group.props.cards]
+          : [];
 
-      let newCard: Record<string, any>;
-      if (source.type === "card") {
-        newCard = {
-          id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          title: source.props.title || `Card ${cards.length + 1}`,
-          badge: source.props.badge || "",
-          content:
-            typeof source.props.content === "string" &&
-            source.props.content.trim()
-              ? source.props.content
-              : "Card content",
+        let newCard: Record<string, any>;
+        if (source.type === "card") {
+          newCard = {
+            id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            title: source.props.title || `Card ${cards.length + 1}`,
+            badge: source.props.badge || "",
+            content:
+              typeof source.props.content === "string" &&
+              source.props.content.trim()
+                ? source.props.content
+                : "Card content",
+          };
+        } else {
+          newCard = {
+            id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+            title: `Card ${cards.length + 1}`,
+            badge: "",
+            content: `This card contains a ${source.type} block.`,
+          };
+        }
+
+        if (
+          typeof targetCardIndex === "number" &&
+          targetCardIndex >= 0 &&
+          targetCardIndex <= cards.length
+        ) {
+          cards.splice(targetCardIndex, 0, newCard);
+        } else {
+          cards.push(newCard);
+        }
+
+        const nextRoot = [...prev];
+        nextRoot[groupIndex] = {
+          ...group,
+          props: { ...group.props, cards },
         };
-      } else {
-        newCard = {
-          id: `card-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-          title: `Card ${cards.length + 1}`,
-          badge: "",
-          content: `This card contains a ${source.type} block.`,
-        };
-      }
-
-      if (
-        typeof targetCardIndex === "number" &&
-        targetCardIndex >= 0 &&
-        targetCardIndex <= cards.length
-      ) {
-        cards.splice(targetCardIndex, 0, newCard);
-      } else {
-        cards.push(newCard);
-      }
-
-      const nextRoot = [...prev];
-      nextRoot[groupIndex] = {
-        ...group,
-        props: { ...group.props, cards },
-      };
-      // Remove the adopted block from its original root position.
-      return nextRoot.filter((_, i) => i !== rootIndex);
-    });
-  };
+        // Remove the adopted block from its original root position.
+        return nextRoot.filter((_, i) => i !== rootIndex);
+      });
+    },
+    [setBlocks],
+  );
 
   /**
    * Extract a card from a Cards Group and place it outside on the root canvas.
    */
-  const handleExtractCard = (
-    groupBlockIndex: number,
-    cardIndex: number,
-    targetRootIndex: number,
-  ) => {
-    setBlocks((prev) => {
-      const group = prev[groupBlockIndex];
-      if (!group || group.type !== "cards") return prev;
-      const cards = Array.isArray(group.props.cards)
-        ? [...group.props.cards]
-        : [];
-      if (cardIndex < 0 || cardIndex >= cards.length) return prev;
+  const handleExtractCard = useCallback(
+    (groupBlockIndex: number, cardIndex: number, targetRootIndex: number) => {
+      setBlocks((prev) => {
+        const group = prev[groupBlockIndex];
+        if (!group || group.type !== "cards") return prev;
+        const cards = Array.isArray(group.props.cards)
+          ? [...group.props.cards]
+          : [];
+        if (cardIndex < 0 || cardIndex >= cards.length) return prev;
 
-      // Extract the card
-      const [extractedCard] = cards.splice(cardIndex, 1);
+        // Extract the card
+        const [extractedCard] = cards.splice(cardIndex, 1);
 
-      // Create a standalone Card block
-      const newBlock: MdxBlock = createBlock("card", {
-        title: extractedCard.title || "",
-        badge: extractedCard.badge || "",
-        content: extractedCard.content || "",
+        // Create a standalone Card block
+        const newBlock: MdxBlock = createBlock("card", {
+          title: extractedCard.title || "",
+          badge: extractedCard.badge || "",
+          content: extractedCard.content || "",
+        });
+
+        const next = [...prev];
+
+        if (cards.length === 0) {
+          // If the group had only this 1 card, remove the now-empty Cards Group
+          next.splice(groupBlockIndex, 1);
+          const finalTarget =
+            groupBlockIndex < targetRootIndex
+              ? targetRootIndex - 1
+              : targetRootIndex;
+          const boundedTarget = Math.max(0, Math.min(finalTarget, next.length));
+          next.splice(boundedTarget, 0, newBlock);
+        } else {
+          // Keep group with remaining cards
+          next[groupBlockIndex] = {
+            ...group,
+            props: { ...group.props, cards },
+          };
+          const boundedTarget = Math.max(
+            0,
+            Math.min(targetRootIndex, next.length),
+          );
+          next.splice(boundedTarget, 0, newBlock);
+        }
+
+        return next;
       });
-
-      const next = [...prev];
-
-      if (cards.length === 0) {
-        // If the group had only this 1 card, remove the now-empty Cards Group
-        next.splice(groupBlockIndex, 1);
-        const finalTarget =
-          groupBlockIndex < targetRootIndex
-            ? targetRootIndex - 1
-            : targetRootIndex;
-        const boundedTarget = Math.max(0, Math.min(finalTarget, next.length));
-        next.splice(boundedTarget, 0, newBlock);
-      } else {
-        // Keep group with remaining cards
-        next[groupBlockIndex] = {
-          ...group,
-          props: { ...group.props, cards },
-        };
-        const boundedTarget = Math.max(
-          0,
-          Math.min(targetRootIndex, next.length),
-        );
-        next.splice(boundedTarget, 0, newBlock);
-      }
-
-      return next;
-    });
-  };
+    },
+    [setBlocks],
+  );
 
   /**
    * Move a card from one Cards Group to another Cards Group.
    */
-  const handleMoveCardBetweenGroups = (
-    srcGroupIndex: number,
-    srcCardIndex: number,
-    targetGroupIndex: number,
-    targetCardIndex?: number,
-  ) => {
-    setBlocks((prev) => {
-      const srcGroup = prev[srcGroupIndex];
-      const tgtGroup = prev[targetGroupIndex];
-      if (
-        !srcGroup ||
-        srcGroup.type !== "cards" ||
-        !tgtGroup ||
-        tgtGroup.type !== "cards"
-      ) {
-        return prev;
-      }
+  const handleMoveCardBetweenGroups = useCallback(
+    (
+      srcGroupIndex: number,
+      srcCardIndex: number,
+      targetGroupIndex: number,
+      targetCardIndex?: number,
+    ) => {
+      setBlocks((prev) => {
+        const srcGroup = prev[srcGroupIndex];
+        const tgtGroup = prev[targetGroupIndex];
+        if (
+          !srcGroup ||
+          srcGroup.type !== "cards" ||
+          !tgtGroup ||
+          tgtGroup.type !== "cards"
+        ) {
+          return prev;
+        }
 
-      const srcCards = Array.isArray(srcGroup.props.cards)
-        ? [...srcGroup.props.cards]
-        : [];
-      const tgtCards = Array.isArray(tgtGroup.props.cards)
-        ? [...tgtGroup.props.cards]
-        : [];
-      if (srcCardIndex < 0 || srcCardIndex >= srcCards.length) return prev;
+        const srcCards = Array.isArray(srcGroup.props.cards)
+          ? [...srcGroup.props.cards]
+          : [];
+        const tgtCards = Array.isArray(tgtGroup.props.cards)
+          ? [...tgtGroup.props.cards]
+          : [];
+        if (srcCardIndex < 0 || srcCardIndex >= srcCards.length) return prev;
 
-      const [movedCard] = srcCards.splice(srcCardIndex, 1);
-      if (
-        typeof targetCardIndex === "number" &&
-        targetCardIndex >= 0 &&
-        targetCardIndex <= tgtCards.length
-      ) {
-        tgtCards.splice(targetCardIndex, 0, movedCard);
-      } else {
-        tgtCards.push(movedCard);
-      }
+        const [movedCard] = srcCards.splice(srcCardIndex, 1);
+        if (
+          typeof targetCardIndex === "number" &&
+          targetCardIndex >= 0 &&
+          targetCardIndex <= tgtCards.length
+        ) {
+          tgtCards.splice(targetCardIndex, 0, movedCard);
+        } else {
+          tgtCards.push(movedCard);
+        }
 
-      const next = [...prev];
-      if (srcCards.length === 0) {
-        next.splice(srcGroupIndex, 1);
-        const adjustedTgtIndex =
-          srcGroupIndex < targetGroupIndex
-            ? targetGroupIndex - 1
-            : targetGroupIndex;
-        next[adjustedTgtIndex] = {
-          ...tgtGroup,
-          props: { ...tgtGroup.props, cards: tgtCards },
-        };
-      } else {
-        next[srcGroupIndex] = {
-          ...srcGroup,
-          props: { ...srcGroup.props, cards: srcCards },
-        };
-        next[targetGroupIndex] = {
-          ...tgtGroup,
-          props: { ...tgtGroup.props, cards: tgtCards },
-        };
-      }
+        const next = [...prev];
+        if (srcCards.length === 0) {
+          next.splice(srcGroupIndex, 1);
+          const adjustedTgtIndex =
+            srcGroupIndex < targetGroupIndex
+              ? targetGroupIndex - 1
+              : targetGroupIndex;
+          next[adjustedTgtIndex] = {
+            ...tgtGroup,
+            props: { ...tgtGroup.props, cards: tgtCards },
+          };
+        } else {
+          next[srcGroupIndex] = {
+            ...srcGroup,
+            props: { ...srcGroup.props, cards: srcCards },
+          };
+          next[targetGroupIndex] = {
+            ...tgtGroup,
+            props: { ...tgtGroup.props, cards: tgtCards },
+          };
+        }
 
-      return next;
-    });
-  };
+        return next;
+      });
+    },
+    [setBlocks],
+  );
 
   // Copy compiled MDX (includes frontmatter when present)
   const handleCopyCode = async () => {
@@ -1079,17 +630,6 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
     }
   };
 
-  // Clear all
-  const handleClear = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to clear all blocks from the canvas?",
-      )
-    ) {
-      setBlocks([]);
-    }
-  };
-
   return (
     <div
       data-lenis-prevent
@@ -1100,116 +640,20 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
       )}
     >
       {/* Builder Top Header Bar */}
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5 bg-white/2 border-b border-white/8 flex-wrap select-none">
-        {/* Left branding & Mobile block sidebar trigger */}
-        <div className="flex items-center gap-2 sm:gap-2.5">
-          {/* Mobile floating sidebar trigger button (visible on small screens when in builder mode) */}
-          {mode === "builder" && (
-            <button
-              type="button"
-              onClick={() => setIsFloatingTrayOpen(true)}
-              className="flex lg:hidden items-center gap-1.5 p-2 rounded-xl bg-white/6 hover:bg-white/12 active:scale-95 border border-white/10 text-xs font-medium text-neutral-200 hover:text-white transition-all cursor-pointer shadow-xs"
-              title="Open Block Library"
-              aria-label="Open Block Library"
-            >
-              <LuMenu className="w-3.5 h-3.5 text-accent" />
-            </button>
-          )}
-
-          <div className="h-4 w-px bg-white/10 hidden sm:block shrink-0" />
-
-          <div className="not-sm:hidden flex items-center gap-2 min-w-0">
-            <span className="text-xs sm:text-sm font-semibold text-white font-rethink truncate">
-              {title}
-            </span>
-            {documentName && (
-              <span className="text-xs text-neutral-400 font-mono truncate hidden md:inline">
-                / {documentName}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Right controls */}
-        <div className="flex items-center gap-2">
-          {/* View mode toggle with SegmentedControl */}
-          <SegmentedControl
-            value={mode}
-            onValueChange={(val) => handleModeChange(val as BuilderMode)}
-            options={[
-              {
-                label: (
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <LuLayoutTemplate className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Builder</span>
-                  </span>
-                ),
-                value: "builder",
-              },
-              {
-                label: (
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <LuCode className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">MDX Code</span>
-                  </span>
-                ),
-                value: "code",
-              },
-              ...(isSmallScreen
-                ? [
-                    {
-                      label: (
-                        <span className="flex items-center gap-1.5 font-medium">
-                          <LuEye className="w-3.5 h-3.5 text-accent" />
-                          <span className="hidden sm:inline">Preview</span>
-                        </span>
-                      ),
-                      value: "preview",
-                    },
-                  ]
-                : []),
-            ]}
-          />
-
-          {/* History Undo / Redo controls */}
-          <div className="flex items-center gap-1 border-r border-white/10 pr-2 mr-0.5">
-            <button
-              type="button"
-              onClick={undo}
-              disabled={!canUndo}
-              title="Undo (Ctrl+Z)"
-              className="p-1.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none transition-colors cursor-pointer"
-              aria-label="Undo"
-            >
-              <LuUndo2 className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={redo}
-              disabled={!canRedo}
-              title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-              className="p-1.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none transition-colors cursor-pointer"
-              aria-label="Redo"
-            >
-              <LuRedo2 className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {/* Copy MDX button */}
-          <button
-            type="button"
-            onClick={handleCopyCode}
-            title="Copy compiled MDX"
-            className="p-1.5 rounded-xl border border-white/10 text-neutral-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-          >
-            {copied ? (
-              <LuCheck className="w-3.5 h-3.5 text-accent" />
-            ) : (
-              <LuCopy className="w-3.5 h-3.5" />
-            )}
-          </button>
-        </div>
-      </div>
+      <BuilderToolbar
+        title={title}
+        documentName={documentName}
+        mode={mode}
+        isSmallScreen={isSmallScreen}
+        canUndo={canUndo}
+        canRedo={canRedo}
+        copied={copied}
+        onModeChange={handleModeChange}
+        onOpenFloatingTray={() => setIsFloatingTrayOpen(true)}
+        onUndo={undo}
+        onRedo={redo}
+        onCopyCode={handleCopyCode}
+      />
 
       {/* Main Work Area */}
       <div
@@ -1226,7 +670,7 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
               className="flex-1 overflow-y-auto p-4 sm:p-6 lg:hidden bg-background/40"
             >
               <div className="prose prose-invert prose-neutral max-w-none text-sm text-neutral-200">
-                <MDXContent content={currentPreviewContent} />
+                <BuilderLivePreview blocks={deferredBlocks} />
               </div>
             </div>
           ) : mode === "builder" ? (
@@ -1443,7 +887,11 @@ export const MdxBuilder: React.FC<MdxBuilderProps> = ({
               className="flex-1 overflow-y-auto p-6 sm:p-7"
             >
               <div className="prose prose-invert prose-neutral max-w-none text-sm text-neutral-200">
-                <MDXContent content={currentPreviewContent} />
+                {mode === "code" ? (
+                  <MDXContent content={codeValue} />
+                ) : (
+                  <BuilderLivePreview blocks={deferredBlocks} />
+                )}
               </div>
             </div>
           </div>

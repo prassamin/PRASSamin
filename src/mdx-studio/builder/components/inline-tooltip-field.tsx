@@ -1,10 +1,30 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { LuMessageSquareQuote, LuX, LuSmile } from "react-icons/lu";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  LuMessageSquareQuote,
+  LuX,
+  LuSmile,
+  LuAtSign,
+  LuPencil,
+  LuBlocks,
+} from "react-icons/lu";
 import { cn } from "@heroui/react";
 import { useInlineTooltip } from "./inline-tooltip-context";
-import { useIconPicker } from "./icon-picker-context";
+import { useOpenIconPicker } from "./icon-picker-context";
+import { useOpenUserMention } from "./user-mention-context";
+import { useAvailableTemplates } from "./template-context";
+import { TemplateDefinitionInfo } from "../types";
+import {
+  CaretPopupCoords,
+  TemplateIntellisensePortal,
+  getAnchorButtonCoords,
+  getCaretPopupCoords,
+} from "./template-intellisense-portal";
+import {
+  parseUserMentions,
+  UserMentionOccurrence,
+} from "./user-mention-utils";
 import {
   TooltipOccurrence,
   buildTooltipTag,
@@ -24,6 +44,7 @@ interface InlineTooltipFieldProps {
   /** "glass" = light field bg, "dark" = darker card inner bg (cards, items) */
   variant?: "glass" | "dark";
   className?: string;
+  availableTemplates?: TemplateDefinitionInfo[];
 }
 
 /**
@@ -45,13 +66,27 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
   placeholder,
   variant = "glass",
   className,
+  availableTemplates: propAvailableTemplates,
 }) => {
   const [node, setNode] = useState<
     HTMLInputElement | HTMLTextAreaElement | null
   >(null);
   const [pendingTip, setPendingTip] = useState("");
   const { target, close } = useInlineTooltip();
-  const { openIconPicker } = useIconPicker();
+  const openIconPicker = useOpenIconPicker();
+  const openMentionPicker = useOpenUserMention();
+  const contextTemplates = useAvailableTemplates();
+  const availableTemplates = propAvailableTemplates ?? contextTemplates;
+  const [isTemplateMenuOpen, setIsTemplateMenuOpen] = useState(false);
+  const [templateMenuCoords, setTemplateMenuCoords] =
+    useState<CaretPopupCoords | null>(null);
+  const [templateQuery, setTemplateQuery] = useState("");
+  const [templateHashRange, setTemplateHashRange] = useState<{
+    start: number;
+    end: number;
+  } | null>(null);
+  const [selectedTemplateIdx, setSelectedTemplateIdx] = useState(0);
+  const templateBtnRef = useRef<HTMLButtonElement | null>(null);
 
   const isActive = node !== null && target !== null && target.element === node;
 
@@ -201,6 +236,215 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
     );
   };
 
+  // Click-outside listener for template menu
+  useEffect(() => {
+    if (!isTemplateMenuOpen) return;
+    const handleDocClick = (e: MouseEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (el && !el.closest("[data-template-menu='true']")) {
+        setIsTemplateMenuOpen(false);
+      }
+    };
+    const handleDocKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsTemplateMenuOpen(false);
+    };
+    document.addEventListener("mousedown", handleDocClick);
+    document.addEventListener("keydown", handleDocKey);
+    return () => {
+      document.removeEventListener("mousedown", handleDocClick);
+      document.removeEventListener("keydown", handleDocKey);
+    };
+  }, [isTemplateMenuOpen]);
+
+  // Persistent user mentions embedded in this field
+  const userMentions = useMemo<UserMentionOccurrence[]>(
+    () => parseUserMentions(value),
+    [value],
+  );
+
+  const removeUserMention = (occ: UserMentionOccurrence) => {
+    onChange(value.substring(0, occ.start) + value.substring(occ.end));
+  };
+
+  interface TemplateShorthandOccurrence {
+    name: string;
+    start: number;
+    end: number;
+  }
+
+  // Parse `#template-name` occurrences in this field's text
+  const templateShorthands = useMemo<TemplateShorthandOccurrence[]>(() => {
+    if (!value) return [];
+    const regex = /(?:^|(?<=\s))#([a-zA-Z_][a-zA-Z0-9_-]*)\b/g;
+    const result: TemplateShorthandOccurrence[] = [];
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(value)) !== null) {
+      const rawMatch = match[0];
+      const name = match[1];
+      const start = match.index + (rawMatch.startsWith("#") ? 0 : 1);
+      const end = start + 1 + name.length;
+      result.push({
+        name,
+        start,
+        end,
+      });
+    }
+    return result;
+  }, [value]);
+
+  const removeTemplateShorthand = (occ: TemplateShorthandOccurrence) => {
+    onChange(value.substring(0, occ.start) + value.substring(occ.end));
+  };
+
+  const filteredTemplates = useMemo(() => {
+    const q = templateQuery.trim().toLowerCase();
+    if (!q) return availableTemplates;
+    return availableTemplates.filter((t) =>
+      t.name.toLowerCase().includes(q),
+    );
+  }, [availableTemplates, templateQuery]);
+
+  const closeTemplateMenu = useCallback(() => {
+    setIsTemplateMenuOpen(false);
+    setTemplateQuery("");
+    setTemplateHashRange(null);
+    setSelectedTemplateIdx(0);
+  }, []);
+
+  const insertTemplateShorthand = useCallback(
+    (templateName: string) => {
+      const el = node;
+      const tag = `#${templateName} `;
+      if (!el) {
+        onChange(value ? `${value} ${tag}` : tag);
+        closeTemplateMenu();
+        return;
+      }
+
+      const currentVal = el.value ?? value;
+      let replaceStart: number;
+      let replaceEnd: number;
+
+      if (templateHashRange) {
+        replaceStart = templateHashRange.start;
+        replaceEnd = templateHashRange.end;
+      } else {
+        const start = el.selectionStart ?? currentVal.length;
+        const end = el.selectionEnd ?? currentVal.length;
+        const before = currentVal.substring(0, start);
+        const hashMatch = before.match(/(?:^|\s)(#[a-zA-Z0-9_-]*)$/);
+        replaceStart = hashMatch ? start - hashMatch[1].length : start;
+        replaceEnd = end;
+      }
+
+      const prefix = currentVal.substring(0, replaceStart);
+      const needsLeadSpace =
+        prefix.length > 0 && !/\s$/.test(prefix) && !templateHashRange;
+      const insertion = `${needsLeadSpace ? " " : ""}${tag}`;
+      const nextVal =
+        prefix + insertion + currentVal.substring(replaceEnd);
+
+      setFieldValue(el, nextVal);
+      closeTemplateMenu();
+      setTimeout(() => {
+        el.focus();
+        const nextPos = replaceStart + insertion.length;
+        el.setSelectionRange(nextPos, nextPos);
+      }, 0);
+    },
+    [node, value, onChange, closeTemplateMenu, templateHashRange],
+  );
+
+  /**
+   * Evaluates whether the caret in `el` is currently inside a `#<query>` token
+   * and updates the VS Code Intellisense popup position & filter query live.
+   */
+  const syncHashIntellisense = useCallback(
+    (el: HTMLInputElement | HTMLTextAreaElement) => {
+      const caret = el.selectionStart ?? 0;
+      const selEnd = el.selectionEnd ?? caret;
+      if (caret !== selEnd) {
+        if (isTemplateMenuOpen && templateHashRange) closeTemplateMenu();
+        return;
+      }
+
+      const textBefore = (el.value || "").substring(0, caret);
+      const match = textBefore.match(/(?:^|\s)#([a-zA-Z0-9_-]*)$/);
+      if (match) {
+        const query = match[1] || "";
+        const hashIdx = caret - query.length - 1;
+        setTemplateQuery(query);
+        setTemplateHashRange({ start: hashIdx, end: caret });
+        setSelectedTemplateIdx(0);
+        setTemplateMenuCoords(getCaretPopupCoords(el, hashIdx));
+        setIsTemplateMenuOpen(true);
+      } else if (isTemplateMenuOpen && templateHashRange !== null) {
+        closeTemplateMenu();
+      }
+    },
+    [isTemplateMenuOpen, templateHashRange, closeTemplateMenu],
+  );
+
+  const handleFieldChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const el = e.currentTarget;
+    onChange(el.value);
+    syncHashIntellisense(el);
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    if (isTemplateMenuOpen) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (filteredTemplates.length > 0) {
+          setSelectedTemplateIdx((prev) =>
+            (prev + 1) % filteredTemplates.length,
+          );
+        }
+        return;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (filteredTemplates.length > 0) {
+          setSelectedTemplateIdx((prev) =>
+            (prev - 1 + filteredTemplates.length) % filteredTemplates.length,
+          );
+        }
+        return;
+      }
+      if (e.key === "Enter" || e.key === "Tab") {
+        const picked =
+          filteredTemplates[selectedTemplateIdx] ?? filteredTemplates[0];
+        if (picked) {
+          e.preventDefault();
+          insertTemplateShorthand(picked.name);
+          return;
+        }
+      }
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        closeTemplateMenu();
+        return;
+      }
+    }
+
+    if (e.key === "@" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      const el = e.currentTarget;
+      const start = el.selectionStart ?? 0;
+      const val = el.value || "";
+      const prevChar = start > 0 ? val[start - 1] : " ";
+      if (start === 0 || /\s/.test(prevChar)) {
+        setTimeout(() => {
+          openMentionPicker(el, { start, end: start + 1 });
+        }, 0);
+      }
+    }
+  };
+
   return (
     <div className={cn("space-y-1.5 relative group/field", className)}>
       <div className="relative">
@@ -209,37 +453,98 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
             ref={setNode}
             rows={rows}
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={handleFieldChange}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className={cn(fieldClasses, "pr-8")}
+            className={cn(fieldClasses, "pr-20")}
           />
         ) : (
           <input
             ref={setNode}
             type="text"
             value={value}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={handleFieldChange}
+            onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className={cn(fieldClasses, "pr-8")}
+            className={cn(fieldClasses, "pr-20")}
           />
         )}
 
-        {/* Quick Icon Button inside the field */}
-        <button
-          type="button"
-          onMouseDown={(e) => {
-            e.preventDefault();
-            if (node) {
-              openIconPicker(node);
-            } else {
-              openIconPicker();
-            }
-          }}
-          title="Insert Icon"
-          className="absolute right-2 top-2 p-1 rounded-md text-neutral-500 hover:text-sky-400 hover:bg-sky-400/15 opacity-0 group-hover/field:opacity-100 focus:opacity-100 transition-all cursor-pointer z-10"
-        >
-          <LuSmile className="w-3.5 h-3.5" />
-        </button>
+        {/* Quick Actions (Mention User, Insert Template & Insert Icon) inside the field */}
+        <div className="absolute right-2 top-2 flex items-center gap-0.5 opacity-0 group-hover/field:opacity-100 focus-within:opacity-100 transition-all z-10">
+          <button
+            ref={templateBtnRef}
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (isTemplateMenuOpen) {
+                closeTemplateMenu();
+              } else {
+                const coords = templateBtnRef.current
+                  ? getAnchorButtonCoords(templateBtnRef.current)
+                  : node
+                    ? getCaretPopupCoords(node, node.selectionStart ?? 0)
+                    : null;
+                setTemplateQuery("");
+                setTemplateHashRange(null);
+                setSelectedTemplateIdx(0);
+                setTemplateMenuCoords(coords);
+                setIsTemplateMenuOpen(true);
+              }
+            }}
+            title="Insert Template (#name)"
+            className={cn(
+              "p-1 rounded-md transition-all cursor-pointer",
+              isTemplateMenuOpen
+                ? "text-indigo-300 bg-indigo-500/20"
+                : "text-neutral-500 hover:text-indigo-400 hover:bg-indigo-400/15",
+            )}
+          >
+            <LuBlocks className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (node) {
+                openMentionPicker(node);
+              } else {
+                openMentionPicker();
+              }
+            }}
+            title="Mention User (@name)"
+            className="p-1 rounded-md text-neutral-500 hover:text-sky-400 hover:bg-sky-400/15 transition-all cursor-pointer"
+          >
+            <LuAtSign className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              if (node) {
+                openIconPicker(node);
+              } else {
+                openIconPicker();
+              }
+            }}
+            title="Insert Icon"
+            className="p-1 rounded-md text-neutral-500 hover:text-amber-400 hover:bg-amber-400/15 transition-all cursor-pointer"
+          >
+            <LuSmile className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        {/* VS Code-Style Floating Template Intellisense Portal (Never clipped by parent overflow-hidden) */}
+        <TemplateIntellisensePortal
+          isOpen={isTemplateMenuOpen}
+          coords={templateMenuCoords}
+          query={templateQuery}
+          templates={filteredTemplates}
+          selectedIndex={selectedTemplateIdx}
+          onSelectIndex={setSelectedTemplateIdx}
+          onPickTemplate={insertTemplateShorthand}
+          onClose={closeTemplateMenu}
+        />
       </div>
 
       {/* Toolbar-triggered child editor (fresh selection, live auto-apply) */}
@@ -352,6 +657,77 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
           </div>
         </div>
       ))}
+
+      {/* Embedded User Mention Pills */}
+      {userMentions.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+            Mentions:
+          </span>
+          {userMentions.map((m, idx) => (
+            <span
+              key={`user-mention-${idx}`}
+              className="inline-flex items-center gap-1.5 pl-1.5 pr-1 py-0.5 rounded-full bg-sky-500/10 border border-sky-400/20 text-sky-200 text-[11px] font-medium"
+            >
+              {m.avatar ? (
+                <img
+                  src={m.avatar}
+                  alt=""
+                  className="w-3.5 h-3.5 rounded-full object-cover"
+                />
+              ) : (
+                <span className="w-3.5 h-3.5 rounded-full bg-sky-400/25 text-[9px] flex items-center justify-center font-bold">
+                  {m.name.charAt(0).toUpperCase()}
+                </span>
+              )}
+              <span className="max-w-28 truncate">{m.name}</span>
+              <button
+                type="button"
+                onClick={() =>
+                  openMentionPicker(node, { start: m.start, end: m.end })
+                }
+                title="Edit mention"
+                className="p-0.5 rounded-full hover:bg-sky-400/20 text-sky-300 transition-colors cursor-pointer"
+              >
+                <LuPencil className="w-2.5 h-2.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => removeUserMention(m)}
+                title="Remove mention"
+                className="p-0.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+              >
+                <LuX className="w-2.5 h-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Embedded Template Shorthand Pills */}
+      {templateShorthands.length > 0 && (
+        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+            Templates:
+          </span>
+          {templateShorthands.map((t, idx) => (
+            <span
+              key={`tpl-${t.name}-${idx}`}
+              className="inline-flex items-center gap-1.5 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-mono font-medium bg-indigo-500/10 border border-indigo-400/20 text-indigo-200"
+            >
+              <span>#{t.name}</span>
+              <button
+                type="button"
+                onClick={() => removeTemplateShorthand(t)}
+                title={`Remove #${t.name}`}
+                className="p-0.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+              >
+                <LuX className="w-2.5 h-2.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

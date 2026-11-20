@@ -136,6 +136,8 @@ export const IconPickerModal: React.FC = () => {
     insertIcon(tag);
   };
 
+  if (!isOpen) return null;
+
   const SelectedIconComp = selectedIconName
     ? ALL_ICONS_MAP[selectedIconName]
     : null;

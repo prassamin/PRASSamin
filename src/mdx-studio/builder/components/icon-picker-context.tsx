@@ -1,7 +1,8 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useState } from "react";
-import { setFieldValue } from "./inline-tooltip-utils";
+import React from "react";
+import { useShallow } from "zustand/react/shallow";
+import { useBuilderUiStore } from "../store/use-builder-ui-store";
 
 export interface ExistingIconInfo {
   tag: string;
@@ -36,20 +37,16 @@ export function findOverlappingIcon(
     const iconStart = match.index;
     const iconEnd = match.index + match[0].length;
 
-    // Inside collapsed cursor (e.g. cursor at index between iconStart and iconEnd)
     const isInsideCollapsed =
       start === end && start > iconStart && start < iconEnd;
-    // Overlapping selection range
     const isOverlappingRange =
       start !== end && Math.max(start, iconStart) < Math.min(end, iconEnd);
-    // Exact selection of the icon
     const isExactSelection = start === iconStart && end === iconEnd;
 
     if (isInsideCollapsed || isOverlappingRange || isExactSelection) {
       const fullTag = match[0];
       const iconName = match[1];
 
-      // Extract existing size and color if present
       const sizeMatch = fullTag.match(/className="[^"]*(w-\d+\s+h-\d+)/);
       const colorMatch = fullTag.match(
         /style=\{\{\s*color:\s*["']([^"']+)["']/,
@@ -69,128 +66,21 @@ export function findOverlappingIcon(
   return null;
 }
 
-interface IconPickerContextValue {
-  isOpen: boolean;
-  target: IconInsertionTarget | null;
-  /** Opens the icon picker, capturing the target element and cursor range */
-  openIconPicker: (element?: HTMLInputElement | HTMLTextAreaElement) => void;
-  closeIconPicker: () => void;
-  /** Inserts the chosen icon JSX tag into the target element at cursor */
-  insertIcon: (iconTag: string) => void;
-}
+export const useIconPicker = () =>
+  useBuilderUiStore(
+    useShallow((s) => ({
+      isOpen: s.isIconPickerOpen,
+      target: s.iconPickerTarget,
+      openIconPicker: s.openIconPicker,
+      closeIconPicker: s.closeIconPicker,
+      insertIcon: s.insertIcon,
+    })),
+  );
 
-const IconPickerContext = createContext<IconPickerContextValue>({
-  isOpen: false,
-  target: null,
-  openIconPicker: () => {},
-  closeIconPicker: () => {},
-  insertIcon: () => {},
-});
-
-export const useIconPicker = () => useContext(IconPickerContext);
+/** Action-only selector so text fields never re-render when the icon modal opens/closes */
+export const useOpenIconPicker = () =>
+  useBuilderUiStore((s) => s.openIconPicker);
 
 export const IconPickerProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [target, setTarget] = useState<IconInsertionTarget | null>(null);
-
-  const openIconPicker = useCallback(
-    (element?: HTMLInputElement | HTMLTextAreaElement) => {
-      let active = element;
-      if (!active) {
-        const docActive = document.activeElement;
-        if (
-          docActive instanceof HTMLInputElement ||
-          docActive instanceof HTMLTextAreaElement
-        ) {
-          active = docActive;
-        }
-      }
-
-      if (active) {
-        const start = active.selectionStart ?? active.value.length;
-        const end = active.selectionEnd ?? active.value.length;
-        const existing = findOverlappingIcon(active.value || "", start, end);
-
-        if (existing) {
-          // If cursor is placed inside an existing icon, select the whole tag for safe replacement
-          setTarget({
-            element: active,
-            start: existing.start,
-            end: existing.end,
-            existingIcon: existing,
-          });
-        } else {
-          setTarget({ element: active, start, end, existingIcon: null });
-        }
-      } else {
-        setTarget(null);
-      }
-      setIsOpen(true);
-    },
-    [],
-  );
-
-  const closeIconPicker = useCallback(() => {
-    setIsOpen(false);
-    setTarget(null);
-  }, []);
-
-  const insertIcon = useCallback(
-    (iconTag: string) => {
-      if (!target?.element) {
-        closeIconPicker();
-        return;
-      }
-
-      const el = target.element;
-      const currentValue = el.value || "";
-
-      // Double check whether current position overlaps an existing icon tag
-      const existing =
-        target.existingIcon ||
-        findOverlappingIcon(currentValue, target.start, target.end);
-
-      const replaceStart = existing ? existing.start : target.start;
-      const replaceEnd = existing ? existing.end : target.end;
-
-      const before = currentValue.slice(0, replaceStart);
-      const after = currentValue.slice(replaceEnd);
-
-      const needsLeadingSpace = before.length > 0 && !/\s$/.test(before);
-      const needsTrailingSpace = after.length > 0 && !/^\s/.test(after);
-
-      const insertion = `${needsLeadingSpace ? " " : ""}${iconTag}${needsTrailingSpace ? " " : ""}`;
-      const nextValue = `${before}${insertion}${after}`;
-
-      setFieldValue(el, nextValue);
-
-      // Place cursor right after the newly inserted/replaced tag
-      const newCursorPos = before.length + (needsLeadingSpace ? 1 : 0) + iconTag.length + (needsTrailingSpace ? 1 : 0);
-      requestAnimationFrame(() => {
-        try {
-          el.focus();
-          el.setSelectionRange(newCursorPos, newCursorPos);
-        } catch {}
-      });
-
-      closeIconPicker();
-    },
-    [target, closeIconPicker],
-  );
-
-  return (
-    <IconPickerContext.Provider
-      value={{
-        isOpen,
-        target,
-        openIconPicker,
-        closeIconPicker,
-        insertIcon,
-      }}
-    >
-      {children}
-    </IconPickerContext.Provider>
-  );
-};
+}) => <>{children}</>;

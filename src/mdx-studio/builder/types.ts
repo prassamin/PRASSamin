@@ -20,7 +20,18 @@ export type MdxBlockType =
   | "divider"
   | "break"
   | "list"
-  | "codeBlockTabs";
+  | "codeBlockTabs"
+  | "template"
+  | "useTemplate"
+  | "user"
+  | "html";
+
+export interface TemplateDefinitionInfo {
+  id: string;
+  name: string;
+  variables: string[];
+  blockCount: number;
+}
 
 export type ListType = "bullet" | "ordered" | "task";
 
@@ -58,11 +69,33 @@ export interface ComponentTrayItem {
   type: MdxBlockType;
   label: string;
   description: string;
-  category: "Structure" | "Interactive" | "Code & Media";
+  category: "Templates" | "Structure" | "Interactive" | "Code & Media";
   defaultProps: Record<string, any>;
 }
 
 export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
+  // Templates
+  {
+    type: "template",
+    label: "Template",
+    description: "Reusable template container (#template-name)",
+    category: "Templates",
+    defaultProps: {
+      name: "my-template",
+      blocks: [],
+    },
+  },
+  {
+    type: "useTemplate",
+    label: "Use Template",
+    description: "Insert template via #template-name or <UseTemplate />",
+    category: "Templates",
+    defaultProps: {
+      name: "",
+      values: {},
+    },
+  },
+
   // Structure
   {
     type: "heading",
@@ -199,6 +232,18 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     category: "Interactive",
     defaultProps: {},
   },
+  {
+    type: "user",
+    label: "Inline User",
+    description: "Inline user mention pill",
+    category: "Interactive",
+    defaultProps: {
+      name: "Jane Doe",
+      avatar: "",
+      role: "",
+      href: "",
+    },
+  },
 
   // Code & Media
   {
@@ -246,5 +291,14 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     description: "Image with optional caption",
     category: "Code & Media",
     defaultProps: {},
+  },
+  {
+    type: "html",
+    label: "Custom HTML / JSX",
+    description: "Custom HTML or JSX markup (<figure>, <video>, <iframe>, etc.)",
+    category: "Code & Media",
+    defaultProps: {
+      code: '<figure className="my-4">\n  <figcaption className="text-xs text-neutral-400">Caption</figcaption>\n</figure>',
+    },
   },
 ];

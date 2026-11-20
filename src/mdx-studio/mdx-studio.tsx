@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { StudioHeader } from "./components/studio-header";
 import { MdxBuilder } from "./builder";
 import { useMdxStudio } from "./mdx-studio-context";
 import { MdxStudioModalProps } from "./types";
+import { MdxBlockType } from "./builder/types";
 import { cn } from "@heroui/react";
 
 const PANEL = {
@@ -38,8 +39,8 @@ const CONTENT = {
   },
 };
 
-export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
-  informationSlot,
+export const MdxStudioModal: React.FC<Partial<MdxStudioModalProps>> = ({
+  informationSlot: propInformationSlot,
   insertBlockListenerRef,
 }) => {
   const studio = useMdxStudio();
@@ -54,7 +55,20 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
     save,
     closeStudio,
     frontmatter,
-  } = studio;
+    informationSlot: storeInformationSlot,
+    registerInsertBlockListener,
+  } = studio as any;
+  const informationSlot = propInformationSlot ?? storeInformationSlot;
+
+  const handleRegisterInsertBlock = useCallback(
+    (fn: (type: MdxBlockType, props?: Record<string, any>) => void) => {
+      registerInsertBlockListener?.(fn);
+      if (insertBlockListenerRef) {
+        insertBlockListenerRef.current = fn;
+      }
+    },
+    [registerInsertBlockListener, insertBlockListenerRef],
+  );
 
   // Keyboard shortcuts: Cmd+S / Ctrl+S to save, Esc to close
   useEffect(() => {
@@ -82,9 +96,9 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
           {...(PANEL as any)}
           className="fixed inset-0 z-50 bg-background text-foreground flex flex-col overflow-hidden"
         >
-          {/* Ambient Top Glow */}
+          {/* Ambient Top Glow (GPU-friendly radial gradient instead of heavy 120px Gaussian blur) */}
           <div
-            className="pointer-events-none absolute -top-40 right-0 -z-10 h-96 w-96 rounded-full bg-accent/5 blur-[120px]"
+            className="pointer-events-none absolute -top-40 right-0 -z-10 h-96 w-96 rounded-full bg-[radial-gradient(circle,rgba(4,133,247,0.08)_0%,transparent_70%)]"
             aria-hidden="true"
           />
 
@@ -133,11 +147,7 @@ export const MdxStudioModal: React.FC<MdxStudioModalProps> = ({
                   onMetadataChange={studio.onMetadataChange}
                   className="rounded-none border-none shadow-none h-full"
                   minHeight="100%"
-                  onRegisterInsertBlock={(fn) => {
-                    if (insertBlockListenerRef) {
-                      insertBlockListenerRef.current = fn;
-                    }
-                  }}
+                  onRegisterInsertBlock={handleRegisterInsertBlock}
                 />
               </div>
             </div>

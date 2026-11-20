@@ -6,6 +6,7 @@ import {
   defineCollections,
 } from "fumadocs-mdx/config";
 import remarkAttributes from "remark-attributes";
+import { remarkTemplates } from "./src/lib/remark-templates";
 import type { Pluggable } from "unified";
 
 /**
@@ -56,6 +57,9 @@ export const project = defineCollections({
 
 export default defineConfig({
   mdxOptions: {
-    remarkPlugins: [remarkAttributes as unknown as Pluggable],
+    remarkPlugins: [
+      remarkTemplates as unknown as Pluggable,
+      remarkAttributes as unknown as Pluggable,
+    ],
   },
 });

@@ -352,6 +352,8 @@ export const ImagePicker: React.FC<ImagePickerProps> = ({
     },
   );
 
+  if (!isOpen && uploadQueue.length === 0) return null;
+
   return (
     <>
       <Modal>

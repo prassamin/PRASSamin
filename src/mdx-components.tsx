@@ -35,6 +35,7 @@ import {
   AvatarGroup,
 } from "./components/mdx/mdx-avatar";
 import { MdxProfile, Profile } from "./components/mdx/mdx-profile";
+import { MdxUser, User } from "./components/mdx/mdx-user";
 import { MdxBlockquote, Blockquote } from "./components/mdx/mdx-blockquote";
 export {
   MdxAvatar,
@@ -43,6 +44,8 @@ export {
   AvatarGroup,
   MdxProfile,
   Profile,
+  MdxUser,
+  User,
   MdxBlockquote,
   Blockquote,
 };
@@ -575,6 +578,7 @@ export const mdxComponents = {
     );
   },
   InlineTooltip: MdxInlineTooltip,
+  User: MdxUser,
   Chip: MdxChip,
   Avatar,
   AvatarGroup,
@@ -604,6 +608,8 @@ export const mdxComponents = {
   Files,
   Folder,
   File,
+  Template: () => null,
+  UseTemplate: () => null,
 };
 
 export function getMDXComponents(components?: MDXComponents): MDXComponents {
@@ -634,6 +640,7 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     Avatar,
     AvatarGroup,
     Profile,
+    User: MdxUser,
     Blockquote,
     Checkbox,
     Card: MdxCard,
@@ -645,6 +652,8 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     CodeBlockTabsList,
     CodeBlockTabsTrigger,
     CodeBlockTab,
+    Template: () => null,
+    UseTemplate: () => null,
     pre: MdxCodeBlock,
     ...components,
   };

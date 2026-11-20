@@ -6,17 +6,19 @@ import { useShortcuts } from "@keybindy/react";
 
 const MAX_HISTORY = 100;
 
-export function useBlockHistory(initialBlocks: MdxBlock[]) {
+export function useBlockHistory(
+  initialBlocks: MdxBlock[] | (() => MdxBlock[]),
+) {
   const [blocks, setBlocksState] = useState<MdxBlock[]>(initialBlocks);
   const pastRef = useRef<MdxBlock[][]>([]);
   const futureRef = useRef<MdxBlock[][]>([]);
-  const currentBlocksRef = useRef<MdxBlock[]>(initialBlocks);
+  const currentBlocksRef = useRef<MdxBlock[]>(blocks);
 
   // Typing session tracking for natural text undo/redo
   const isTypingSessionActiveRef = useRef(false);
   const typingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // State to force re-render for canUndo/canRedo button states
+  // State to force re-render only when canUndo/canRedo availability changes
   const [, setHistoryVersion] = useState(0);
 
   const canUndo = pastRef.current.length > 0;
@@ -36,8 +38,7 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
       const nextBlocks =
         typeof action === "function" ? action(previousState) : action;
 
-      // Ignore no-op updates
-      if (JSON.stringify(previousState) === JSON.stringify(nextBlocks)) {
+      if (previousState === nextBlocks) {
         return;
       }
 
@@ -49,30 +50,27 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
         }
         isTypingSessionActiveRef.current = false;
 
-        // Push baseline to past
+        // Block updates use immutable structural sharing, so a shallow array snapshot is O(1)
         pastRef.current = [
           ...pastRef.current.slice(-(MAX_HISTORY - 1)),
-          JSON.parse(JSON.stringify(previousState)),
+          previousState,
         ];
         futureRef.current = [];
         currentBlocksRef.current = nextBlocks;
         setBlocksState(nextBlocks);
-        setHistoryVersion((v) => v + 1);
       } else {
-        // Writing / typing in an input
+        // Writing / typing in an input — O(1) structural snapshot on burst start
         if (!isTypingSessionActiveRef.current) {
           isTypingSessionActiveRef.current = true;
-          // Immediately save the state BEFORE the user began typing this burst
           pastRef.current = [
             ...pastRef.current.slice(-(MAX_HISTORY - 1)),
-            JSON.parse(JSON.stringify(previousState)),
+            previousState,
           ];
           futureRef.current = [];
         }
 
         currentBlocksRef.current = nextBlocks;
         setBlocksState(nextBlocks);
-        setHistoryVersion((v) => v + 1);
 
         // Reset inactivity timer (450ms). When timer fires, typing session closes
         if (typingTimerRef.current) {
@@ -113,11 +111,8 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
     const previous = pastRef.current[pastRef.current.length - 1];
     const newPast = pastRef.current.slice(0, pastRef.current.length - 1);
 
-    // Push current state into future stack for Redo
-    futureRef.current = [
-      JSON.parse(JSON.stringify(currentBlocksRef.current)),
-      ...futureRef.current,
-    ];
+    // Push current state into future stack for Redo (O(1) structural snapshot)
+    futureRef.current = [currentBlocksRef.current, ...futureRef.current];
     pastRef.current = newPast;
     currentBlocksRef.current = previous;
 
@@ -137,10 +132,10 @@ export function useBlockHistory(initialBlocks: MdxBlock[]) {
     const next = futureRef.current[0];
     const newFuture = futureRef.current.slice(1);
 
-    // Push current state into past stack
+    // Push current state into past stack (O(1) structural snapshot)
     pastRef.current = [
       ...pastRef.current.slice(-(MAX_HISTORY - 1)),
-      JSON.parse(JSON.stringify(currentBlocksRef.current)),
+      currentBlocksRef.current,
     ];
     futureRef.current = newFuture;
     currentBlocksRef.current = next;

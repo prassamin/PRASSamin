@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import { LuPlus } from "react-icons/lu";
+import { useShallow } from "zustand/react/shallow";
 import { MdxBlock, MdxBlockType } from "../types";
 import { CanvasBlockItem } from "./canvas-block-item";
 import { DropIndicator } from "./drop-indicator";
 import { TextSelectionMenu } from "./text-selection-menu";
-import { InlineTooltipProvider } from "./inline-tooltip-context";
-import { IconPickerProvider } from "./icon-picker-context";
 import { IconPickerModal } from "./icon-picker-modal";
+import { UserMentionModal } from "./user-mention-modal";
+import { useBuilderUiStore } from "../store/use-builder-ui-store";
 import { cn } from "@heroui/react";
 
 interface CanvasAreaProps {
@@ -70,6 +71,20 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
   const canvasRef = scrollRef || internalCanvasRef;
   const isNestedDragActiveRef = useRef(false);
 
+  const { availableTemplates, duplicateTemplateIds, syncTemplatesFromBlocks } =
+    useBuilderUiStore(
+      useShallow((s) => ({
+        availableTemplates: s.availableTemplates,
+        duplicateTemplateIds: s.duplicateTemplateIds,
+        syncTemplatesFromBlocks: s.syncTemplatesFromBlocks,
+      })),
+    );
+
+  // Sync template definitions into Zustand store (signature-stabilized, O(1) when unchanged)
+  useEffect(() => {
+    syncTemplatesFromBlocks(blocks);
+  }, [blocks, syncTemplatesFromBlocks]);
+
   const handleNestedDragChange = useCallback((active: boolean) => {
     isNestedDragActiveRef.current = active;
     if (active) {
@@ -77,21 +92,40 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
     }
   }, []);
 
-  const handleDragStart = (e: React.DragEvent, index: number) => {
+  const handleDragStart = useCallback((e: React.DragEvent, index: number) => {
     e.dataTransfer.setData("application/mdx-canvas-reorder", String(index));
     e.dataTransfer.effectAllowed = "move";
     setDraggedIndex(index);
-  };
+  }, []);
+
+  const dragRectCacheRef = useRef<{
+    index: number;
+    midY: number;
+    time: number;
+  } | null>(null);
 
   const handleItemDragOver = (e: React.DragEvent, index: number) => {
     e.preventDefault();
     e.stopPropagation();
     if (isNestedDragActiveRef.current) {
-      setDropIndicator(null);
+      if (dropIndicator !== null) setDropIndicator(null);
       return;
     }
-    const rect = e.currentTarget.getBoundingClientRect();
-    const midY = rect.top + rect.height / 2;
+
+    const now = performance.now();
+    let midY: number;
+    if (
+      dragRectCacheRef.current &&
+      dragRectCacheRef.current.index === index &&
+      now - dragRectCacheRef.current.time < 80
+    ) {
+      midY = dragRectCacheRef.current.midY;
+    } else {
+      const rect = e.currentTarget.getBoundingClientRect();
+      midY = rect.top + rect.height / 2;
+      dragRectCacheRef.current = { index, midY, time: now };
+    }
+
     const position: "top" | "bottom" = e.clientY < midY ? "top" : "bottom";
 
     if (
@@ -216,15 +250,21 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
       ref={canvasRef}
       onScroll={onScroll}
       onDragOver={(e) => e.preventDefault()}
-      onDragLeave={() => setIsDropTargetActive(false)}
+      onDragLeave={(e) => {
+        if (
+          isDropTargetActive &&
+          !e.currentTarget.contains(e.relatedTarget as Node)
+        ) {
+          setIsDropTargetActive(false);
+        }
+      }}
       onDrop={handleContainerDrop}
       className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-4 select-text relative"
     >
-      {/* Floating Rich Formatting Toolbar on Text Selection across all blocks */}
-      <InlineTooltipProvider>
-        <IconPickerProvider>
-          <TextSelectionMenu containerRef={canvasRef} />
-          <IconPickerModal />
+      {/* Floating Rich Formatting Toolbar & Modals (Powered by Zustand useBuilderUiStore) */}
+      <TextSelectionMenu containerRef={canvasRef} />
+      <IconPickerModal />
+      <UserMentionModal />
 
           {blocks.length === 0 ? (
             /* Empty State Drop Target */
@@ -286,6 +326,8 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
                     }
                     onExtractCard={onExtractCard}
                     onMoveCardBetweenGroups={onMoveCardBetweenGroups}
+                    availableTemplates={availableTemplates}
+                    isDuplicateTemplate={duplicateTemplateIds.has(block.id)}
                   />
 
                   {/* Drop Indicator (Insert Below) */}
@@ -316,8 +358,6 @@ export const CanvasArea: React.FC<CanvasAreaProps> = ({
               </div>
             </div>
           )}
-        </IconPickerProvider>
-      </InlineTooltipProvider>
     </div>
   );
 };

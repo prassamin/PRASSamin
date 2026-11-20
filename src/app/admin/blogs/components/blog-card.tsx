@@ -28,7 +28,7 @@ export const BlogCard: React.FC<{
     <div
       className={cn(
         "relative rounded-2xl border border-white/3 bg-muted/40",
-        "p-5 md:p-6 transition-all duration-300 shadow-md overflow-hidden",
+        "p-5 transition-all duration-300 shadow-md overflow-hidden",
         "hover:border-white/5 hover:bg-muted/60",
         showAnalytics && "bg-muted/60",
       )}

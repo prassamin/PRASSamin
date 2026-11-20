@@ -5,6 +5,7 @@ import { evaluate } from "@mdx-js/mdx";
 import * as runtime from "react/jsx-runtime";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
+import { remarkTemplates } from "@/lib/remark-templates";
 import { remarkCardGroup } from "@/lib/remark-card-group";
 import { remarkCodeMeta, rehypeCodeMeta } from "@/lib/remark-code-meta";
 import {
@@ -23,6 +24,7 @@ import {
   Avatar,
   AvatarGroup,
   Profile,
+  User,
   Blockquote,
   MdxTabs,
   MdxTab,
@@ -45,7 +47,7 @@ const resolvedCache = new Map<
 >();
 
 class MDXErrorBoundary extends React.Component<
-  { fallback?: React.ReactNode; children: React.ReactNode },
+  { resetKey?: string; fallback?: React.ReactNode; children: React.ReactNode },
   { hasError: boolean; error: Error | null }
 > {
   constructor(props: any) {
@@ -54,6 +56,11 @@ class MDXErrorBoundary extends React.Component<
   }
   static getDerivedStateFromError(error: Error) {
     return { hasError: true, error };
+  }
+  componentDidUpdate(prevProps: { resetKey?: string }) {
+    if (this.state.hasError && prevProps.resetKey !== this.props.resetKey) {
+      this.setState({ hasError: false, error: null });
+    }
   }
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
     if (NODE_ENV !== "production") {
@@ -108,6 +115,7 @@ function getMdxPromise(content: string) {
           // as hard line breaks instead of being collapsed into spaces
           remarkPlugins: [
             remarkGfm,
+            remarkTemplates,
             remarkBreaks,
             remarkCardGroup,
             remarkCodeMeta,
@@ -157,10 +165,49 @@ export interface MDXContentProps {
   fallback?: React.ReactNode;
 }
 
+const BASE_MDX_COMPONENTS = {
+  ...getMDXComponents(mdxComponents),
+  Accordion: MdxAccordion,
+  AccordionItem: MdxAccordionItem,
+  Accordions: MdxAccordion,
+  Card: MdxCard,
+  Cards: MdxCards,
+  Tabs: MdxTabs,
+  Tab: MdxTab,
+  pre: MdxCodeBlock,
+  table: MdxTable,
+  thead: MdxThead,
+  tbody: MdxTbody,
+  tr: MdxTr,
+  th: MdxTh,
+  td: MdxTd,
+  TypeTable,
+  Files,
+  Folder,
+  File,
+  Avatar,
+  AvatarGroup,
+  Profile,
+  User,
+  Blockquote,
+};
+
+/**
+ * Invokes the stateless function produced by `@mdx-js/mdx` evaluate() directly
+ * so React diffs the returned JSX element tree instead of unmounting and
+ * remounting the entire preview subtree whenever `renderFn` reference changes.
+ */
+const MdxTreeHost: React.FC<{
+  renderFn: React.ComponentType<{ components?: any }>;
+  components: Record<string, any>;
+}> = ({ renderFn, components }) => {
+  return <>{(renderFn as any)({ components })}</>;
+};
+
 export const MDXContent: React.FC<MDXContentProps> = ({
   content,
   className,
-  components = {},
+  components,
   fallback,
 }) => {
   const [RenderedComponent, setRenderedComponent] =
@@ -174,7 +221,7 @@ export const MDXContent: React.FC<MDXContentProps> = ({
       return;
     }
 
-    // If already resolved in cache, update immediately
+    // If already resolved in cache, update immediately in 0ms
     const cached = resolvedCache.get(content);
     if (cached) {
       setRenderedComponent(() => cached);
@@ -182,17 +229,33 @@ export const MDXContent: React.FC<MDXContentProps> = ({
     }
 
     let isCancelled = false;
-    getMdxPromise(content).then((Comp) => {
-      if (!isCancelled) {
-        resolvedCache.set(content, Comp);
-        setRenderedComponent(() => Comp);
-      }
-    });
+    // Debounce AST compilation during active typing bursts so we don't fire
+    // full Unified/Remark/Acorn evaluations on the main thread mid-keystroke
+    const timer = setTimeout(
+      () => {
+        getMdxPromise(content).then((Comp) => {
+          if (!isCancelled) {
+            resolvedCache.set(content, Comp);
+            setRenderedComponent(() => Comp);
+          }
+        });
+      },
+      RenderedComponent ? 180 : 0,
+    );
 
     return () => {
       isCancelled = true;
+      clearTimeout(timer);
     };
   }, [content]);
+
+  const mergedComponents = React.useMemo(
+    () =>
+      components && Object.keys(components).length > 0
+        ? { ...BASE_MDX_COMPONENTS, ...components }
+        : BASE_MDX_COMPONENTS,
+    [components],
+  );
 
   if (!content) return null;
 
@@ -203,33 +266,6 @@ export const MDXContent: React.FC<MDXContentProps> = ({
       </div>
     );
   }
-
-  const mergedComponents = {
-    ...getMDXComponents(mdxComponents),
-    Accordion: MdxAccordion,
-    AccordionItem: MdxAccordionItem,
-    Accordions: MdxAccordion,
-    Card: MdxCard,
-    Cards: MdxCards,
-    Tabs: MdxTabs,
-    Tab: MdxTab,
-    pre: MdxCodeBlock,
-    table: MdxTable,
-    thead: MdxThead,
-    tbody: MdxTbody,
-    tr: MdxTr,
-    th: MdxTh,
-    td: MdxTd,
-    TypeTable,
-    Files,
-    Folder,
-    File,
-    Avatar,
-    AvatarGroup,
-    Profile,
-    Blockquote,
-    ...components,
-  };
 
   return (
     <div
@@ -244,8 +280,11 @@ export const MDXContent: React.FC<MDXContentProps> = ({
         className,
       )}
     >
-      <MDXErrorBoundary key={content} fallback={fallback}>
-        <RenderedComponent components={mergedComponents} />
+      <MDXErrorBoundary resetKey={content} fallback={fallback}>
+        <MdxTreeHost
+          renderFn={RenderedComponent}
+          components={mergedComponents}
+        />
       </MDXErrorBoundary>
     </div>
   );
