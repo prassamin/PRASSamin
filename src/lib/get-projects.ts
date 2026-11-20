@@ -15,6 +15,8 @@ export interface QueryProjects {
     title: string;
     description?: string;
     thumbnail?: string;
+    live?: string;
+    github?: string;
     createdAt: string;
     updatedAt: string;
     views?: number;
@@ -71,7 +73,8 @@ export async function getProjects({
       updatedAt: entry.data.updatedAt,
       createdAt: entry.data.createdAt,
       thumbnail: entry.data.thumbnail,
-      links: entry.data.links,
+      github: entry.data.github,
+      live: entry.data.live,
       category: entry.data.category,
       slug: entry.slugs.join("/"),
       url: entry.url,

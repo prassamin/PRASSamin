@@ -105,9 +105,9 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                 </p>
 
                 {/* Repository Link */}
-                {page.data.links?.github && (
+                {page.data?.github && (
                   <Link
-                    href={page.data.links.github}
+                    href={page.data.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] flex items-center gap-1.5 c1 group decoration-transparent"
@@ -118,9 +118,9 @@ const ProjectPage = async ({ params }: { params: Props }) => {
                 )}
 
                 {/* Open Live Site Link */}
-                {page.data.links?.live && (
+                {page.data?.live && (
                   <Link
-                    href={page.data.links.live}
+                    href={page.data.live}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="underline text-neutral-300 transition-colors hover:decoration-current focus:decoration-current active:decoration-[color-mix(in_srgb,currentColor_65%,#171717)] flex items-center gap-1.5 c1 group decoration-transparent"

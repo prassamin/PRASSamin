@@ -90,14 +90,22 @@ export const useMdxStudioStore = create<MdxStudioStoreState>((set, get) => ({
     });
   },
 
-  setMetadata: (meta: Record<string, any>) => {
+  setMetadata: (
+    metaOrUpdater:
+      | Record<string, any>
+      | ((prev: Record<string, any>) => Record<string, any>),
+  ) => {
     const state = get();
+    const nextMeta =
+      typeof metaOrUpdater === "function"
+        ? metaOrUpdater(state.metadata)
+        : metaOrUpdater;
     set({
-      metadata: meta,
+      metadata: nextMeta,
       frontmatter: computeFrontmatter(
         null,
         state.includeMetadata,
-        meta,
+        nextMeta,
         state.getMetadataCallback,
       ),
     });

@@ -17,9 +17,7 @@ import type { Pluggable } from "unified";
  */
 const dateString = z
   .union([z.string(), z.date()])
-  .transform((value) =>
-    value instanceof Date ? value.toISOString() : value,
-  );
+  .transform((value) => (value instanceof Date ? value.toISOString() : value));
 
 export const blog = defineDocs({
   dir: "content/blogs",
@@ -43,12 +41,8 @@ export const project = defineCollections({
     createdAt: dateString,
     thumbnail: z.string().optional(),
     banner: z.string().optional(),
-    links: z
-      .object({
-        github: z.string().optional(),
-        live: z.string().optional(),
-      })
-      .optional(),
+    github: z.string().optional(),
+    live: z.string().optional(),
     category: z.string(),
     tools: z.array(z.string()).optional(),
     views: z.number().optional(),

@@ -79,15 +79,11 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
       if (tools.length) {
         result.tools = tools;
       }
-      const links: Record<string, string> = {};
       if (sanitizeMetaText(current.github)) {
-        links.github = sanitizeMetaText(current.github);
+        result.github = sanitizeMetaText(current.github);
       }
       if (sanitizeMetaText(current.live)) {
-        links.live = sanitizeMetaText(current.live);
-      }
-      if (Object.keys(links).length) {
-        result.links = links;
+        result.live = sanitizeMetaText(current.live);
       }
       if (sanitizeMetaText(current.thumbnail)) {
         result.thumbnail = sanitizeMetaText(current.thumbnail);
@@ -209,8 +205,18 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
       description: typeof data.description === "string" ? data.description : "",
       category: typeof data.category === "string" ? data.category : "",
       tools: Array.isArray(data.tools) ? data.tools.join(", ") : "",
-      github: typeof data.links?.github === "string" ? data.links.github : "",
-      live: typeof data.links?.live === "string" ? data.links.live : "",
+      github:
+        typeof data?.github === "string"
+          ? data.github
+          : typeof data?.links?.github === "string"
+            ? data.links.github
+            : "",
+      live:
+        typeof data?.live === "string"
+          ? data.live
+          : typeof data?.links?.live === "string"
+            ? data.links.live
+            : "",
       thumbnail: typeof data.thumbnail === "string" ? data.thumbnail : "",
       banner: typeof data.banner === "string" ? data.banner : "",
     };

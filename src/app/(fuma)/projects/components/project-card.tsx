@@ -160,14 +160,14 @@ export default function ProjectCard({
         </motion.div>
 
         {/* Links: Live Preview & Source Code */}
-        {(project.links?.live || project.links?.github) && (
+        {(project?.live || project?.github) && (
           <motion.div
             className="flex items-center w-fit gap-4 *:whitespace-nowrap"
             variants={cardSectionVariants}
           >
-            {project.links?.live && (
+            {project?.live && (
               <a
-                href={project.links.live}
+                href={project.live}
                 target="_blank"
                 rel="noreferrer"
                 className="text-neutral-300 font-light flex items-center gap-1.5 hover:text-foreground transition-colors"
@@ -179,9 +179,9 @@ export default function ProjectCard({
                 />
               </a>
             )}
-            {project.links?.github && (
+            {project?.github && (
               <a
-                href={project.links.github}
+                href={project.github}
                 target="_blank"
                 rel="noreferrer"
                 className="text-neutral-300 font-light flex items-center gap-1.5 hover:text-foreground transition-colors"
