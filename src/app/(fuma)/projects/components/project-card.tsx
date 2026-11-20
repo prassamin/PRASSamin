@@ -155,14 +155,6 @@ export default function ProjectCard({
                 aria-hidden="true"
                 className="absolute inset-x-0 top-0 z-10 h-[0.8px] bg-[linear-gradient(90deg,rgba(0,0,0,0)_20%,rgb(255,255,255)_50%,rgba(0,0,0,0)_80%)] opacity-70"
               />
-
-              {/* Heading text + ArrowRight (top-aligned) */}
-              <div className="relative z-20 flex w-full flex-row items-center justify-between gap-8 px-4 py-3 text-white/90 md:px-6 md:py-4 lg:px-5 lg:py-5">
-                <p className="text-sm sm:text-base md:text-lg line-clamp-2">
-                  {project.description}
-                </p>
-                <ArrowRight className="size-5 shrink-0 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
-              </div>
             </div>
           </Link>
         </motion.div>

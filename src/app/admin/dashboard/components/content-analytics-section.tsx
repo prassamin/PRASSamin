@@ -133,7 +133,7 @@ export const ContentAnalyticsSection: React.FC<
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer",
                 selectedTab === "chart"
-                  ? "bg-white/1 text-white shadow-xs"
+                  ? "bg-white/8 text-white shadow-xs"
                   : "text-neutral-400 hover:text-white",
               )}
             >
@@ -146,7 +146,7 @@ export const ContentAnalyticsSection: React.FC<
               className={cn(
                 "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all whitespace-nowrap cursor-pointer",
                 selectedTab === "table"
-                  ? "bg-white/1 text-white shadow-xs"
+                  ? "bg-white/8 text-white shadow-xs"
                   : "text-neutral-400 hover:text-white",
               )}
             >
