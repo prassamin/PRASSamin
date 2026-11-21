@@ -15,6 +15,7 @@ import { useOpenIconPicker } from "./icon-picker-context";
 import { useOpenUserMention } from "./user-mention-context";
 import { useAvailableTemplates } from "./template-context";
 import { TemplateDefinitionInfo } from "../types";
+import { parseShorthandParams } from "@/lib/remark-templates";
 import {
   CaretPopupCoords,
   TemplateIntellisensePortal,
@@ -268,23 +269,28 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
 
   interface TemplateShorthandOccurrence {
     name: string;
+    params: Record<string, string>;
     start: number;
     end: number;
   }
 
-  // Parse `#template-name` occurrences in this field's text
+  // Parse `#template-name` and `#template-name(k="v")` occurrences in this field's text
   const templateShorthands = useMemo<TemplateShorthandOccurrence[]>(() => {
     if (!value) return [];
-    const regex = /(?:^|(?<=\s))#([a-zA-Z_][a-zA-Z0-9_-]*)\b/g;
+    const regex =
+      /(?:^|(?<=\s))#([a-zA-Z_][a-zA-Z0-9_-]*)(?:\(([^)\r\n]*)\))?(?![a-zA-Z0-9_-])/g;
     const result: TemplateShorthandOccurrence[] = [];
     let match: RegExpExecArray | null;
     while ((match = regex.exec(value)) !== null) {
       const rawMatch = match[0];
       const name = match[1];
-      const start = match.index + (rawMatch.startsWith("#") ? 0 : 1);
-      const end = start + 1 + name.length;
+      const rawArgs = match[2];
+      const leadOffset = rawMatch.startsWith("#") ? 0 : 1;
+      const start = match.index + leadOffset;
+      const end = match.index + rawMatch.length;
       result.push({
         name,
+        params: parseShorthandParams(rawArgs),
         start,
         end,
       });
@@ -294,6 +300,45 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
 
   const removeTemplateShorthand = (occ: TemplateShorthandOccurrence) => {
     onChange(value.substring(0, occ.start) + value.substring(occ.end));
+  };
+
+  const updateTemplateShorthandVar = (
+    occ: TemplateShorthandOccurrence,
+    varKey: string,
+    varVal: string,
+  ) => {
+    const tplDef = availableTemplates.find((t) => t.name === occ.name);
+    const declaredOrder = tplDef ? tplDef.variables : [];
+    const nextParams: Record<string, string> = {
+      ...occ.params,
+      [varKey]: varVal,
+    };
+
+    const orderedKeys = [
+      ...declaredOrder,
+      ...Object.keys(nextParams).filter((k) => !declaredOrder.includes(k)),
+    ];
+
+    const entries = orderedKeys
+      .map((k) => [k, nextParams[k] ?? ""] as const)
+      .filter(([, v]) => String(v).trim() !== "");
+
+    let replacement = `#${occ.name}`;
+    if (entries.length > 0) {
+      const formattedArgs = entries
+        .map(([k, v]) => {
+          const escaped = String(v)
+            .replace(/"/g, '\\"')
+            .replace(/\r?\n/g, " ");
+          return `${k}="${escaped}"`;
+        })
+        .join(", ");
+      replacement = `#${occ.name}(${formattedArgs})`;
+    }
+
+    onChange(
+      value.substring(0, occ.start) + replacement + value.substring(occ.end),
+    );
   };
 
   const filteredTemplates = useMemo(() => {
@@ -704,28 +749,107 @@ export const InlineTooltipField: React.FC<InlineTooltipFieldProps> = ({
         </div>
       )}
 
-      {/* Embedded Template Shorthand Pills */}
+      {/* Embedded Template Shorthand Pills & Variable Rows */}
       {templateShorthands.length > 0 && (
-        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-          <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
-            Templates:
-          </span>
-          {templateShorthands.map((t, idx) => (
-            <span
-              key={`tpl-${t.name}-${idx}`}
-              className="inline-flex items-center gap-1.5 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-mono font-medium bg-indigo-500/10 border border-indigo-400/20 text-indigo-200"
-            >
-              <span>#{t.name}</span>
-              <button
-                type="button"
-                onClick={() => removeTemplateShorthand(t)}
-                title={`Remove #${t.name}`}
-                className="p-0.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+        <div className="space-y-1.5 pt-0.5">
+          {/* Compact pills for 0-variable template shorthands */}
+          {templateShorthands.some((t) => {
+            const def = availableTemplates.find((d) => d.name === t.name);
+            const hasVars =
+              (def && def.variables.length > 0) ||
+              Object.keys(t.params).length > 0;
+            return !hasVars;
+          }) && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-[10px] font-mono text-neutral-500 uppercase tracking-wider">
+                Templates:
+              </span>
+              {templateShorthands.map((t, idx) => {
+                const def = availableTemplates.find((d) => d.name === t.name);
+                const hasVars =
+                  (def && def.variables.length > 0) ||
+                  Object.keys(t.params).length > 0;
+                if (hasVars) return null;
+                return (
+                  <span
+                    key={`tpl-pill-${t.name}-${idx}`}
+                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-0.5 rounded-full text-[11px] font-mono font-medium bg-indigo-500/10 border border-indigo-400/20 text-indigo-200"
+                  >
+                    <span>#{t.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeTemplateShorthand(t)}
+                      title={`Remove #${t.name}`}
+                      className="p-0.5 rounded-full hover:bg-red-500/20 text-neutral-400 hover:text-red-400 transition-colors cursor-pointer"
+                    >
+                      <LuX className="w-2.5 h-2.5" />
+                    </button>
+                  </span>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Embedded Variable Editor Rows for templates with {{variables}} */}
+          {templateShorthands.map((t, idx) => {
+            const def = availableTemplates.find((d) => d.name === t.name);
+            const declaredVars = def ? def.variables : [];
+            const extraVars = Object.keys(t.params).filter(
+              (k) => !declaredVars.includes(k),
+            );
+            const allVars = [...declaredVars, ...extraVars];
+            if (allVars.length === 0) return null;
+
+            return (
+              <div
+                key={`tpl-vars-row-${idx}`}
+                className="rounded-xl border border-indigo-400/20 bg-indigo-500/6 p-2.5 space-y-2"
               >
-                <LuX className="w-2.5 h-2.5" />
-              </button>
-            </span>
-          ))}
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <LuBlocks className="w-3.5 h-3.5 text-indigo-300 shrink-0" />
+                    <span className="text-[11px] font-mono font-semibold text-indigo-200 truncate">
+                      #{t.name}
+                    </span>
+                    <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-indigo-500/15 border border-indigo-400/20 text-indigo-300">
+                      {allVars.length} {allVars.length === 1 ? "var" : "vars"}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeTemplateShorthand(t)}
+                    title={`Remove #${t.name}`}
+                    className="p-1 rounded-lg text-neutral-400 hover:text-red-400 hover:bg-red-500/10 shrink-0 transition-colors cursor-pointer"
+                  >
+                    <LuX className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {allVars.map((varKey) => (
+                    <div
+                      key={varKey}
+                      className="flex items-center gap-1.5 bg-black/35 border border-white/10 focus-within:border-indigo-400/60 rounded-lg px-2 py-1 transition-colors"
+                    >
+                      <span className="text-[10px] font-mono text-indigo-300 shrink-0 select-none">
+                        {`{{${varKey}}}`}
+                      </span>
+                      <input
+                        type="text"
+                        data-format-role="plain"
+                        value={t.params[varKey] ?? ""}
+                        onChange={(e) =>
+                          updateTemplateShorthandVar(t, varKey, e.target.value)
+                        }
+                        placeholder={`Value for ${varKey}...`}
+                        className="flex-1 min-w-0 bg-transparent text-[11px] text-white placeholder:text-neutral-500 focus:outline-none"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

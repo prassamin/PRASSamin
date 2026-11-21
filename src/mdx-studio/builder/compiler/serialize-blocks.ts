@@ -615,9 +615,20 @@ export function blocksToMdx(
           );
         });
 
-        // If shorthand mode is chosen (or no variables defined), compile as clean #template-name!
-        if (props.mode === "shorthand" && varEntries.length === 0 && rawName) {
-          segments.push(`#${rawName}`);
+        // If shorthand mode is chosen (or no variables defined), compile as clean #template-name or #template-name(k="v")!
+        if (props.mode === "shorthand" && rawName) {
+          if (varEntries.length === 0) {
+            segments.push(`#${rawName}`);
+          } else {
+            const argParts = varEntries.map(([key, val]) => {
+              const safeKey = key.trim();
+              const escapedVal = String(val ?? "")
+                .replace(/"/g, '\\"')
+                .replace(/\r?\n/g, " ");
+              return `${safeKey}="${escapedVal}"`;
+            });
+            segments.push(`#${rawName}(${argParts.join(", ")})`);
+          }
           break;
         }
 

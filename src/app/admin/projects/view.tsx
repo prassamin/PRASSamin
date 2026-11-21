@@ -56,6 +56,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
   const YAML_OPTIONS = {
     lineWidth: 80,
     defaultStringType: "QUOTE_DOUBLE" as const,
+    defaultKeyType: "PLAIN" as const,
   };
 
   useEffect(() => {
@@ -115,32 +116,47 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
           : "New Project",
       initialMdx: initialBody,
       includeMetadata: true,
-      initialMetadata: initialMeta,
+      initialMetadata: buildMeta(),
       getMetadata: buildMeta,
       onMetadataChange: (newMeta) => {
-        setMeta((prev) => ({
-          ...prev,
-          ...(newMeta.title !== undefined ? { title: String(newMeta.title) } : {}),
-          ...(newMeta.description !== undefined
-            ? { description: String(newMeta.description) }
-            : {}),
-          ...(newMeta.category !== undefined
-            ? { category: String(newMeta.category) }
-            : {}),
-          ...(newMeta.tools !== undefined
-            ? {
-                tools: Array.isArray(newMeta.tools)
-                  ? newMeta.tools.join(", ")
-                  : String(newMeta.tools),
-              }
-            : {}),
-          ...(newMeta.github !== undefined ? { github: String(newMeta.github) } : {}),
-          ...(newMeta.live !== undefined ? { live: String(newMeta.live) } : {}),
-          ...(newMeta.thumbnail !== undefined
-            ? { thumbnail: String(newMeta.thumbnail) }
-            : {}),
-          ...(newMeta.banner !== undefined ? { banner: String(newMeta.banner) } : {}),
-        }));
+        const next: ProjectFormData = {
+          title:
+            newMeta.title !== undefined
+              ? String(newMeta.title)
+              : metaRef.current.title,
+          description:
+            newMeta.description !== undefined
+              ? String(newMeta.description)
+              : metaRef.current.description,
+          category:
+            newMeta.category !== undefined
+              ? String(newMeta.category)
+              : metaRef.current.category,
+          tools:
+            newMeta.tools !== undefined
+              ? Array.isArray(newMeta.tools)
+                ? newMeta.tools.join(", ")
+                : String(newMeta.tools)
+              : metaRef.current.tools,
+          github:
+            newMeta.github !== undefined
+              ? String(newMeta.github)
+              : metaRef.current.github,
+          live:
+            newMeta.live !== undefined
+              ? String(newMeta.live)
+              : metaRef.current.live,
+          thumbnail:
+            newMeta.thumbnail !== undefined
+              ? String(newMeta.thumbnail)
+              : metaRef.current.thumbnail,
+          banner:
+            newMeta.banner !== undefined
+              ? String(newMeta.banner)
+              : metaRef.current.banner,
+        };
+        metaRef.current = next;
+        setMeta(next);
       },
       saveButton: (controller) => {
         const current = metaRef.current;
@@ -168,7 +184,13 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ projects }) => {
         );
       },
       informationSlot: (
-        <ProjectForm initialData={initialMeta} onChange={setMeta} />
+        <ProjectForm
+          initialData={initialMeta}
+          onChange={(next) => {
+            metaRef.current = next;
+            setMeta(next);
+          }}
+        />
       ),
       onSave: async () => {},
     });

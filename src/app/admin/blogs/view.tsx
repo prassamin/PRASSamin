@@ -62,6 +62,7 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
   const YAML_OPTIONS = {
     lineWidth: 80,
     defaultStringType: "QUOTE_DOUBLE" as const,
+    defaultKeyType: "PLAIN" as const,
   };
 
   useEffect(() => {
@@ -115,29 +116,35 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
           : "New Blog Post",
       initialMdx: initialBody,
       includeMetadata: true,
-      initialMetadata: initialMeta,
+      initialMetadata: buildMeta(),
       getMetadata: buildMeta,
       onMetadataChange: (newMeta) => {
-        setMeta((prev) => ({
-          ...prev,
-          ...(newMeta.title !== undefined ? { title: String(newMeta.title) } : {}),
-          ...(newMeta.description !== undefined
-            ? { description: String(newMeta.description) }
-            : {}),
-          ...(newMeta.tags !== undefined
-            ? {
-                tags: Array.isArray(newMeta.tags)
-                  ? newMeta.tags.join(", ")
-                  : String(newMeta.tags),
-              }
-            : {}),
-          ...(newMeta.thumbnail !== undefined
-            ? { thumbnail: String(newMeta.thumbnail) }
-            : {}),
-          ...(newMeta.banner !== undefined
-            ? { banner: String(newMeta.banner) }
-            : {}),
-        }));
+        const next: BlogFormData = {
+          title:
+            newMeta.title !== undefined
+              ? String(newMeta.title)
+              : metaRef.current.title,
+          description:
+            newMeta.description !== undefined
+              ? String(newMeta.description)
+              : metaRef.current.description,
+          tags:
+            newMeta.tags !== undefined
+              ? Array.isArray(newMeta.tags)
+                ? newMeta.tags.join(", ")
+                : String(newMeta.tags)
+              : metaRef.current.tags,
+          thumbnail:
+            newMeta.thumbnail !== undefined
+              ? String(newMeta.thumbnail)
+              : metaRef.current.thumbnail,
+          banner:
+            newMeta.banner !== undefined
+              ? String(newMeta.banner)
+              : metaRef.current.banner,
+        };
+        metaRef.current = next;
+        setMeta(next);
       },
       saveButton: (controller) => {
         const current = metaRef.current;
@@ -167,7 +174,15 @@ export const BlogsView: React.FC<BlogsViewProps> = ({ blogs }) => {
           />
         );
       },
-      informationSlot: <BlogForm initialData={initialMeta} onChange={setMeta} />,
+      informationSlot: (
+        <BlogForm
+          initialData={initialMeta}
+          onChange={(next) => {
+            metaRef.current = next;
+            setMeta(next);
+          }}
+        />
+      ),
       onSave: async () => {},
     });
 

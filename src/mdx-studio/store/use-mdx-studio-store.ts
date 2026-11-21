@@ -15,14 +15,17 @@ function computeFrontmatter(
 ): string {
   if (customFrontmatter !== null) return customFrontmatter;
   if (!includeMetadata) return "";
-  const meta =
-    Object.keys(metadata).length > 0
+  const meta = getMetadata
+    ? getMetadata()
+    : Object.keys(metadata).length > 0
       ? metadata
-      : getMetadata
-        ? getMetadata()
-        : {};
+      : {};
   if (!meta || Object.keys(meta).length === 0) return "";
-  return `---\n${stringify(meta, { lineWidth: 80 })}---`;
+  return `---\n${stringify(meta, {
+    lineWidth: 80,
+    defaultStringType: "QUOTE_DOUBLE",
+    defaultKeyType: "PLAIN",
+  })}---`;
 }
 
 let currentInsertBlockListener:

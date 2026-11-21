@@ -1,5 +1,6 @@
 import { MdxBlock, ListType, ListItem } from "../types";
 import { parseUserMentions } from "../components/user-mention-utils";
+import { parseShorthandParams } from "@/lib/remark-templates";
 import {
   createBlock,
   dedentCode,
@@ -23,14 +24,17 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
     const trimmed = raw.trim();
     if (!trimmed) continue;
 
-    // Standalone #template-name shorthand usage
-    const shorthandMatch = trimmed.match(/^#([a-zA-Z_][a-zA-Z0-9_-]*)$/);
+    // Standalone #template-name or #template-name(k="v") shorthand usage
+    const shorthandMatch = trimmed.match(
+      /^#([a-zA-Z_][a-zA-Z0-9_-]*)(?:\(([^)\r\n]*)\))?$/,
+    );
     if (shorthandMatch) {
+      const values = parseShorthandParams(shorthandMatch[2]);
       blocks.push(
         createBlock("useTemplate", {
           name: shorthandMatch[1],
           mode: "shorthand",
-          values: {},
+          values,
         }),
       );
       continue;

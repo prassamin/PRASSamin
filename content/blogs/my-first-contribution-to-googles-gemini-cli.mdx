@@ -2,8 +2,6 @@
 title: "My First Contribution to Google's Gemini CLI"
 description: "How getting rejected by Google maintainers and learning the hard
   way turned a naive PR into a merged P1 feature in Gemini CLI."
-createdAt: "2026-11-18T04:10:00.000Z"
-updatedAt: "2026-11-19T14:46:51.848Z"
 tags:
   - "Open Source"
   - "Google Gemini"
@@ -11,8 +9,22 @@ tags:
   - "CLI"
 thumbnail: "https://res.cloudinary.com/dee5yihmx/image/upload/v1795078210/pras/\
   portfolio/images/image_1795078208510.webp"
+createdAt: "2026-11-23T21:02:24.503Z"
+updatedAt: "2026-11-23T21:40:23.245Z"
 ---
 
+
+<Template name="prassamin">
+  <User name="PRAS Samin" avatar="https://avatars.githubusercontent.com/u/103464543" href="https://github.com/prassamin" role="Senior Software" />
+</Template>
+
+<Template name="scidomino">
+  <User name="Tommaso Sciortino" avatar="https://avatars.githubusercontent.com/u/13950003" href="https://github.com/scidomino" role="Senior Software Developer at Google" />
+</Template>
+
+<Template name="pr">
+  [#{{number}}](https://github.com/google-gemini/gemini-cli/pull/{{number}})
+</Template>
 
 Earlier this year in April, Google’s Gemini CLI was one of the leading terminal AI harnesses in the developer space. Other CLI tools were either just getting off the ground or hadn't even appeared yet. I was a heavy user, working across multiple projects with Gemini as my primary coding partner.
 
@@ -38,14 +50,14 @@ So, blindly, I opened my editor and started writing code.
 
 <br />
 
-A couple of weeks later, **[PR #25256](https://github.com/google-gemini/gemini-cli/pull/25256)**-labeled **`size/L`** was merged into main and featured in the **v0.40.0 release notes**.
+A couple of weeks later, #pr(number="25256") labeled **`size/L`** was merged into main and featured in the **v0.40.0 release notes**.
 
 Here’s the honest story of how that happened: the terrible first attempt, the rejection, the pivot, and the 9-day review marathon that followed.
 
 ---
 
 <Callout type="info">
-  **TL;DR:** Gemini CLI's `@` file suggestion only crawled your workspace once on startup. My first naive attempt was rejected because it re-introduced expensive full-project crawls. After researching watcher techniques and pitching Google maintainer `@scidomino`, we implemented a debounced file watcher, swapped arrays to `Set` for `O(1)` operations, and shipped it safely behind a configuration flag.
+  **TL;DR:** Gemini CLI's `@` file suggestion only crawled your workspace once on startup. My first naive attempt was rejected because it re-introduced expensive full-project crawls. After researching watcher techniques and pitching Google maintainer #scidomino, we implemented a debounced file watcher, swapped arrays to `Set` for `O(1)` operations, and shipped it safely behind a configuration flag.
 </Callout>
 
 ---
@@ -60,7 +72,7 @@ I closed it, made a few minor tweaks to that same bad approach, and opened anoth
 
 Finally, a Google maintainer left a comment that gave me a cold shower of reality:
 
-> *"We intentionally introduced the fzf index in [#5136](http://github.com/google-gemini/gemini-cli/pull/5136) because we didn't want users to have to wait to crawl their whole workspace before presenting autocompletions. But this PR reintroduces the full-workspace crawl. For most users this is probably fine, but we were getting lots of complaints from users with very large workspaces which is why we merged [#5136](http://github.com/google-gemini/gemini-cli/pull/5136)... After discussing this with the team we've decided this is not the way to go. We'd want to use filewatchers if anything. Thanks for investigating this tho!"*
+> *"We intentionally introduced the fzf index in #pr(number="5136") because we didn't want users to have to wait to crawl their whole workspace before presenting autocompletions. But this PR reintroduces the full-workspace crawl. For most users this is probably fine, but we were getting lots of complaints from users with very large workspaces which is why we merged #pr(number="5136")... After discussing this with the team we've decided this is not the way to go. We'd want to use filewatchers if anything. Thanks for investigating this tho!"*
 
 My solution wasn't just suboptimal-it was undoing performance work the Google team had spent months optimizing.
 
@@ -72,7 +84,7 @@ It would have been very easy to close the tab, feel embarrassed, and give up. Bu
 
 I spent the next few hours researching background file-watching patterns. But this time, I didn't rush to open another PR. I decided to communicate first.
 
-I reached out directly to Google maintainer **`@scidomino`**:
+I reached out directly to Google maintainer #scidomino:
 
 > *"Hey @scidomino, I have an idea for a fix. When the CLI first opens, the crawler runs and crawls the entire workspace to create results for the @ menu. Then, a file watcher will continuously watch the workspace for file/folder creation and deletion. When an event occurs, the watcher will update the crawled results in the background. This way, users won't need to wait when they press @. What do you think about this approach? Does it look okay to you? I'd love to work on this fix."*
 
@@ -147,7 +159,7 @@ With a `Set`, checking, adding, and deleting paths became **O(1) constant time**
 
 ### 2. `fzf` Can't Do Incremental Updates
 
-Updating our `Set` in memory was fast. But as `@scidomino` pointed out, `fzf` doesn't let you append a single file to an existing index. The index has to be rebuilt from scratch.
+Updating our `Set` in memory was fast. But as #scidomino pointed out, `fzf` doesn't let you append a single file to an existing index. The index has to be rebuilt from scratch.
 
 If we rebuilt the index on every single watcher event, running `bun install` or a build step would freeze the terminal.
 
@@ -174,7 +186,7 @@ We added an explicit safeguard: once `this.files.size` hits the configured `maxF
 
 Because this PR touched 14 files and core search behavior, it was tagged as **`size/L`** in the repository.
 
-From **April 13 to April 22**-nine straight days-`@scidomino` and I worked through review cycles. He wasn't just reviewing; he was actively mentoring me through edge cases:
+From **April 13 to April 22** nine straight days #scidomino and I worked through review cycles. He wasn't just reviewing; he was actively mentoring me through edge cases:
 
 1. **Clean Shutdown on Disposal:** If a user hit `Ctrl + C` while an asynchronous file scan was still resolving, floating promises could trigger unhandled rejections during exit. We added an explicit lifecycle flag to cancel pending tasks cleanly when the searcher is disposed.
 2. **Sandbox Error Propagation:** In early revisions, I silenced watcher errors. Maintainers noted that in corporate sandboxes where filesystem access might be restricted, silent errors make troubleshooting impossible. We wired up an `onError` channel so issues bubble up to the CLI’s logger.
@@ -206,7 +218,7 @@ It was about how to handle failure:
 - Stop coding and start communicating. Ask the maintainers if your architecture makes sense before writing 500 lines of code.
 - If you listen to feedback and keep showing up, even the busiest engineers at Big Tech will gladly help you cross the finish line.
 
-Thanks for reading! Feel free to check out the full review history on **[GitHub: PR #25256](https://github.com/google-gemini/gemini-cli/pull/25256)**.
+Thanks for reading! Feel free to check out the full review history on #pr(number="25256").
 
 ---
 
