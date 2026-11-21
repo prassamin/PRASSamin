@@ -175,3 +175,15 @@ model McpToken {
 
   @@map("mcp_tokens")
 }
+
+model Draft {
+  id        String   @id @default(cuid())
+  type      String   // e.g. "blog" | "project" | "experience"
+  status    String   @default("draft") // "draft" | "published" | "archived"
+  data      Json
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([type, status])
+  @@map("drafts")
+}
