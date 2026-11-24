@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "~/generated/prisma/client";
 import { revalidatePath } from "next/cache";
 import { McpAuthContext } from "../auth";
 import { ToolDefinition, CallToolResult } from "../protocol";
