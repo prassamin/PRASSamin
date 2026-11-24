@@ -17,8 +17,16 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
     return [];
   }
 
+  // Pre-normalize spacing around headings to ensure that content missing an empty
+  // line between a heading and its following bullet list/paragraph parses cleanly into
+  // separate AST blocks instead of collapsing into a single raw paragraph block.
+  const normalizedMdx = mdx
+    .replace(/\r\n/g, "\n")
+    .replace(/(^|[^\n])\n(#{1,6}[ \t]+[^\n]+)/g, "$1\n\n$2")
+    .replace(/(#{1,6}[ \t]+[^\n]+)\n([^\n#])/g, "$1\n\n$2");
+
   const blocks: MdxBlock[] = [];
-  const rawSegments = splitMdxIntoBlocks(mdx);
+  const rawSegments = splitMdxIntoBlocks(normalizedMdx);
 
   for (const raw of rawSegments) {
     const trimmed = raw.trim();

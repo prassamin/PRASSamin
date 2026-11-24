@@ -114,3 +114,17 @@ export async function deleteEducationAction(id: number) {
 
   return { success: true, data: deleted };
 }
+
+export async function deleteEducationDraftAction(id: string) {
+  if (!id || typeof id !== "string") {
+    throw new Error("Valid Draft ID is required.");
+  }
+
+  await db.draft.delete({
+    where: { id },
+  });
+
+  revalidatePath("/admin/educations");
+
+  return { success: true };
+}
