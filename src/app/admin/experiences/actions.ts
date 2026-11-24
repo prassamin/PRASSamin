@@ -116,3 +116,17 @@ export async function deleteExperienceAction(id: number) {
 
   return { success: true, data: deleted };
 }
+
+export async function deleteExperienceDraftAction(id: string) {
+  if (!id || typeof id !== "string") {
+    throw new Error("Valid Draft ID is required.");
+  }
+
+  await db.draft.delete({
+    where: { id },
+  });
+
+  revalidatePath("/admin/experiences");
+
+  return { success: true };
+}

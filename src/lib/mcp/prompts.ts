@@ -297,6 +297,51 @@ When drafting or updating an education credential for ${APP_NAME}'s portfolio, a
    - Use \`put_education_draft\` (or \`put_draft\`) only when intentionally replacing the entire record content.
 `;
 
+export const EXPERIENCE_DRAFT_STANDARDS = `### Work Experience Best Practices & Drafting Standards
+
+When drafting or updating a work or career experience entry for ${APP_NAME}'s portfolio, adhere strictly to the following standards:
+
+1. **Required Fields & Validation**:
+   - \`company\`: Full official company or organization name (e.g. "Google", "Vercel", "Acme Labs").
+   - \`role\`: Precise job title (e.g. "Senior Full-Stack Engineer", "Staff Software Engineer", "Tech Lead").
+   - \`start\`: Start date in valid ISO format or \`YYYY-MM-DD\` (e.g. "2022-03-01").
+   - \`end\`: End date in \`YYYY-MM-DD\` format, or \`"Present"\` / \`null\` if currently employed.
+   - \`location\`: Workplace location or mode (e.g. "San Francisco, CA (Remote)", "New York, NY", "Remote").
+   - \`companyUrl\`: Official company website URL (e.g. "https://company.com").
+   - \`companyLogo\`: Direct URL to company logo (optional, can be a CDN or public image URL).
+
+2. **Heading Level Constraint (STRICT)**:
+   - **DO NOT use headings bigger than level 4 (\`####\`) inside experience descriptions.**
+   - Allowed heading levels: **Level 4 (\`####\`), Level 5 (\`#####\`), and Level 6 (\`######\`) ONLY.**
+   - Never use \`#\` (H1), \`##\` (H2), or \`###\` (H3) in the description body because experience entries render inside timeline cards where large headings disrupt layout balance and typographic flow.
+
+3. **Description Markdown / MDX Rules**:
+   - **Blank Line Separation Between Segments (MANDATORY)**:
+     - Always insert a blank line (\`\\n\\n\`) after every heading, paragraph, and list block.
+     - For example, after any \`#### Key Achievements\`, there MUST be an empty line before starting a paragraph or a bullet list.
+     - Never attach text or list items directly adjacent to a heading without an empty newline intervening, so that MDX Studio can tokenize each block into distinct AST nodes.
+   - **Action & Impact (STAR/XYZ Formula)**:
+     - Structure achievements using: *"Accomplished [X] as measured by [Y], by doing [Z]"*.
+     - Include metrics (e.g. "reduced latency by 42%", "scaled throughput to 10M req/sec", "led team of 6 engineers").
+   - **Structure**:
+     - 1-sentence role overview.
+     - \`#### Key Responsibilities\` or \`#### Key Achievements\` followed by \`\\n\\n\` and bullet items.
+     - \`#### Technologies\` or \`#### Tech Stack\` followed by \`\\n\\n\` and inline chips or bullets.
+
+4. **Permitted MDX Studio Blocks in Experience Cards**:
+   - Refer to **\`mdx_components_reference\`** for complete syntax.
+   - **ALLOWED in Experience Descriptions**:
+     - **\`chipGroup\` / \`<Chip>\`**: For technology tags (e.g. Next.js, TypeScript, PostgreSQL, Docker, AWS).
+     - **\`InlineTooltip\`**: For defining domain terms or metrics.
+     - Standard Markdown bold, italic, inline code (\`code\`), and unordered bullet lists.
+   - **FORBIDDEN in Experience Cards**:
+     - Do NOT use \`<Cards>\`, \`<Tabs>\`, \`<Steps>\`, \`<Files>\`, or full-width layout grids. Keep experience cards focused, scannable, and compact.
+
+5. **AI Revision Workflow**:
+   - If revising an existing published experience, pass \`targetId: <experienceId>\` to \`create_experience_draft\`.
+   - This triggers an "AI Revision Proposed" badge in the admin panel and opens a side-by-side diff review modal where the user can inspect changes and accept/reject individual segments.
+`;
+
 export const MCP_PROMPTS: PromptDefinition[] = [
   {
     name: "mdx_components_reference",
@@ -317,6 +362,23 @@ export const MCP_PROMPTS: PromptDefinition[] = [
       {
         name: "degree",
         description: "Optional degree or field of study for domain-specific recommendations.",
+        required: false,
+      },
+    ],
+  },
+  {
+    name: "experience_best_standards",
+    description:
+      "Guidelines, schema requirements, allowed MDX Studio blocks, and STAR/XYZ impact metrics for drafting professional work experience entries in the portfolio.",
+    arguments: [
+      {
+        name: "company",
+        description: "Optional company name for tailored recommendations.",
+        required: false,
+      },
+      {
+        name: "role",
+        description: "Optional job role or title for domain-specific recommendations.",
         required: false,
       },
     ],
@@ -356,6 +418,26 @@ export function handleGetPrompt(
           content: {
             type: "text",
             text: `${EDUCATION_DRAFT_STANDARDS}${customContext}`,
+          },
+        },
+      ],
+    };
+  }
+
+  if (name === "experience_best_standards") {
+    let customContext = "";
+    if (args.company || args.role) {
+      customContext = `\\n\\nTargeting Role: ${args.role || "Role"} at ${args.company || "Company"}. Ensure metrics and responsibilities align with this position.`;
+    }
+
+    return {
+      description: "Best practices and standards for drafting work experience entries",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `${EXPERIENCE_DRAFT_STANDARDS}${customContext}`,
           },
         },
       ],

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { ExperienceType } from "@/types";
 import { LuBriefcase, LuPlus } from "react-icons/lu";
 import { Button, Card, toast } from "@heroui/react";
@@ -10,16 +10,32 @@ import {
   ExperienceForm,
   ExperienceFormData,
 } from "./components/experience-form";
-import { useRouter } from "@/hooks/use-router";
+import { useRouter } from "next/navigation";
 import { useConfirm } from "@/providers/confirm-provider";
+import { useRealtimeSync } from "@/hooks/use-realtime-sync";
 import {
   createExperienceAction,
   updateExperienceAction,
   deleteExperienceAction,
+  deleteExperienceDraftAction,
 } from "./actions";
+import {
+  ExperienceDiffModal,
+  ExperienceDraftData,
+} from "./components/experience-diff-modal";
+
+export interface ExperienceDraftItem {
+  id: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  data: ExperienceDraftData;
+}
 
 interface AdminExpViewProps {
   experiences: ExperienceType[];
+  drafts?: ExperienceDraftItem[];
 }
 
 function safeFormatDateForInput(val: any): string {
@@ -33,15 +49,46 @@ function safeFormatDateForInput(val: any): string {
   }
 }
 
-export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
+export const AdminExpView: React.FC<AdminExpViewProps> = ({
+  experiences,
+  drafts = [],
+}) => {
   const router = useRouter();
   const { openStudio } = useMdxStudio();
   const { confirm } = useConfirm();
+
+  // Enable real-time sync for experience drafts
+  useRealtimeSync({
+    type: "experience",
+    intervalMs: 3000,
+  });
+
+  // State for line-by-line diff modal
+  const [diffTarget, setDiffTarget] = useState<{
+    published: ExperienceType;
+    draft: ExperienceDraftItem;
+  } | null>(null);
+
+  // Split drafts into:
+  // 1. Revision drafts (has targetId matching a published experience)
+  // 2. Standalone new drafts (no targetId)
+  const revisionDraftsByTargetId = new Map<number, ExperienceDraftItem>();
+  const standaloneDrafts: ExperienceDraftItem[] = [];
+
+  for (const draft of drafts) {
+    const targetId = draft.data?.targetId;
+    if (typeof targetId === "number" && targetId > 0) {
+      revisionDraftsByTargetId.set(targetId, draft);
+    } else {
+      standaloneDrafts.push(draft);
+    }
+  }
 
   const handleSave = async (
     id: number | null,
     meta: ExperienceFormData,
     mdx: string,
+    associatedDraftId?: string,
   ) => {
     if (!meta.company?.trim()) {
       throw new Error("Company / Organization name is required.");
@@ -81,7 +128,58 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
       toast.success(`Added "${payload.role}" successfully.`);
     }
 
+    // Clean up draft if this was published from a draft
+    if (associatedDraftId) {
+      try {
+        await deleteExperienceDraftAction(associatedDraftId);
+      } catch {
+        // non-blocking
+      }
+    }
+
     router.refresh();
+  };
+
+  const handleOpenDraftReview = (draft: ExperienceDraftItem) => {
+    const data = draft.data || {};
+    let currentMeta: ExperienceFormData = {
+      company: data.company || "",
+      role: data.role || "",
+      start: safeFormatDateForInput(data.start),
+      end: safeFormatDateForInput(data.end),
+      isCurrent: !data.end || String(data.end).toLowerCase() === "present",
+      companyUrl: data.companyUrl || "",
+      companyLogo: data.companyLogo || "",
+      location: data.location || "",
+    };
+
+    openStudio({
+      title: "Review Experience Draft",
+      documentName: `${currentMeta.role || "Draft"} @ ${currentMeta.company || "Company"}`,
+      initialMdx: data.description || "",
+      informationSlot: (
+        <ExperienceForm
+          initialData={currentMeta}
+          onChange={(next) => {
+            currentMeta = next;
+          }}
+        />
+      ),
+      onSave: async (compiledMdx) => {
+        await handleSave(null, currentMeta, compiledMdx, draft.id);
+      },
+    });
+  };
+
+  const handleDeleteDraft = async (draft: ExperienceDraftItem) => {
+    try {
+      await deleteExperienceDraftAction(draft.id);
+      toast.success("Draft discarded.");
+      router.refresh();
+    } catch (err: any) {
+      console.error("Delete draft error:", err);
+      toast.danger(err.message || "Failed to delete draft.");
+    }
   };
 
   const handleOpenCreate = () => {
@@ -160,6 +258,107 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
     }
   };
 
+  const handleAcceptRevision = async (
+    targetExp: ExperienceType,
+    draft: ExperienceDraftItem,
+    customDescription?: string,
+  ) => {
+    try {
+      const data = draft.data || {};
+      const company = (data.company || targetExp.company).trim();
+      const role = (data.role || targetExp.role).trim();
+      const start = data.start ? new Date(data.start) : targetExp.start;
+
+      let end: Date | null = null;
+      if (data.end !== undefined) {
+        if (data.end && data.end !== "Present") {
+          const parsed = new Date(data.end);
+          if (!isNaN(parsed.getTime())) end = parsed;
+        }
+      } else if (targetExp.end) {
+        end = new Date(targetExp.end);
+      }
+
+      const location =
+        data.location !== undefined ? data.location : targetExp.location;
+      const companyUrl =
+        data.companyUrl !== undefined ? data.companyUrl : targetExp.companyUrl;
+      const companyLogo =
+        data.companyLogo !== undefined ? data.companyLogo : targetExp.companyLogo;
+
+      const description =
+        customDescription !== undefined
+          ? customDescription
+          : (data.description !== undefined
+              ? data.description
+              : targetExp.description) || "";
+
+      await updateExperienceAction(targetExp.id, {
+        company,
+        role,
+        start,
+        end,
+        location,
+        companyUrl,
+        companyLogo,
+        description,
+      });
+
+      await deleteExperienceDraftAction(draft.id);
+      toast.success(`Accepted AI changes for "${role}" at ${company}.`);
+      router.refresh();
+    } catch (err: any) {
+      console.error("Failed to accept revision draft:", err);
+      toast.danger(err.message || "Failed to apply changes.");
+      throw err;
+    }
+  };
+
+  const handleOpenStudioForRevision = (
+    targetExp: ExperienceType,
+    draft: ExperienceDraftItem,
+    overrideDescription?: string,
+  ) => {
+    const data = draft.data || {};
+    let currentMeta: ExperienceFormData = {
+      company: data.company ?? targetExp.company,
+      role: data.role ?? targetExp.role,
+      start: safeFormatDateForInput(data.start ?? targetExp.start),
+      end: safeFormatDateForInput(data.end ?? targetExp.end),
+      isCurrent:
+        data.end === null ||
+        data.end === "Present" ||
+        (!data.end && !targetExp.end),
+      companyUrl: data.companyUrl ?? targetExp.companyUrl ?? "",
+      companyLogo: data.companyLogo ?? targetExp.companyLogo ?? "",
+      location: data.location ?? targetExp.location ?? "",
+    };
+
+    const initialMdx =
+      overrideDescription !== undefined
+        ? overrideDescription
+        : data.description !== undefined
+          ? data.description
+          : targetExp.description || "";
+
+    openStudio({
+      title: "Review & Edit AI Revision",
+      documentName: `${currentMeta.role} @ ${currentMeta.company}`,
+      initialMdx,
+      informationSlot: (
+        <ExperienceForm
+          initialData={currentMeta}
+          onChange={(next) => {
+            currentMeta = next;
+          }}
+        />
+      ),
+      onSave: async (compiledMdx) => {
+        await handleSave(targetExp.id, currentMeta, compiledMdx, draft.id);
+      },
+    });
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 w-full">
       {/* Header Section */}
@@ -188,7 +387,7 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
       </div>
 
       {/* Experience Cards List */}
-      {experiences.length === 0 ? (
+      {experiences.length === 0 && drafts.length === 0 ? (
         /* Empty State */
         <Card className="bg-muted/30 border border-white/8 rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center justify-center">
           <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mb-4">
@@ -212,25 +411,109 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({ experiences }) => {
         </Card>
       ) : (
         <div className="space-y-4">
-          {experiences.map((exp) => (
-            <ExperienceCard
-              key={exp.id}
-              experience={exp}
-              onEdit={(item) => handleOpenEdit(item)}
-              onDelete={(item) => {
-                confirm({
-                  isDanger: true,
-                  title: `Delete ${item.role}?`,
-                  description: `Are you sure you want to delete this position at ${item.company}? This action cannot be undone.`,
-                  confirmText: "Delete",
-                  onConfirm: async () => {
-                    await handleDelete(item);
-                  },
-                });
-              }}
-            />
-          ))}
+          {/* Standalone drafts (brand new items) rendered at top with amber draft indicator */}
+          {standaloneDrafts.map((draft) => {
+            const data = draft.data || {};
+            const startStr = data.start ? String(data.start).split("T")[0] : "";
+            const endStr = data.end ? String(data.end).split("T")[0] : "Present";
+            const draftExp: ExperienceType = {
+              id: -1, // sentinel
+              company: data.company || "Untitled Company",
+              role: data.role || "Untitled Role",
+              location: data.location || undefined,
+              companyUrl: data.companyUrl || undefined,
+              companyLogo: data.companyLogo || undefined,
+              description: data.description || "",
+              period: startStr ? `${startStr} — ${endStr}` : "Draft",
+              start: data.start ? new Date(data.start) : new Date(),
+              end: data.end ? new Date(data.end) : undefined,
+              created_at: new Date(draft.createdAt),
+              updated_at: new Date(draft.updatedAt),
+            };
+
+            return (
+              <ExperienceCard
+                key={`draft-${draft.id}`}
+                experience={draftExp}
+                isDraft={true}
+                onEdit={() => handleOpenDraftReview(draft)}
+                onDelete={() => {
+                  confirm({
+                    isDanger: true,
+                    title: `Discard Draft?`,
+                    description: `Are you sure you want to discard the draft for "${draftExp.role}" at ${draftExp.company}?`,
+                    confirmText: "Discard",
+                    onConfirm: async () => {
+                      await handleDeleteDraft(draft);
+                    },
+                  });
+                }}
+              />
+            );
+          })}
+
+          {/* Published experience records with AI Revision Detection */}
+          {experiences.map((exp) => {
+            const revisionDraft = revisionDraftsByTargetId.get(exp.id);
+
+            return (
+              <ExperienceCard
+                key={exp.id}
+                experience={exp}
+                isDraft={false}
+                hasRevisionDraft={Boolean(revisionDraft)}
+                onReviewRevision={() => {
+                  if (revisionDraft) {
+                    setDiffTarget({ published: exp, draft: revisionDraft });
+                  }
+                }}
+                onEdit={(item) => handleOpenEdit(item)}
+                onDelete={(item) => {
+                  confirm({
+                    isDanger: true,
+                    title: `Delete ${item.role}?`,
+                    description: `Are you sure you want to delete this position at ${item.company}? This action cannot be undone.`,
+                    confirmText: "Delete",
+                    onConfirm: async () => {
+                      await handleDelete(item);
+                    },
+                  });
+                }}
+              />
+            );
+          })}
         </div>
+      )}
+
+      {/* GitHub PR/Cursor-style Side-by-Side Line Diff Review Modal */}
+      {diffTarget && (
+        <ExperienceDiffModal
+          isOpen={Boolean(diffTarget)}
+          onClose={() => setDiffTarget(null)}
+          published={diffTarget.published}
+          draftId={diffTarget.draft.id}
+          draftData={diffTarget.draft.data}
+          onAcceptAll={async () => {
+            await handleAcceptRevision(diffTarget.published, diffTarget.draft);
+          }}
+          onAcceptCustom={async (compiledDescription) => {
+            await handleAcceptRevision(
+              diffTarget.published,
+              diffTarget.draft,
+              compiledDescription,
+            );
+          }}
+          onRejectAll={async () => {
+            await handleDeleteDraft(diffTarget.draft);
+          }}
+          onEditInStudio={(currentDescription) => {
+            handleOpenStudioForRevision(
+              diffTarget.published,
+              diffTarget.draft,
+              currentDescription,
+            );
+          }}
+        />
       )}
     </div>
   );
