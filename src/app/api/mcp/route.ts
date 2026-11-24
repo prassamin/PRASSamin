@@ -21,7 +21,7 @@ import {
   MCP_SERVER_VERSION,
 } from "@/config/mcp";
 import { authenticateMcpRequest } from "@/lib/mcp/auth";
-import { dispatchMcpTool } from "@/lib/mcp/tools";
+import { dispatchMcpTool, getAvailableTools, ALL_MCP_TOOLS } from "@/lib/mcp/tools";
 
 /** Streamable HTTP transport for the MCP protocol (JSON-RPC 2.0). */
 export async function POST(req: NextRequest) {
@@ -65,12 +65,16 @@ export async function POST(req: NextRequest) {
     case "ping":
       if (!auth) return unauthorized(id);
       return jsonRpcResponse({ id: id as JsonRpcId, result: PING_RESULT });
-    case "tools/list":
+    case "tools/list": {
       if (!auth) return unauthorized(id);
+      const allowedTools = getAvailableTools(auth.scopes).map(
+        ({ requiredScope: _scope, ...toolProps }) => toolProps,
+      );
       return jsonRpcResponse({
         id: id as JsonRpcId,
-        result: { tools: MCP_TOOLS },
+        result: { tools: allowedTools },
       });
+    }
     case "tools/call":
       if (!auth) return unauthorized(id);
       return handleCallTool(message as JsonRpcRequest, auth, id);
@@ -121,10 +125,14 @@ function handleInitialize(
       version: MCP_SERVER_VERSION,
     },
     instructions:
-      `You are connected to ${APP_NAME}'s Portfolio Assistant MCP Server. Before performing any drafting, writing, or updating operations on portfolio content (education, blogs, projects, experiences), you MUST first inspect the prompts library (e.g. 'prompts/get' with 'education_best_standards') or call the tool 'get_content_guidelines' for that content type to adhere to formatting standards, valid schema constraints, and MDX styling rules. Always prefer creating or updating drafts (e.g. 'create_education_draft', 'patch_education_draft', 'patch_draft') so that content can be reviewed before publishing.`,
+      `You are connected to ${APP_NAME}'s Portfolio Assistant MCP Server.${
+        auth
+          ? auth.scopes.includes("write")
+            ? " Connected with Full Access (Read & Write): you can inspect portfolio content and create or revise drafts."
+            : " Connected with Read-Only Access: you can inspect portfolio content and editorial guidelines. Write and draft mutation tools are hidden."
+          : ""
+      } Before performing operations on portfolio content (education, blogs, projects, experiences), you should inspect the prompts library (e.g. 'prompts/get' with 'education_best_standards') or call 'get_content_guidelines' to adhere to formatting standards and MDX styling rules. Always prefer creating or updating drafts so that content can be reviewed in the admin panel before publishing.`,
   };
-
-  void auth;
 
   return jsonRpcResponse({ id: id as JsonRpcId, result });
 }
@@ -147,13 +155,24 @@ async function handleCallTool(
     });
   }
 
-  const tool = MCP_TOOLS.find((t) => t.name === name);
+  const tool = ALL_MCP_TOOLS.find((t) => t.name === name);
   if (!tool) {
     return jsonRpcResponse({
       id,
       error: {
         code: -32602,
         message: `Unknown tool: ${name}`,
+      },
+    });
+  }
+
+  // Enforce dynamic authorization scope check
+  if (tool.requiredScope === "write" && !auth.scopes.includes("write")) {
+    return jsonRpcResponse({
+      id,
+      error: {
+        code: -32003,
+        message: `Forbidden: Token lacks 'write' scope required to invoke tool '${name}'`,
       },
     });
   }

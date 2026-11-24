@@ -75,6 +75,28 @@ export async function revokeMcpTokenAction(id: string): Promise<void> {
   });
 }
 
+export async function updateMcpTokenScopeAction(
+  id: string,
+  scopes: string[],
+): Promise<McpTokenRecord> {
+  const cleanScopes = validateScopes(scopes);
+  const updated = await db.mcpToken.update({
+    where: { id },
+    data: { scopes: cleanScopes },
+    select: {
+      id: true,
+      name: true,
+      scopes: true,
+      lastUsedAt: true,
+      revokedAt: true,
+      expiresAt: true,
+      createdAt: true,
+    },
+  });
+
+  return updated;
+}
+
 export async function deleteMcpTokenAction(id: string): Promise<void> {
   await db.mcpToken.delete({ where: { id } });
 }

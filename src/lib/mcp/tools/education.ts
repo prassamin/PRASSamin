@@ -28,6 +28,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
     name: "list_educations",
     description:
       "List all education history entries from the portfolio (degrees, universities, fields of study, dates, and descriptions).",
+    requiredScope: "read",
     inputSchema: {
       type: "object",
       properties: {},
@@ -37,6 +38,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
   {
     name: "get_education",
     description: "Get detailed information for a specific education entry by its numeric ID.",
+    requiredScope: "read",
     inputSchema: {
       type: "object",
       properties: {
@@ -53,6 +55,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
     name: "create_education_draft",
     description:
       "Create a draft for an education entry to be reviewed in the admin panel before publishing. If 'targetId' is provided, it creates a revision draft on an existing published education record, enabling line-by-line diff review (red/green) with Accept/Reject controls. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -95,6 +98,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
     name: "patch_education_draft",
     description:
       "Partially update an education draft by ID (PATCH mode). Only provided fields will be merged into the draft. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -135,6 +139,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
     name: "put_education_draft",
     description:
       "Completely replace an education draft's content by ID (PUT mode). Requires write scope and all required fields.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -175,6 +180,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
     name: "create_education",
     description:
       "Directly create a published education record in the database. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -210,6 +216,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
   {
     name: "update_education",
     description: "Update an existing education entry by ID. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -249,6 +256,7 @@ export const EDUCATION_TOOLS: ToolDefinition[] = [
   {
     name: "delete_education",
     description: "Delete an education entry by ID. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {

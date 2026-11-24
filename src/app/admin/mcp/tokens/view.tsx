@@ -6,6 +6,7 @@ import { useConfirm } from "@/providers/confirm-provider";
 import {
   revokeMcpTokenAction,
   deleteMcpTokenAction,
+  updateMcpTokenScopeAction,
   McpTokenRecord,
 } from "./actions";
 import { McpHeader } from "./components/mcp-header";
@@ -65,6 +66,28 @@ export const McpView: React.FC<McpViewProps> = ({ tokens: initialTokens }) => {
     });
   };
 
+  const handleToggleScope = async (
+    token: McpTokenRecord,
+    enableWrite: boolean,
+  ) => {
+    const nextScopes = enableWrite ? ["read", "write"] : ["read"];
+    // Optimistic update
+    setTokens((prev) =>
+      prev.map((t) => (t.id === token.id ? { ...t, scopes: nextScopes } : t)),
+    );
+    try {
+      await updateMcpTokenScopeAction(token.id, nextScopes);
+    } catch {
+      // Revert on error
+      setTokens((prev) =>
+        prev.map((t) =>
+          t.id === token.id ? { ...t, scopes: token.scopes } : t,
+        ),
+      );
+      toast.danger("Failed to update token scope.");
+    }
+  };
+
   return (
     <div className="space-y-6 sm:space-y-8 w-full">
       <McpHeader onCreate={() => setIsCreateOpen(true)} />
@@ -73,6 +96,7 @@ export const McpView: React.FC<McpViewProps> = ({ tokens: initialTokens }) => {
         tokens={tokens}
         onRevoke={handleRevoke}
         onDelete={handleDelete}
+        onToggleScope={handleToggleScope}
       />
 
       <McpTokenCreateDrawer

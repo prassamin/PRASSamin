@@ -8,6 +8,7 @@ export const DRAFT_TOOLS: ToolDefinition[] = [
   {
     name: "list_drafts",
     description: "List pending drafts with optional filtering by type (e.g. 'education', 'blog', 'project') or status.",
+    requiredScope: "read",
     inputSchema: {
       type: "object",
       properties: {
@@ -26,6 +27,7 @@ export const DRAFT_TOOLS: ToolDefinition[] = [
   {
     name: "get_draft",
     description: "Retrieve a draft by its CUID string ID.",
+    requiredScope: "read",
     inputSchema: {
       type: "object",
       properties: {
@@ -42,6 +44,7 @@ export const DRAFT_TOOLS: ToolDefinition[] = [
     name: "patch_draft",
     description:
       "Partially update an existing draft (PATCH mode). Deep-merges new fields into the draft's existing JSON data without losing unmentioned keys. Optionally updates status. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -66,6 +69,7 @@ export const DRAFT_TOOLS: ToolDefinition[] = [
     name: "put_draft",
     description:
       "Completely replace an existing draft's data (PUT mode). Replaces the entire JSON data payload with the provided object. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {
@@ -89,6 +93,7 @@ export const DRAFT_TOOLS: ToolDefinition[] = [
   {
     name: "delete_draft",
     description: "Delete a draft by its CUID. Requires write scope.",
+    requiredScope: "write",
     inputSchema: {
       type: "object",
       properties: {

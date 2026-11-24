@@ -8,13 +8,14 @@ import {
   LuClock,
   LuBot,
 } from "react-icons/lu";
-import { cn } from "@heroui/react";
+import { cn, Switch } from "@heroui/react";
 import type { McpTokenRecord } from "../actions";
 
 interface McpTokenTableProps {
   tokens: McpTokenRecord[];
   onRevoke: (token: McpTokenRecord) => void;
   onDelete: (token: McpTokenRecord) => void;
+  onToggleScope?: (token: McpTokenRecord, enableWrite: boolean) => Promise<void>;
 }
 
 function formatDate(value?: Date | null): string {
@@ -30,6 +31,7 @@ export const McpTokenTable: React.FC<McpTokenTableProps> = ({
   tokens,
   onRevoke,
   onDelete,
+  onToggleScope,
 }) => {
   if (tokens.length === 0) {
     return (
@@ -77,12 +79,13 @@ export const McpTokenTable: React.FC<McpTokenTableProps> = ({
           <tbody className="divide-y divide-white/5">
             {tokens.map((token) => {
               const isRevoked = Boolean(token.revokedAt);
+              const hasWrite = token.scopes.includes("write");
 
               return (
                 <tr
                   key={token.id}
                   className={cn(
-                    "transition-colors",
+                    "group/row transition-colors",
                     isRevoked
                       ? "opacity-50 bg-muted/10"
                       : "hover:bg-white/3",
@@ -97,17 +100,53 @@ export const McpTokenTable: React.FC<McpTokenTableProps> = ({
                     </div>
                   </td>
 
-                  {/* Scopes */}
-                  <td className="px-4 py-4">
-                    <div className="flex items-center gap-1.5">
-                      {token.scopes.map((scope) => (
-                        <span
-                          key={scope}
-                          className="px-1.5 py-0.5 rounded-lg bg-white/5 border border-white/3 text-neutral-300 text-[10px] font-mono"
+                  {/* Scopes with Hover-to-Switch Interaction */}
+                  <td className="px-4 py-4 min-w-[140px]">
+                    <div className="relative flex items-center h-6">
+                      {/* Default State: Static Badge */}
+                      <div
+                        className={cn(
+                          "transition-all duration-200",
+                          !isRevoked &&
+                          onToggleScope &&
+                          "group-hover/row:opacity-0 group-hover/row:pointer-events-none group-hover/row:-translate-y-1 group-focus-within/row:opacity-0 group-focus-within/row:pointer-events-none group-focus-within/row:-translate-y-1",
+                        )}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          {token.scopes.map((scope) => {
+                            return <span key={scope} className="px-1.5 py-0.5 rounded-lg bg-white/5 border border-white/3 text-neutral-300 text-[10px] font-mono">{scope}</span>
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Hover / Focus State: Interactive Switch */}
+                      {!isRevoked && onToggleScope && (
+                        <div
+                          className={cn(
+                            "absolute left-0 inset-y-0 flex items-center transition-all duration-200",
+                            "opacity-0 pointer-events-none translate-y-1 group-hover/row:opacity-100 group-hover/row:pointer-events-auto group-hover/row:translate-y-0 group-focus-within/row:opacity-100 group-focus-within/row:pointer-events-auto group-focus-within/row:translate-y-0",
+                          )}
                         >
-                          {scope}
-                        </span>
-                      ))}
+                          <Switch
+                            size="sm"
+                            isSelected={hasWrite}
+                            onChange={(checked) =>
+                              onToggleScope(token, checked)
+                            }
+                            aria-label={`Toggle full access for ${token.name}`}
+                            className="scale-85 origin-left"
+                          >
+                            <Switch.Content>
+                              <Switch.Control className="[:not([data-selected])>&]:bg-neutral-700">
+                                <Switch.Thumb />
+                              </Switch.Control>
+                              <span className="text-[11px] font-mono text-neutral-300 font-medium whitespace-nowrap">
+                                {hasWrite ? "Full Access" : "Read only"}
+                              </span>
+                            </Switch.Content>
+                          </Switch>
+                        </div>
+                      )}
                     </div>
                   </td>
 
@@ -141,25 +180,28 @@ export const McpTokenTable: React.FC<McpTokenTableProps> = ({
                   </td>
 
                   {/* Actions */}
-                  <td className="px-5 py-4">
-                    <div className="flex items-center justify-end gap-1.5">
+                  <td className="px-5 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1">
                       {!isRevoked && (
                         <button
                           type="button"
                           onClick={() => onRevoke(token)}
-                          title="Revoke token"
-                          className="w-8 h-8 rounded-lg border border-white/8 bg-white/3 flex items-center justify-center text-neutral-400 hover:text-amber-400 hover:border-amber-400/30 hover:bg-amber-400/10 transition-all cursor-pointer"
+                          title={`Revoke "${token.name}"`}
+                          aria-label={`Revoke "${token.name}"`}
+                          className="size-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 transition-all cursor-pointer shrink-0"
                         >
-                          <LuBan className="w-3.5 h-3.5" />
+                          <LuBan className="w-4 h-4" />
                         </button>
                       )}
+
                       <button
                         type="button"
                         onClick={() => onDelete(token)}
-                        title="Delete token"
-                        className="w-8 h-8 rounded-lg border border-white/8 bg-white/3 flex items-center justify-center text-neutral-400 hover:text-red-400 hover:border-red-400/30 hover:bg-red-400/10 transition-all cursor-pointer"
+                        title={`Delete "${token.name}"`}
+                        aria-label={`Delete "${token.name}"`}
+                        className="size-8 rounded-xl flex items-center justify-center text-neutral-400 hover:text-red-400 hover:bg-red-500/10 transition-all cursor-pointer shrink-0"
                       >
-                        <LuTrash2 className="w-3.5 h-3.5" />
+                        <LuTrash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </td>

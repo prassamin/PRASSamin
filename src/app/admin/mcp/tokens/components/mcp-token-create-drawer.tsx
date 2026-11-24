@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { LuX, LuCopy, LuCheck, LuKeyRound } from "react-icons/lu";
-import { CheckboxGroup, toast } from "@heroui/react";
+import { LuX, LuCopy, LuCheck } from "react-icons/lu";
+import { toast } from "@heroui/react";
 import { Drawer } from "@/components/ui/drawer";
 import { Checkbox } from "@/components/ui/checkbox";
 import { createMcpTokenAction, McpTokenRecord } from "../actions";
-import { MCP_SCOPES } from "../constants";
 
 interface McpTokenCreateDrawerProps {
   isOpen: boolean;
@@ -21,7 +20,7 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
   onCreated,
 }) => {
   const [name, setName] = useState("");
-  const [scopes, setScopes] = useState<string[]>(["read"]);
+  const [isReadOnly, setIsReadOnly] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [createdData, setCreatedData] = useState<{
     token: string;
@@ -45,12 +44,9 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
       toast.danger("Token name is required.");
       return;
     }
-    if (scopes.length === 0) {
-      toast.danger("Select at least one scope.");
-      return;
-    }
     setIsCreating(true);
     try {
+      const scopes = isReadOnly ? ["read"] : ["read", "write"];
       const result = await createMcpTokenAction(name, scopes);
       // Notify parent so the table in the background updates immediately
       onCreated(result.record);
@@ -65,7 +61,7 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
 
   const handleClose = () => {
     setName("");
-    setScopes(["read"]);
+    setIsReadOnly(false);
     setCreatedData(null);
     setCopied(false);
     onClose();
@@ -100,23 +96,25 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-              className="space-y-5"
+              className="space-y-6"
             >
-              {/* Secret Token Field */}
+              {/* Token secret box */}
               <div className="space-y-2">
                 <label className="block text-xs font-medium text-neutral-300 font-inter">
                   Personal Access Token
                 </label>
                 <div className="relative">
-                  <textarea
+                  <input
+                    type="text"
                     readOnly
-                    rows={3}
                     value={createdData.token}
-                    className="w-full font-mono text-xs text-neutral-100 bg-neutral-950/40 border border-white/4 rounded-2xl p-3.5 pr-12 outline-none select-all transition-colors resize-none leading-relaxed break-all"
+                    className="w-full h-11 pl-4 pr-12 rounded-xl bg-foreground/4 border border-foreground/6 text-xs font-mono text-foreground focus:outline-none select-all"
                   />
                   <button
                     type="button"
                     onClick={() => handleCopy(createdData.token)}
+                    title="Copy token"
+                    aria-label="Copy token"
                     className="absolute right-1.5 top-1.5 size-8 rounded-[calc(var(--radius)*1.25)] bg-white/5 hover:bg-white/8 border border-white/5 flex items-center justify-center text-neutral-400 hover:text-white transition-all cursor-pointer active:scale-90"
                   >
                     {copied ? (
@@ -153,7 +151,7 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="e.g. claude-desktop"
+                  placeholder="e.g. claude-desktop, cursor"
                   autoFocus
                   className="w-full h-11 px-4 rounded-xl bg-foreground/4 border border-foreground/6 text-sm text-foreground placeholder:text-neutral-500 focus:outline-none focus:border-accent/60 focus:ring-2 focus:ring-accent/20 transition-all"
                 />
@@ -162,22 +160,27 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
                 </p>
               </div>
 
-              {/* Scopes */}
-              <div>
+              {/* Access Permissions (Option A: Read-Only checkbox) */}
+              <div className="space-y-2">
                 <label className="block text-xs font-medium text-neutral-300 font-inter">
-                  Scopes
+                  Access Level
                 </label>
-                <CheckboxGroup
-                  name="scopes"
-                  value={scopes}
-                  onChange={setScopes}
-                >
-                  {MCP_SCOPES.map((scope) => (
-                    <Checkbox key={scope} value={scope}>
-                      {scope}
-                    </Checkbox>
-                  ))}
-                </CheckboxGroup>
+                <div className="p-3.5 rounded-2xl bg-foreground/4 border border-foreground/6 hover:border-foreground/10 transition-colors">
+                  <Checkbox
+                    className={"not-data-selected:**:data-[slot=checkbox-control]:bg-neutral-700"}
+                    isSelected={isReadOnly}
+                    onChange={setIsReadOnly}
+                  >
+                    <div className="flex flex-col ml-1">
+                      <span className="text-xs font-medium text-foreground">
+                        Read only access
+                      </span>
+                      <p className="text-[11px] text-neutral-500 mt-0.5 leading-relaxed">
+                        Restrict this token so the AI agent can only inspect portfolio data. All write, draft creation, and revision tools will be hidden.
+                      </p>
+                    </div>
+                  </Checkbox>
+                </div>
               </div>
             </motion.div>
           )}
@@ -200,7 +203,7 @@ export const McpTokenCreateDrawer: React.FC<McpTokenCreateDrawerProps> = ({
             <button
               type="button"
               onClick={handleCreate}
-              disabled={isCreating || !name.trim() || scopes.length === 0}
+              disabled={isCreating || !name.trim()}
               className="px-5 h-10 rounded-2xl bg-accent text-neutral-950 font-semibold text-sm hover:bg-accent/90 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm active:scale-95"
             >
               {isCreating ? "Creating…" : "Create token"}
