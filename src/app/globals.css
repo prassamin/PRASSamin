@@ -205,7 +205,7 @@
 
   strong,
   b {
-    @apply text-muted-foreground bg-muted font-mono font-medium px-1 py-[2px] rounded;
+    @apply text-white bg-muted font-mono font-medium px-2 py-0.5 rounded;
   }
 
   ::-webkit-scrollbar {
@@ -463,5 +463,23 @@ pre,
   }
   100% {
     transform: translateX(350%) skewX(-12deg);
+  }
+}
+
+/* Inline MCP token placeholder link inside code blocks */
+@utility link-subtle {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  text-decoration-color: color-mix(in srgb, var(--accent) 65%, transparent);
+  color: color-mix(in srgb, var(--accent) 80%, var(--foreground));
+  cursor: pointer;
+  border-radius: 2px;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+  
+  &:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
   }
 }
