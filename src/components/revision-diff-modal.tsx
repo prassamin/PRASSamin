@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import { EducationType } from "@/types";
-import { Modal, cn } from "@heroui/react";
+import React, { useState, useMemo, useEffect } from "react";
+import { Modal, cn, toast } from "@heroui/react";
 import {
   computeLineDiff,
   groupDiffIntoHunks,
@@ -14,47 +13,82 @@ import {
   LuX,
   LuPencil,
   LuGitPullRequest,
-  LuSchool,
-  LuGraduationCap,
-  LuCalendar,
   LuBookOpen,
   LuLoaderCircle,
+  LuCopy,
+  LuDownload,
 } from "react-icons/lu";
 
-export interface EducationDraftData {
-  targetId?: number;
-  school?: string;
-  degree?: string;
-  field?: string;
-  start?: string;
-  end?: string | null;
-  description?: string;
+export interface DiffMetadataProperty {
+  label: string;
+  icon?: React.ReactNode;
+  oldValue: string;
+  newValue: string;
 }
 
-interface EducationDiffModalProps {
+export interface RevisionDiffModalProps {
   isOpen: boolean;
   onClose: () => void;
-  published: EducationType;
-  draftId: string;
-  draftData: EducationDraftData;
+  title: string;
+  subtitle?: string;
+  headerIcon?: React.ReactNode;
+
+  // The text being diffed (body description or full MDX document)
+  oldText: string;
+  newText: string;
+  diffSectionTitle?: string;
+
+  // Optional relational metadata properties (e.g. for Education/Experience columns)
+  metadataProperties?: DiffMetadataProperty[];
+
+  // Action callbacks
   onAcceptAll: () => Promise<void>;
-  onAcceptCustom: (finalDescription: string) => Promise<void>;
+  onAcceptCustom: (finalText: string) => Promise<void>;
   onRejectAll: () => Promise<void>;
-  onEditInStudio: (currentDescription: string) => void;
+  onEditInStudio: (compiledText: string) => void;
+
+  // Optional export tools
+  allowCopyMdx?: boolean;
+  downloadFilename?: string;
+
+  // Customization labels & toggles for new drafts vs revisions
+  headingTitle?: string;
+  acceptLabel?: string;
+  rejectLabel?: string;
+  hideRevertButton?: boolean;
 }
 
-export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
+export const RevisionDiffModal: React.FC<RevisionDiffModalProps> = ({
   isOpen,
   onClose,
-  published,
-  draftData,
+  title,
+  subtitle,
+  headerIcon,
+  oldText,
+  newText,
+  diffSectionTitle = "Description",
+  metadataProperties,
   onAcceptAll,
   onAcceptCustom,
   onRejectAll,
   onEditInStudio,
+  allowCopyMdx = false,
+  downloadFilename,
+  headingTitle,
+  acceptLabel = "Accept & Apply",
+  rejectLabel = "Discard All Changes",
+  hideRevertButton,
 }) => {
+  const isNew = !oldText;
+  const shouldHideRevert = hideRevertButton ?? isNew;
+  const resolvedSubtitle =
+    subtitle ||
+    (isNew
+      ? "Review the proposed content for this new draft."
+      : "Review the proposed edits below. All changes are accepted by default; click “Revert” on any line to preserve the published text.");
   const [isAccepting, setIsAccepting] = useState(false);
   const [isRejecting, setIsRejecting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const isLoading = isAccepting || isRejecting;
 
   // Rejected hunks set. By default, all proposals are accepted unless explicitly reverted.
@@ -62,44 +96,16 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
     new Set(),
   );
 
-  const oldSchool = published.school || "";
-  const newSchool = draftData.school ?? oldSchool;
-  const schoolChanged = oldSchool !== newSchool;
-
-  const oldDegree = published.degree || "";
-  const newDegree = draftData.degree ?? oldDegree;
-  const degreeChanged = oldDegree !== newDegree;
-
-  const oldField = published.field || "";
-  const newField = draftData.field ?? oldField;
-  const fieldChanged = oldField !== newField;
-
-  const oldStart = published.start
-    ? new Date(published.start).toISOString().split("T")[0]
-    : "";
-  const newStart = draftData.start ?? oldStart;
-
-  const oldEnd = published.end
-    ? new Date(published.end).toISOString().split("T")[0]
-    : "Present";
-  const newEnd =
-    draftData.end === null
-      ? "Present"
-      : draftData.end !== undefined
-        ? draftData.end
-        : oldEnd;
-
-  const timelineChanged = oldStart !== newStart || oldEnd !== newEnd;
-  const hasMetadataChanges =
-    schoolChanged || degreeChanged || fieldChanged || timelineChanged;
-
-  const oldDescription = published.description || "";
-  const newDescription = draftData.description ?? oldDescription;
+  useEffect(() => {
+    if (isOpen) {
+      setRejectedHunkIds(new Set());
+    }
+  }, [isOpen, oldText, newText]);
 
   // Compute diffs and group into actionable hunks
   const rawDiffs = useMemo(
-    () => computeLineDiff(oldDescription, newDescription),
-    [oldDescription, newDescription],
+    () => computeLineDiff(oldText || "", newText || ""),
+    [oldText, newText],
   );
 
   const hunks = useMemo(() => groupDiffIntoHunks(rawDiffs), [rawDiffs]);
@@ -126,15 +132,48 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
 
   const hasRejectedAny = rejectedHunkIds.size > 0;
 
+  const buildFinalText = () => {
+    if (!hasRejectedAny) return newText;
+    const decisions: Record<string, "accept" | "reject"> = {};
+    for (const h of changeHunks) {
+      decisions[h.id] = rejectedHunkIds.has(h.id) ? "reject" : "accept";
+    }
+    return reconstructTextFromHunks(hunks, decisions, "accept");
+  };
+
+  const handleCopyText = async () => {
+    try {
+      const finalDoc = buildFinalText();
+      await navigator.clipboard.writeText(finalDoc);
+      setCopied(true);
+      toast.success(
+        downloadFilename
+          ? `Copied content for ${downloadFilename} to clipboard!`
+          : "Copied diff content to clipboard!",
+      );
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      toast.danger("Failed to copy content.");
+    }
+  };
+
+  const handleDownloadFile = () => {
+    const finalDoc = buildFinalText();
+    const blob = new Blob([finalDoc], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = downloadFilename || "revision.mdx";
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success(`Downloaded ${downloadFilename || "revision.mdx"}`);
+  };
+
   const handleApply = async () => {
     try {
       setIsAccepting(true);
       if (hasRejectedAny) {
-        const decisions: Record<string, "accept" | "reject"> = {};
-        for (const h of changeHunks) {
-          decisions[h.id] = rejectedHunkIds.has(h.id) ? "reject" : "accept";
-        }
-        const compiled = reconstructTextFromHunks(hunks, decisions, "accept");
+        const compiled = buildFinalText();
         await onAcceptCustom(compiled);
       } else {
         await onAcceptAll();
@@ -155,6 +194,13 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
     }
   };
 
+  const visibleMetadata = useMemo(() => {
+    if (!metadataProperties || metadataProperties.length === 0) return [];
+    return metadataProperties.filter(
+      (p) => p.oldValue.trim() !== p.newValue.trim(),
+    );
+  }, [metadataProperties]);
+
   return (
     <Modal>
       <Modal.Backdrop
@@ -168,14 +214,14 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
             data-lenis-prevent
             className="p-0! overflow-hidden rounded-[26px] max-w-4xl bg-neutral-900/80 backdrop-blur-2xl border border-white/6 shadow-2xl text-foreground w-full flex flex-col max-h-[92vh]"
           >
-            {/* Top Window Bar (HeroUI style) */}
-            <div className="flex items-center justify-between px-5 pt-3.5 pb-1.5 select-none shrink-0">
+            {/* Top Window Bar */}
+            <div className="flex items-center justify-between px-5 pt-3.5 pb-1.5 shrink-0">
               <div className="flex items-center gap-2.5 truncate pr-4">
                 <div className="size-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                  <LuGitPullRequest className="size-3.5" />
+                  {headerIcon || <LuGitPullRequest className="size-3.5" />}
                 </div>
                 <span className="text-xs font-medium text-neutral-300 font-inter truncate">
-                  Review Changes &middot; #{published.id} {published.degree}
+                  {title}
                 </span>
               </div>
 
@@ -207,102 +253,63 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
               {/* Header Title block */}
               <div>
                 <h3 className="text-lg sm:text-xl font-bold font-rethink text-white tracking-tight leading-snug">
-                  Proposed Revision
+                  {headingTitle || (isNew ? "Proposed New Draft" : "Proposed Revision")}
                 </h3>
                 <p className="text-xs text-neutral-400 font-inter mt-0.5 leading-relaxed">
-                  Review the proposed edits below. All changes are accepted by default; click &ldquo;Revert&rdquo; on any line to preserve the published text.
+                  {resolvedSubtitle}
                 </p>
               </div>
 
               {/* Modified Metadata Properties (if any) */}
-              {hasMetadataChanges && (
+              {visibleMetadata.length > 0 && (
                 <div className="rounded-2xl border border-white/6 bg-neutral-900/60 p-3.5 space-y-2">
                   <span className="text-[11px] font-mono uppercase tracking-wider text-neutral-400 font-medium">
-                    Modified Properties
+                    {isNew ? "Properties" : "Modified Properties"}
                   </span>
 
                   <div className="divide-y divide-white/4 text-xs font-mono">
-                    {degreeChanged && (
-                      <div className="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    {visibleMetadata.map((prop, idx) => (
+                      <div
+                        key={idx}
+                        className="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1"
+                      >
                         <span className="text-neutral-400 flex items-center gap-1.5">
-                          <LuGraduationCap className="w-3.5 h-3.5" /> Degree:
+                          {prop.icon}
+                          {prop.label}:
                         </span>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-red-400 line-through opacity-70">
-                            {oldDegree}
-                          </span>
-                          <span className="text-neutral-500">&rarr;</span>
+                          {prop.oldValue && prop.oldValue !== "(None)" ? (
+                            <>
+                              <span className="text-red-400 line-through opacity-70">
+                                {prop.oldValue}
+                              </span>
+                              <span className="text-neutral-500">&rarr;</span>
+                            </>
+                          ) : null}
                           <span className="text-emerald-300 font-semibold">
-                            {newDegree}
+                            {prop.newValue || "(None)"}
                           </span>
                         </div>
                       </div>
-                    )}
-
-                    {schoolChanged && (
-                      <div className="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <span className="text-neutral-400 flex items-center gap-1.5">
-                          <LuSchool className="w-3.5 h-3.5" /> School:
-                        </span>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-red-400 line-through opacity-70">
-                            {oldSchool}
-                          </span>
-                          <span className="text-neutral-500">&rarr;</span>
-                          <span className="text-emerald-300 font-semibold">
-                            {newSchool}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {fieldChanged && (
-                      <div className="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <span className="text-neutral-400">Field:</span>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-red-400 line-through opacity-70">
-                            {oldField}
-                          </span>
-                          <span className="text-neutral-500">&rarr;</span>
-                          <span className="text-emerald-300 font-semibold">
-                            {newField}
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {timelineChanged && (
-                      <div className="py-2 flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-                        <span className="text-neutral-400 flex items-center gap-1.5">
-                          <LuCalendar className="w-3.5 h-3.5" /> Timeline:
-                        </span>
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-red-400 line-through opacity-70">
-                            {oldStart} &mdash; {oldEnd}
-                          </span>
-                          <span className="text-neutral-500">&rarr;</span>
-                          <span className="text-emerald-300 font-semibold">
-                            {newStart} &mdash; {newEnd}
-                          </span>
-                        </div>
-                      </div>
-                    )}
+                    ))}
                   </div>
                 </div>
               )}
 
               {/* Description Body Diff Viewer */}
-              <div className="rounded-xl border border-white/10 bg-neutral-800 overflow-hidden shadow-inner flex flex-col">
-                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-white/6 bg-neutral-900 text-[11px] font-mono text-neutral-400 select-none">
+              <div className="rounded-xl border border-white/10 bg-neutral-800 overflow-hidden shadow-inner flex flex-col flex-1 min-h-[280px]">
+                <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-white/6 bg-neutral-900 text-[11px] font-mono text-neutral-400">
                   <span className="flex items-center gap-1.5 font-medium text-neutral-300">
-                    <LuBookOpen className="w-3.5 h-3.5 text-neutral-400" /> Description
+                    <LuBookOpen className="w-3.5 h-3.5 text-neutral-400" /> {diffSectionTitle}
                   </span>
-                  <span className="text-[10px] text-neutral-400">
-                    Hover changed segments to revert
-                  </span>
+                  {!shouldHideRevert && (
+                    <span className="text-[10px] text-neutral-400">
+                      Hover changed segments to revert
+                    </span>
+                  )}
                 </div>
 
-                <div className="divide-y divide-white/4 max-h-[380px] overflow-y-auto">
+                <div className="divide-y divide-white/4 max-h-[420px] overflow-y-auto">
                   {hunks.map((hunk) => {
                     if (!hunk.isPending) {
                       return (
@@ -332,30 +339,32 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
                         )}
                       >
                         {/* Inline Quick Action Badge */}
-                        <div className="absolute right-2 top-1.5 z-10 opacity-80 group-hover/hunk:opacity-100 transition-opacity">
-                          <button
-                            type="button"
-                            onClick={() => toggleRejectHunk(hunk.id)}
-                            className={cn(
-                              "px-2 py-0.5 rounded-lg text-[10px] font-mono font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs",
-                              isReverted
-                                ? "bg-neutral-800 text-neutral-300 hover:text-emerald-300 border border-white/10"
-                                : "bg-neutral-900 text-neutral-400 hover:text-red-400 border border-white/10",
-                            )}
-                          >
-                            {isReverted ? (
-                              <>
-                                <LuCheck className="w-3 h-3 text-emerald-400" />
-                                <span>Include Change</span>
-                              </>
-                            ) : (
-                              <>
-                                <LuX className="w-3 h-3 text-red-400" />
-                                <span>Revert</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                        {!shouldHideRevert && (
+                          <div className="absolute right-2 top-1.5 z-10 opacity-80 group-hover/hunk:opacity-100 transition-opacity">
+                            <button
+                              type="button"
+                              onClick={() => toggleRejectHunk(hunk.id)}
+                              className={cn(
+                                "px-2 py-0.5 rounded-lg text-[10px] font-mono font-medium flex items-center gap-1 transition-all cursor-pointer shadow-xs",
+                                isReverted
+                                  ? "bg-neutral-800 text-neutral-300 hover:text-emerald-300 border border-white/10"
+                                  : "bg-neutral-900 text-neutral-400 hover:text-red-400 border border-white/10",
+                              )}
+                            >
+                              {isReverted ? (
+                                <>
+                                  <LuCheck className="w-3 h-3 text-emerald-400" />
+                                  <span>Include Change</span>
+                                </>
+                              ) : (
+                                <>
+                                  <LuX className="w-3 h-3 text-red-400" />
+                                  <span>Revert</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        )}
 
                         <div>
                           {hunk.lines.map((line) => (
@@ -383,27 +392,51 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
                   onClick={handleConfirmReject}
                   className="text-xs font-medium text-neutral-400 hover:text-red-400 transition-colors cursor-pointer disabled:opacity-50 text-center sm:text-left"
                 >
-                  {isRejecting ? "Discarding..." : "Discard All Changes"}
+                  {isRejecting ? "Discarding..." : rejectLabel}
                 </button>
 
-                <div className="flex items-center justify-end gap-2.5">
+                <div className="flex items-center justify-end gap-2.5 flex-wrap">
+                  {allowCopyMdx && (
+                    <>
+                      <button
+                        type="button"
+                        disabled={isLoading}
+                        onClick={handleCopyText}
+                        className="text-xs font-medium text-neutral-300 hover:text-white px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                      >
+                        {copied ? (
+                          <>
+                            <LuCheck className="w-3.5 h-3.5 text-emerald-400" />
+                            <span>Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <LuCopy className="w-3.5 h-3.5" />
+                            <span>Copy MDX</span>
+                          </>
+                        )}
+                      </button>
+
+                      {downloadFilename && (
+                        <button
+                          type="button"
+                          disabled={isLoading}
+                          onClick={handleDownloadFile}
+                          className="text-xs font-medium text-neutral-300 hover:text-white px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                        >
+                          <LuDownload className="w-3.5 h-3.5" />
+                          <span>.mdx</span>
+                        </button>
+                      )}
+                    </>
+                  )}
+
                   <button
                     type="button"
                     disabled={isLoading}
                     onClick={() => {
                       onClose();
-                      const decisions: Record<string, "accept" | "reject"> = {};
-                      for (const h of changeHunks) {
-                        decisions[h.id] = rejectedHunkIds.has(h.id)
-                          ? "reject"
-                          : "accept";
-                      }
-                      const compiled = reconstructTextFromHunks(
-                        hunks,
-                        decisions,
-                        "accept",
-                      );
-                      onEditInStudio(compiled);
+                      onEditInStudio(buildFinalText());
                     }}
                     className="text-xs font-medium text-neutral-300 hover:text-white px-3.5 py-2 rounded-xl bg-white/5 hover:bg-white/8 border border-white/8 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
                   >
@@ -422,7 +455,7 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
                     ) : (
                       <LuCheck className="size-3.5" />
                     )}
-                    <span>{isAccepting ? "Applying..." : "Accept & Apply"}</span>
+                    <span>{isAccepting ? "Applying..." : acceptLabel}</span>
                   </button>
                 </div>
               </div>
@@ -433,3 +466,5 @@ export const EducationDiffModal: React.FC<EducationDiffModalProps> = ({
     </Modal>
   );
 };
+
+export default RevisionDiffModal;

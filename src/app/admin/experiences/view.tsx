@@ -2,7 +2,14 @@
 
 import React, { useState } from "react";
 import { ExperienceType } from "@/types";
-import { LuBriefcase, LuPlus } from "react-icons/lu";
+import {
+  LuBriefcase,
+  LuPlus,
+  LuBuilding2,
+  LuMapPin,
+  LuGlobe,
+  LuCalendar,
+} from "react-icons/lu";
 import { Button, Card, toast } from "@heroui/react";
 import { ExperienceCard } from "./components/experience-card";
 import { useMdxStudio } from "@/mdx-studio";
@@ -20,9 +27,21 @@ import {
   deleteExperienceDraftAction,
 } from "./actions";
 import {
-  ExperienceDiffModal,
-  ExperienceDraftData,
-} from "./components/experience-diff-modal";
+  RevisionDiffModal,
+  DiffMetadataProperty,
+} from "@/components/revision-diff-modal";
+
+export interface ExperienceDraftData {
+  targetId?: number;
+  company?: string;
+  role?: string;
+  start?: string;
+  end?: string | null;
+  location?: string | null;
+  companyUrl?: string | null;
+  companyLogo?: string | null;
+  description?: string;
+}
 
 export interface ExperienceDraftItem {
   id: string;
@@ -68,6 +87,10 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({
     published: ExperienceType;
     draft: ExperienceDraftItem;
   } | null>(null);
+
+  // State for reviewing standalone new draft modal
+  const [newDraftTarget, setNewDraftTarget] =
+    useState<ExperienceDraftItem | null>(null);
 
   // Split drafts into:
   // 1. Revision drafts (has targetId matching a published experience)
@@ -436,7 +459,7 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({
                 key={`draft-${draft.id}`}
                 experience={draftExp}
                 isDraft={true}
-                onEdit={() => handleOpenDraftReview(draft)}
+                onEdit={() => setNewDraftTarget(draft)}
                 onDelete={() => {
                   confirm({
                     isDanger: true,
@@ -486,35 +509,207 @@ export const AdminExpView: React.FC<AdminExpViewProps> = ({
       )}
 
       {/* GitHub PR/Cursor-style Side-by-Side Line Diff Review Modal */}
-      {diffTarget && (
-        <ExperienceDiffModal
-          isOpen={Boolean(diffTarget)}
-          onClose={() => setDiffTarget(null)}
-          published={diffTarget.published}
-          draftId={diffTarget.draft.id}
-          draftData={diffTarget.draft.data}
-          onAcceptAll={async () => {
-            await handleAcceptRevision(diffTarget.published, diffTarget.draft);
-          }}
-          onAcceptCustom={async (compiledDescription) => {
-            await handleAcceptRevision(
-              diffTarget.published,
-              diffTarget.draft,
-              compiledDescription,
-            );
-          }}
-          onRejectAll={async () => {
-            await handleDeleteDraft(diffTarget.draft);
-          }}
-          onEditInStudio={(currentDescription) => {
-            handleOpenStudioForRevision(
-              diffTarget.published,
-              diffTarget.draft,
-              currentDescription,
-            );
-          }}
-        />
-      )}
+      {diffTarget && (() => {
+        const pub = diffTarget.published;
+        const draftData = diffTarget.draft.data || {};
+        const oldStart = pub.start
+          ? new Date(pub.start).toISOString().split("T")[0]
+          : "";
+        const newStart = draftData.start ?? oldStart;
+        const oldEnd = pub.end
+          ? new Date(pub.end).toISOString().split("T")[0]
+          : "Present";
+        const newEnd =
+          draftData.end === null
+            ? "Present"
+            : (draftData.end !== undefined ? draftData.end : oldEnd);
+
+        const metadataProperties: DiffMetadataProperty[] = [
+          {
+            label: "Role",
+            icon: <LuBriefcase className="size-3.5" />,
+            oldValue: pub.role || "",
+            newValue: draftData.role ?? (pub.role || ""),
+          },
+          {
+            label: "Company",
+            icon: <LuBuilding2 className="size-3.5" />,
+            oldValue: pub.company || "",
+            newValue: draftData.company ?? (pub.company || ""),
+          },
+          {
+            label: "Location",
+            icon: <LuMapPin className="size-3.5" />,
+            oldValue: pub.location || "",
+            newValue: draftData.location ?? (pub.location || ""),
+          },
+          {
+            label: "Website",
+            icon: <LuGlobe className="size-3.5" />,
+            oldValue: pub.companyUrl || "",
+            newValue: draftData.companyUrl ?? (pub.companyUrl || ""),
+          },
+          {
+            label: "Timeline",
+            icon: <LuCalendar className="size-3.5" />,
+            oldValue: `${oldStart} — ${oldEnd}`,
+            newValue: `${newStart} — ${newEnd}`,
+          },
+        ];
+
+        return (
+          <RevisionDiffModal
+            isOpen={Boolean(diffTarget)}
+            onClose={() => setDiffTarget(null)}
+            title={`Review Changes · #${pub.id} ${pub.role} at ${pub.company}`}
+            headerIcon={<LuBriefcase className="size-3.5" />}
+            oldText={pub.description || ""}
+            newText={draftData.description ?? (pub.description || "")}
+            diffSectionTitle="Responsibilities & Achievements"
+            metadataProperties={metadataProperties}
+            onAcceptAll={async () => {
+              await handleAcceptRevision(diffTarget.published, diffTarget.draft);
+            }}
+            onAcceptCustom={async (compiledDescription) => {
+              await handleAcceptRevision(
+                diffTarget.published,
+                diffTarget.draft,
+                compiledDescription,
+              );
+            }}
+            onRejectAll={async () => {
+              await handleDeleteDraft(diffTarget.draft);
+            }}
+            onEditInStudio={(currentDescription) => {
+              handleOpenStudioForRevision(
+                diffTarget.published,
+                diffTarget.draft,
+                currentDescription,
+              );
+            }}
+          />
+        );
+      })()}
+
+      {/* Standalone New Draft Review Modal */}
+      {newDraftTarget && (() => {
+        const draftData = newDraftTarget.data || {};
+        const startStr = draftData.start
+          ? String(draftData.start).split("T")[0]
+          : "";
+        const endStr = draftData.end
+          ? String(draftData.end).split("T")[0]
+          : "Present";
+
+        const metadataProperties: DiffMetadataProperty[] = [
+          {
+            label: "Role",
+            icon: <LuBriefcase className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.role || "Untitled Role",
+          },
+          {
+            label: "Company",
+            icon: <LuBuilding2 className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.company || "Untitled Company",
+          },
+          {
+            label: "Location",
+            icon: <LuMapPin className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.location || "",
+          },
+          {
+            label: "Website",
+            icon: <LuGlobe className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.companyUrl || "",
+          },
+          {
+            label: "Timeline",
+            icon: <LuCalendar className="size-3.5" />,
+            oldValue: "",
+            newValue: startStr ? `${startStr} — ${endStr}` : "Present",
+          },
+        ];
+
+        return (
+          <RevisionDiffModal
+            isOpen={Boolean(newDraftTarget)}
+            onClose={() => setNewDraftTarget(null)}
+            title={`Review Draft · ${draftData.role || "New Experience"}`}
+            headingTitle="Proposed New Experience"
+            subtitle="Review the proposed details for this new experience record. You can accept and add it to your portfolio, edit in Studio, or discard it."
+            headerIcon={<LuBriefcase className="size-3.5" />}
+            oldText=""
+            newText={draftData.description || ""}
+            diffSectionTitle="Responsibilities & Achievements"
+            metadataProperties={metadataProperties}
+            acceptLabel="Accept & Add"
+            rejectLabel="Discard Draft"
+            hideRevertButton={true}
+            onAcceptAll={async () => {
+              let parsedEnd: Date | null = null;
+              if (
+                draftData.end &&
+                String(draftData.end).toLowerCase() !== "present"
+              ) {
+                parsedEnd = new Date(draftData.end);
+              }
+              await createExperienceAction({
+                company: (draftData.company || "Untitled Company").trim(),
+                role: (draftData.role || "Untitled Role").trim(),
+                location: draftData.location?.trim() || undefined,
+                companyUrl: draftData.companyUrl?.trim() || undefined,
+                companyLogo: draftData.companyLogo?.trim() || undefined,
+                start: draftData.start ? new Date(draftData.start) : new Date(),
+                end: parsedEnd,
+                description: draftData.description?.trim() || "",
+              });
+              await deleteExperienceDraftAction(newDraftTarget.id);
+              toast.success(
+                `Added "${draftData.role || "Experience"}" successfully.`,
+              );
+              setNewDraftTarget(null);
+              router.refresh();
+            }}
+            onAcceptCustom={async (compiledDescription) => {
+              let parsedEnd: Date | null = null;
+              if (
+                draftData.end &&
+                String(draftData.end).toLowerCase() !== "present"
+              ) {
+                parsedEnd = new Date(draftData.end);
+              }
+              await createExperienceAction({
+                company: (draftData.company || "Untitled Company").trim(),
+                role: (draftData.role || "Untitled Role").trim(),
+                location: draftData.location?.trim() || undefined,
+                companyUrl: draftData.companyUrl?.trim() || undefined,
+                companyLogo: draftData.companyLogo?.trim() || undefined,
+                start: draftData.start ? new Date(draftData.start) : new Date(),
+                end: parsedEnd,
+                description: compiledDescription.trim(),
+              });
+              await deleteExperienceDraftAction(newDraftTarget.id);
+              toast.success(
+                `Added "${draftData.role || "Experience"}" successfully.`,
+              );
+              setNewDraftTarget(null);
+              router.refresh();
+            }}
+            onRejectAll={async () => {
+              await handleDeleteDraft(newDraftTarget);
+              setNewDraftTarget(null);
+            }}
+            onEditInStudio={() => {
+              handleOpenDraftReview(newDraftTarget);
+              setNewDraftTarget(null);
+            }}
+          />
+        );
+      })()}
     </div>
   );
 };

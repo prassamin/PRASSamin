@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { EducationType } from "@/types";
-import { LuGraduationCap, LuPlus } from "react-icons/lu";
+import { LuGraduationCap, LuPlus, LuCalendar, LuSchool } from "react-icons/lu";
 import { Button, Card, toast } from "@heroui/react";
 import { EducationCard } from "./components/education-card";
 import { useMdxStudio } from "@/mdx-studio";
@@ -16,7 +16,20 @@ import {
   deleteEducationAction,
   deleteEducationDraftAction,
 } from "./actions";
-import { EducationDiffModal, EducationDraftData } from "./components/education-diff-modal";
+import {
+  RevisionDiffModal,
+  DiffMetadataProperty,
+} from "@/components/revision-diff-modal";
+
+export interface EducationDraftData {
+  targetId?: number;
+  school?: string;
+  degree?: string;
+  field?: string;
+  start?: string;
+  end?: string | null;
+  description?: string;
+}
 
 export interface EducationDraftItem {
   id: string;
@@ -63,6 +76,10 @@ export const AdminEduView: React.FC<AdminEduViewProps> = ({
     published: EducationType;
     draft: EducationDraftItem;
   } | null>(null);
+
+  // State for reviewing standalone new draft modal
+  const [newDraftTarget, setNewDraftTarget] =
+    useState<EducationDraftItem | null>(null);
 
   // Split drafts into:
   // 1. Revision drafts (has targetId matching a published education)
@@ -414,7 +431,7 @@ export const AdminEduView: React.FC<AdminEduViewProps> = ({
                 key={`draft-${draft.id}`}
                 education={draftEdu}
                 isDraft={true}
-                onEdit={() => handleOpenDraftReview(draft)}
+                onEdit={() => setNewDraftTarget(draft)}
                 onDelete={() => {
                   confirm({
                     isDanger: true,
@@ -464,35 +481,189 @@ export const AdminEduView: React.FC<AdminEduViewProps> = ({
       )}
 
       {/* Line-by-Line Visual Diff Review Modal with Granular Segment Accept */}
-      {diffTarget && (
-        <EducationDiffModal
-          isOpen={Boolean(diffTarget)}
-          onClose={() => setDiffTarget(null)}
-          published={diffTarget.published}
-          draftId={diffTarget.draft.id}
-          draftData={diffTarget.draft.data}
-          onAcceptAll={async () => {
-            await handleAcceptRevision(diffTarget.published, diffTarget.draft);
-          }}
-          onAcceptCustom={async (customDescription) => {
-            await handleAcceptRevision(
-              diffTarget.published,
-              diffTarget.draft,
-              customDescription,
-            );
-          }}
-          onRejectAll={async () => {
-            await handleDeleteDraft(diffTarget.draft);
-          }}
-          onEditInStudio={(currentDesc) => {
-            handleOpenStudioForRevision(
-              diffTarget.published,
-              diffTarget.draft,
-              currentDesc,
-            );
-          }}
-        />
-      )}
+      {diffTarget && (() => {
+        const pub = diffTarget.published;
+        const draftData = diffTarget.draft.data || {};
+        const oldStart = pub.start
+          ? new Date(pub.start).toISOString().split("T")[0]
+          : "";
+        const newStart = draftData.start ?? oldStart;
+        const oldEnd = pub.end
+          ? new Date(pub.end).toISOString().split("T")[0]
+          : "Present";
+        const newEnd =
+          draftData.end === null
+            ? "Present"
+            : (draftData.end !== undefined ? draftData.end : oldEnd);
+
+        const metadataProperties: DiffMetadataProperty[] = [
+          {
+            label: "Degree",
+            icon: <LuGraduationCap className="size-3.5" />,
+            oldValue: pub.degree || "",
+            newValue: draftData.degree ?? (pub.degree || ""),
+          },
+          {
+            label: "School",
+            icon: <LuSchool className="size-3.5" />,
+            oldValue: pub.school || "",
+            newValue: draftData.school ?? (pub.school || ""),
+          },
+          {
+            label: "Field",
+            oldValue: pub.field || "",
+            newValue: draftData.field ?? (pub.field || ""),
+          },
+          {
+            label: "Timeline",
+            icon: <LuCalendar className="size-3.5" />,
+            oldValue: `${oldStart} — ${oldEnd}`,
+            newValue: `${newStart} — ${newEnd}`,
+          },
+        ];
+
+        return (
+          <RevisionDiffModal
+            isOpen={Boolean(diffTarget)}
+            onClose={() => setDiffTarget(null)}
+            title={`Review Changes · #${pub.id} ${pub.degree} at ${pub.school}`}
+            headerIcon={<LuGraduationCap className="size-3.5" />}
+            oldText={pub.description || ""}
+            newText={draftData.description ?? (pub.description || "")}
+            diffSectionTitle="Description & Coursework"
+            metadataProperties={metadataProperties}
+            onAcceptAll={async () => {
+              await handleAcceptRevision(diffTarget.published, diffTarget.draft);
+            }}
+            onAcceptCustom={async (customDescription) => {
+              await handleAcceptRevision(
+                diffTarget.published,
+                diffTarget.draft,
+                customDescription,
+              );
+            }}
+            onRejectAll={async () => {
+              await handleDeleteDraft(diffTarget.draft);
+            }}
+            onEditInStudio={(currentDesc) => {
+              handleOpenStudioForRevision(
+                diffTarget.published,
+                diffTarget.draft,
+                currentDesc,
+              );
+            }}
+          />
+        );
+      })()}
+
+      {/* Standalone New Draft Review Modal */}
+      {newDraftTarget && (() => {
+        const draftData = newDraftTarget.data || {};
+        const startStr = draftData.start
+          ? String(draftData.start).split("T")[0]
+          : "";
+        const endStr = draftData.end
+          ? String(draftData.end).split("T")[0]
+          : "Present";
+
+        const metadataProperties: DiffMetadataProperty[] = [
+          {
+            label: "Degree",
+            icon: <LuGraduationCap className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.degree || "Untitled Degree",
+          },
+          {
+            label: "School",
+            icon: <LuSchool className="size-3.5" />,
+            oldValue: "",
+            newValue: draftData.school || "Untitled Institution",
+          },
+          {
+            label: "Field",
+            oldValue: "",
+            newValue: draftData.field || "",
+          },
+          {
+            label: "Timeline",
+            icon: <LuCalendar className="size-3.5" />,
+            oldValue: "",
+            newValue: startStr ? `${startStr} — ${endStr}` : "Present",
+          },
+        ];
+
+        return (
+          <RevisionDiffModal
+            isOpen={Boolean(newDraftTarget)}
+            onClose={() => setNewDraftTarget(null)}
+            title={`Review Draft · ${draftData.degree || "New Education"}`}
+            headingTitle="Proposed New Education"
+            subtitle="Review the proposed details for this new education record. You can accept and add it to your portfolio, edit in Studio, or discard it."
+            headerIcon={<LuGraduationCap className="size-3.5" />}
+            oldText=""
+            newText={draftData.description || ""}
+            diffSectionTitle="Description & Coursework"
+            metadataProperties={metadataProperties}
+            acceptLabel="Accept & Add"
+            rejectLabel="Discard Draft"
+            hideRevertButton={true}
+            onAcceptAll={async () => {
+              let parsedEnd: Date | null = null;
+              if (
+                draftData.end &&
+                String(draftData.end).toLowerCase() !== "present"
+              ) {
+                parsedEnd = new Date(draftData.end);
+              }
+              await createEducationAction({
+                school: (draftData.school || "Untitled Institution").trim(),
+                degree: (draftData.degree || "Untitled Degree").trim(),
+                field: (draftData.field || "").trim(),
+                start: draftData.start ? new Date(draftData.start) : new Date(),
+                end: parsedEnd,
+                description: draftData.description?.trim() || "",
+              });
+              await deleteEducationDraftAction(newDraftTarget.id);
+              toast.success(
+                `Added "${draftData.degree || "Education"}" successfully.`,
+              );
+              setNewDraftTarget(null);
+              router.refresh();
+            }}
+            onAcceptCustom={async (customDescription) => {
+              let parsedEnd: Date | null = null;
+              if (
+                draftData.end &&
+                String(draftData.end).toLowerCase() !== "present"
+              ) {
+                parsedEnd = new Date(draftData.end);
+              }
+              await createEducationAction({
+                school: (draftData.school || "Untitled Institution").trim(),
+                degree: (draftData.degree || "Untitled Degree").trim(),
+                field: (draftData.field || "").trim(),
+                start: draftData.start ? new Date(draftData.start) : new Date(),
+                end: parsedEnd,
+                description: customDescription.trim(),
+              });
+              await deleteEducationDraftAction(newDraftTarget.id);
+              toast.success(
+                `Added "${draftData.degree || "Education"}" successfully.`,
+              );
+              setNewDraftTarget(null);
+              router.refresh();
+            }}
+            onRejectAll={async () => {
+              await handleDeleteDraft(newDraftTarget);
+              setNewDraftTarget(null);
+            }}
+            onEditInStudio={() => {
+              handleOpenDraftReview(newDraftTarget);
+              setNewDraftTarget(null);
+            }}
+          />
+        );
+      })()}
     </div>
   );
 };
