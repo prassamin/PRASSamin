@@ -49,18 +49,30 @@ export async function getProjects({
     if (!search) return true;
     const inTitle = entry.data.title?.toLowerCase().includes(search);
     const inDesc = entry.data.description?.toLowerCase().includes(search);
-    return inTitle || inDesc;
+    const inCategory = entry.data.category?.toLowerCase().includes(search);
+    const inTools =
+      Array.isArray(entry.data.tools) &&
+      entry.data.tools.some((t: string) =>
+        String(t).toLowerCase().includes(search),
+      );
+    const inSlug = entry.slugs.some((s) => s.toLowerCase().includes(search));
+    return inTitle || inDesc || inCategory || inTools || inSlug;
   });
 
   // Fetch corresponding stats from DB
   const slugs = filtered.map((p) => p.slugs.join("/"));
-  const stats = await db.projectStat.findMany({
-    where: { slug: { in: slugs } },
-    select: {
-      slug: true,
-      totalViews: true,
-    },
-  });
+  let stats: { slug: string; totalViews: number }[] = [];
+  try {
+    stats = await db.projectStat.findMany({
+      where: { slug: { in: slugs } },
+      select: {
+        slug: true,
+        totalViews: true,
+      },
+    });
+  } catch {
+    stats = [];
+  }
   const statsMap = new Map(stats.map((s) => [s.slug, s.totalViews || 0]));
 
   // Combine metadata + stats

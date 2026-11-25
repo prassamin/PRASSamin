@@ -3,11 +3,13 @@ import { ToolDefinition, CallToolResult } from "../protocol";
 import { EDUCATION_TOOLS, handleEducationTool } from "./education";
 import { EXPERIENCE_TOOLS, handleExperienceTool } from "./experience";
 import { BLOG_TOOLS, handleBlogTool } from "./blog";
+import { PROJECT_TOOLS, handleProjectTool } from "./project";
 import { DRAFT_TOOLS, handleDraftTool } from "./drafts";
 import {
   EDUCATION_DRAFT_STANDARDS,
   EXPERIENCE_DRAFT_STANDARDS,
   BLOG_DRAFT_STANDARDS,
+  PROJECT_DRAFT_STANDARDS,
   MDX_COMPONENTS_REFERENCE,
   MCP_GLOBAL_INSTRUCTIONS,
 } from "../prompts";
@@ -41,6 +43,7 @@ export const ALL_MCP_TOOLS: ToolDefinition[] = [
   ...EDUCATION_TOOLS,
   ...EXPERIENCE_TOOLS,
   ...BLOG_TOOLS,
+  ...PROJECT_TOOLS,
   ...DRAFT_TOOLS,
   ...GUIDELINE_TOOLS,
 ];
@@ -88,6 +91,12 @@ export async function dispatchMcpTool(
       };
     }
 
+    if (type === "project") {
+      return {
+        content: [{ type: "text", text: PROJECT_DRAFT_STANDARDS }],
+      };
+    }
+
     if (type === "mdx_components") {
       return {
         content: [{ type: "text", text: MDX_COMPONENTS_REFERENCE }],
@@ -121,6 +130,10 @@ export async function dispatchMcpTool(
 
   if (BLOG_TOOLS.some((t) => t.name === toolName)) {
     return handleBlogTool(toolName, args, auth);
+  }
+
+  if (PROJECT_TOOLS.some((t) => t.name === toolName)) {
+    return handleProjectTool(toolName, args, auth);
   }
 
   if (DRAFT_TOOLS.some((t) => t.name === toolName)) {

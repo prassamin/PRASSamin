@@ -173,7 +173,7 @@ export const BlogCard: React.FC<{
                 )}
               </div>
 
-              {blog.slug && (
+              {(blog.slug && !isDraft) && (
                 <button
                   type="button"
                   onClick={() => setShowAnalytics((v) => !v)}

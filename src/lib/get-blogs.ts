@@ -50,18 +50,24 @@ export async function getBlogs({
     const inTags = entry.data.tags?.some((t) =>
       t.toLowerCase().includes(search),
     );
-    return inTitle || inDesc || inTags;
+    const inSlug = entry.slugs.some((s) => s.toLowerCase().includes(search));
+    return inTitle || inDesc || inTags || inSlug;
   });
 
   // Fetch corresponding stats from DB
   const slugs = filtered.map((p) => p.slugs.join("/"));
-  const stats = await db.blogStat.findMany({
-    where: { slug: { in: slugs } },
-    select: {
-      slug: true,
-      totalViews: true,
-    },
-  });
+  let stats: { slug: string; totalViews: number }[] = [];
+  try {
+    stats = await db.blogStat.findMany({
+      where: { slug: { in: slugs } },
+      select: {
+        slug: true,
+        totalViews: true,
+      },
+    });
+  } catch {
+    stats = [];
+  }
   const statsMap = new Map(stats.map((s) => [s.slug, s.totalViews || 0]));
 
   // Combine metadata + stats

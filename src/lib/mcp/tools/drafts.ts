@@ -221,6 +221,15 @@ export async function handleDraftTool(
       if (updated.type === "education") {
         revalidatePath("/admin/educations");
       }
+      if (updated.type === "experience") {
+        revalidatePath("/admin/experiences");
+      }
+      if (updated.type === "blog") {
+        revalidatePath("/admin/blogs");
+      }
+      if (updated.type === "project") {
+        revalidatePath("/admin/projects");
+      }
 
       return {
         content: [
@@ -277,6 +286,15 @@ export async function handleDraftTool(
       if (updated.type === "education") {
         revalidatePath("/admin/educations");
       }
+      if (updated.type === "experience") {
+        revalidatePath("/admin/experiences");
+      }
+      if (updated.type === "blog") {
+        revalidatePath("/admin/blogs");
+      }
+      if (updated.type === "project") {
+        revalidatePath("/admin/projects");
+      }
 
       return {
         content: [
@@ -316,6 +334,15 @@ export async function handleDraftTool(
 
       if (existing.type === "education") {
         revalidatePath("/admin/educations");
+      }
+      if (existing.type === "experience") {
+        revalidatePath("/admin/experiences");
+      }
+      if (existing.type === "blog") {
+        revalidatePath("/admin/blogs");
+      }
+      if (existing.type === "project") {
+        revalidatePath("/admin/projects");
       }
 
       return {

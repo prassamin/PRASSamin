@@ -397,6 +397,44 @@ When drafting or updating an article or technical blog post for ${APP_NAME}'s po
    - Passing \`targetSlug: <existingSlug>\` marks the draft as a revision, triggering an "AI Revision Proposed" badge in the admin panel and opening a side-by-side Myers line diff modal for PR-style review before publishing to disk.
 `;
 
+export const PROJECT_DRAFT_STANDARDS = `### Project Case Study Best Practices & Editorial Standards
+
+When drafting or updating a project showcase for ${APP_NAME}'s portfolio, adhere to the following standards:
+
+1. **Frontmatter Schema & Validation**:
+   - \`title\`: Clear product/project name (e.g. "EnvDrop", "PrettyShot", "Fetchy").
+   - \`category\`: Concise domain category (e.g. "Security", "Open Source", "Fullstack", "Developer Tools", "AI").
+   - \`description\`: High-impact 1-3 sentence elevator pitch describing the value proposition, security model, or problem solved.
+   - \`tools\`: Array of 3–8 primary technologies used (e.g. \`["Nextjs", "Typescript", "Tailwindcss", "Redis", "Web Crypto"]\`).
+   - \`github\`: Repository URL (e.g. \`"https://github.com/..."\`).
+   - \`live\`: Production or live demo URL (e.g. \`"https://..."\`).
+   - \`thumbnail\`: Cover screenshot/asset image URL (e.g. Cloudinary CDN or public image URL).
+   - \`banner\`: Optional wide header banner image URL.
+   - \`createdAt\` / \`updatedAt\`: ISO date strings (e.g. \`"2026-11-25T00:00:00.000Z"\`).
+
+2. **Project Case Study Structure & Narrative Formula**:
+   - **The Origin & Problem**: The specific friction or pain point that inspired building this product.
+   - **The Solution & Value Proposition**: High-level overview of what the tool does and why it feels magical to users.
+   - **Architecture & Technical Decisions**: Key architectural choices, zero-knowledge security models, caching strategies, or protocols used.
+   - **Core Highlights / Features**: Illustrated with \`<Cards>\`, \`<Card>\`, and code snippets.
+   - **Challenges & Learnings**: What was hard to build and what you'd do differently next time.
+
+3. **Permitted MDX Studio Blocks & Components in Projects**:
+   - Projects have full access to the complete catalog of MDX Studio components:
+     - \`<Cards>\` & \`<Card>\`: For feature breakdowns, highlights, and architecture pillars.
+     - \`<Callout>\`: For important security notices, benchmarks, or tips.
+     - \`<Steps>\`: For installation or setup guides.
+     - \`<Tabs>\` / \`<CodeBlockTabs>\`: For multi-language or multi-environment code examples.
+     - Refer to **\`mdx_components_reference\`** for complete syntax.
+
+4. **AI Revision Workflow & Draft Management Rules**:
+   - **Check for Existing Drafts First (MANDATORY RULE)**:
+     - Before creating a revision draft targeting an existing project (\`targetSlug\`), call \`list_projects(includeDrafts: true)\` or \`list_drafts(type: "project")\`.
+     - If an active draft already exists targeting this \`targetSlug\` (or sharing the proposed \`slug\`), **DO NOT call \`create_project_draft\`** (which creates duplicate competing drafts). Instead, use **\`patch_project_draft\`** (or \`put_project_draft\`) with the draft's ID (\`id: <draftId>\`) to update the existing proposal!
+     - Only call \`create_project_draft\` if NO active draft currently exists for this project.
+   - Passing \`targetSlug: <existingSlug>\` marks the draft as a revision, triggering an "AI Revision Proposed" badge in the admin panel and opening a side-by-side diff modal for review before publishing to disk.
+`;
+
 export const MCP_PROMPTS: PromptDefinition[] = [
   {
     name: "mdx_components_reference",
@@ -446,6 +484,18 @@ export const MCP_PROMPTS: PromptDefinition[] = [
       {
         name: "topic",
         description: "Optional article topic or domain for tailored advice.",
+        required: false,
+      },
+    ],
+  },
+  {
+    name: "project_best_standards",
+    description:
+      "Editorial guidelines, frontmatter schema, narrative structures, and permitted MDX Studio components for project case studies and showcase entries in the portfolio.",
+    arguments: [
+      {
+        name: "category",
+        description: "Optional project domain/category for tailored advice (e.g. 'Security', 'Open Source', 'Fullstack').",
         required: false,
       },
     ],
@@ -530,6 +580,26 @@ export function handleGetPrompt(
           content: {
             type: "text",
             text: `${BLOG_DRAFT_STANDARDS}${customContext}`,
+          },
+        },
+      ],
+    };
+  }
+
+  if (name === "project_best_standards") {
+    let customContext = "";
+    if (args.category) {
+      customContext = `\\n\\nTargeting Category: ${args.category}. Tailor architecture and feature highlights to this domain.`;
+    }
+
+    return {
+      description: "Editorial guidelines and best practices for drafting project showcases and case studies",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `${PROJECT_DRAFT_STANDARDS}${customContext}`,
           },
         },
       ],
