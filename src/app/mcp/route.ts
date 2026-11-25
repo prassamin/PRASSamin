@@ -1,7 +1,6 @@
 import { NextRequest } from "next/server";
 import { APP_NAME } from "@/config";
 import {
-  MCP_TOOLS,
   MCP_PROMPTS,
   handleGetPrompt,
   MCP_GLOBAL_INSTRUCTIONS,
@@ -126,12 +125,11 @@ function handleInitialize(
       version: MCP_SERVER_VERSION,
     },
     instructions:
-      `You are connected to ${APP_NAME}'s Portfolio Assistant MCP Server.${
-        auth
-          ? auth.scopes.includes("write")
-            ? " Connected with Full Access (Read & Write)."
-            : " Connected with Read-Only Access. Write and draft mutation tools are hidden."
-          : ""
+      `You are connected to ${APP_NAME}'s Portfolio Assistant MCP Server.${auth
+        ? auth.scopes.includes("write")
+          ? " Connected with Full Access (Read & Write)."
+          : " Connected with Read-Only Access. Write and draft mutation tools are hidden."
+        : ""
       }\n\n${MCP_GLOBAL_INSTRUCTIONS}\n\nBefore formatting specific content (education, blog, experience), you can call 'get_content_guidelines' or check 'prompts/list' to retrieve domain-specific formatting standards and MDX component rules.`,
   };
 

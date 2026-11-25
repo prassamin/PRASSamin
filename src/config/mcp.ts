@@ -1,4 +1,4 @@
-export const MCP_SERVER_ENDPOINT = (origin: string) => `${origin}/api/mcp`;
+export const MCP_SERVER_ENDPOINT = (origin: string) => `${origin}/mcp`;
 export const MCP_SERVER_NAME = "portfolio".replace(/[^a-zA-Z0-9]+/g, "");
 
 export const MCP_SERVER_VERSION = "0.1.0";
