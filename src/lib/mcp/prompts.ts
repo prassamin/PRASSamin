@@ -38,7 +38,7 @@ export const MCP_GLOBAL_INSTRUCTIONS = `### GLOBAL OPERATIONAL RULES (MANDATORY 
 2. RULE 2: SMART DRAFT DECISION (ONE ACTIVE DRAFT PER TARGET)
    - Every published entry must have AT MOST ONE active pending revision draft in the review queue. Never create duplicate competing drafts.
    - BEFORE drafting a revision for an existing entry:
-     a) Check if an active draft already exists using \`list_drafts\`.
+     a) Check if an active draft already exists using \`list_drafts\` (or \`list_blogs(includeDrafts: true)\`).
      b) IF an active draft ALREADY EXISTS targeting that entry, DO NOT call \`create_*_draft\`. You MUST call \`patch_*_draft\` (or \`put_*_draft\`) with the existing draft's ID (\`id: <draftId>\`) to update and refine it.
      c) ONLY call \`create_*_draft\` if NO active draft currently exists for that target.`;
 
@@ -366,6 +366,37 @@ When drafting or updating a work or career experience entry for ${APP_NAME}'s po
    - Passing \`targetId: <experienceId>\` marks the draft as an AI revision, triggering an "AI Revision Proposed" badge in the admin panel and opening a side-by-side diff review modal where the user can inspect changes and accept/reject individual segments.
 `;
 
+export const BLOG_DRAFT_STANDARDS = `### Blog Article Best Practices & Editorial Standards
+
+When drafting or updating an article or technical blog post for ${APP_NAME}'s portfolio, adhere to the following standards:
+
+1. **Frontmatter Schema & Validation**:
+   - \`title\`: Clear, engaging, and professional article headline.
+   - \`description\`: Compelling 1-2 sentence summary explaining the core takeaway or story (used in social previews and SEO meta tags).
+   - \`tags\`: Array of 2–5 topical tags (e.g. \`["TypeScript", "Next.js", "AI", "Open Source"]\`).
+   - \`thumbnail\`: Cover image URL (e.g. from Cloudinary CDN or public image URL).
+   - \`banner\`: Optional wide hero banner image URL.
+   - \`createdAt\` / \`updatedAt\`: ISO date strings (e.g. \`"2026-11-25T00:00:00.000Z"\`).
+
+2. **Article Structure & Narrative Formula**:
+   - **Hook & Motivation**: Start with a relatable scenario, personal experience, or technical problem.
+   - **The Problem / Friction**: Why traditional approaches failed or what made this challenging.
+   - **Technical Deep Dive**: Architecture diagrams, code examples with syntax highlighting, and implementation rationale.
+   - **Results & Metrics**: Benchmarks, user impact, latency reductions, or key lessons learned.
+   - **Takeaways / Next Steps**: Actionable conclusions for readers.
+
+3. **Permitted MDX Studio Blocks & Components in Blog Posts**:
+   - Blogs have full access to the complete catalog of MDX Studio components:
+     - Refer to **\`mdx_components_reference\`** for complete syntax.
+
+4. **AI Revision Workflow & Draft Management Rules**:
+   - **Check for Existing Drafts First (MANDATORY RULE)**:
+     - Before creating a revision draft targeting an existing blog post (\`targetSlug\`), call \`list_blogs(includeDrafts: true)\` or \`list_drafts(type: "blog")\`.
+     - If an active draft already exists targeting this \`targetSlug\` (or sharing the proposed \`slug\`), **DO NOT call \`create_blog_draft\`** (which creates duplicate competing drafts). Instead, use **\`patch_blog_draft\`** (or \`put_blog_draft\`) with the draft's ID (\`id: <draftId>\`) to update the existing proposal!
+     - Only call \`create_blog_draft\` if NO active draft currently exists for this article.
+   - Passing \`targetSlug: <existingSlug>\` marks the draft as a revision, triggering an "AI Revision Proposed" badge in the admin panel and opening a side-by-side Myers line diff modal for PR-style review before publishing to disk.
+`;
+
 export const MCP_PROMPTS: PromptDefinition[] = [
   {
     name: "mdx_components_reference",
@@ -403,6 +434,18 @@ export const MCP_PROMPTS: PromptDefinition[] = [
       {
         name: "role",
         description: "Optional job role or title for domain-specific recommendations.",
+        required: false,
+      },
+    ],
+  },
+  {
+    name: "blog_best_standards",
+    description:
+      "Editorial guidelines, frontmatter schema, narrative structures, and permitted MDX Studio components for technical articles and blog posts in the portfolio.",
+    arguments: [
+      {
+        name: "topic",
+        description: "Optional article topic or domain for tailored advice.",
         required: false,
       },
     ],
@@ -467,6 +510,26 @@ export function handleGetPrompt(
           content: {
             type: "text",
             text: `${EXPERIENCE_DRAFT_STANDARDS}${customContext}`,
+          },
+        },
+      ],
+    };
+  }
+
+  if (name === "blog_best_standards") {
+    let customContext = "";
+    if (args.topic) {
+      customContext = `\\n\\nTargeting Article Topic: ${args.topic}. Focus on technical depth and storytelling relevant to this subject.`;
+    }
+
+    return {
+      description: "Editorial guidelines and best practices for drafting technical blog posts",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: `${BLOG_DRAFT_STANDARDS}${customContext}`,
           },
         },
       ],

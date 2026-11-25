@@ -2,10 +2,12 @@ import { McpAuthContext } from "../auth";
 import { ToolDefinition, CallToolResult } from "../protocol";
 import { EDUCATION_TOOLS, handleEducationTool } from "./education";
 import { EXPERIENCE_TOOLS, handleExperienceTool } from "./experience";
+import { BLOG_TOOLS, handleBlogTool } from "./blog";
 import { DRAFT_TOOLS, handleDraftTool } from "./drafts";
 import {
   EDUCATION_DRAFT_STANDARDS,
   EXPERIENCE_DRAFT_STANDARDS,
+  BLOG_DRAFT_STANDARDS,
   MDX_COMPONENTS_REFERENCE,
   MCP_GLOBAL_INSTRUCTIONS,
 } from "../prompts";
@@ -14,7 +16,7 @@ export const GUIDELINE_TOOLS: ToolDefinition[] = [
   {
     name: "get_content_guidelines",
     description:
-      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', project').",
+      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', 'blog', 'project').",
     requiredScope: "read",
     inputSchema: {
       type: "object",
@@ -22,8 +24,8 @@ export const GUIDELINE_TOOLS: ToolDefinition[] = [
         type: {
           type: "string",
           description:
-            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'global_rules' | 'project'.",
-          enum: ["education", "experience", "mdx_components", "global_rules", "project"],
+            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'blog' | 'global_rules' | 'project'.",
+          enum: ["education", "experience", "mdx_components", "blog", "global_rules", "project"],
         },
       },
       required: ["type"],
@@ -38,6 +40,7 @@ export const GUIDELINE_TOOLS: ToolDefinition[] = [
 export const ALL_MCP_TOOLS: ToolDefinition[] = [
   ...EDUCATION_TOOLS,
   ...EXPERIENCE_TOOLS,
+  ...BLOG_TOOLS,
   ...DRAFT_TOOLS,
   ...GUIDELINE_TOOLS,
 ];
@@ -79,6 +82,12 @@ export async function dispatchMcpTool(
       };
     }
 
+    if (type === "blog") {
+      return {
+        content: [{ type: "text", text: BLOG_DRAFT_STANDARDS }],
+      };
+    }
+
     if (type === "mdx_components") {
       return {
         content: [{ type: "text", text: MDX_COMPONENTS_REFERENCE }],
@@ -108,6 +117,10 @@ export async function dispatchMcpTool(
 
   if (EXPERIENCE_TOOLS.some((t) => t.name === toolName)) {
     return handleExperienceTool(toolName, args, auth);
+  }
+
+  if (BLOG_TOOLS.some((t) => t.name === toolName)) {
+    return handleBlogTool(toolName, args, auth);
   }
 
   if (DRAFT_TOOLS.some((t) => t.name === toolName)) {
