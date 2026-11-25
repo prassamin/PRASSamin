@@ -4,6 +4,7 @@ import {
   MCP_TOOLS,
   MCP_PROMPTS,
   handleGetPrompt,
+  MCP_GLOBAL_INSTRUCTIONS,
   PING_RESULT,
   JSONRPC_ERROR,
   type JsonRpcRequest,
@@ -128,10 +129,10 @@ function handleInitialize(
       `You are connected to ${APP_NAME}'s Portfolio Assistant MCP Server.${
         auth
           ? auth.scopes.includes("write")
-            ? " Connected with Full Access (Read & Write): you can inspect portfolio content and create or revise drafts."
-            : " Connected with Read-Only Access: you can inspect portfolio content and editorial guidelines. Write and draft mutation tools are hidden."
+            ? " Connected with Full Access (Read & Write)."
+            : " Connected with Read-Only Access. Write and draft mutation tools are hidden."
           : ""
-      } Before performing operations on portfolio content (education, blogs, projects, experiences), you should inspect the prompts library (e.g. 'prompts/get' with 'education_best_standards') or call 'get_content_guidelines' to adhere to formatting standards and MDX styling rules. Always prefer creating or updating drafts so that content can be reviewed in the admin panel before publishing.`,
+      }\n\n${MCP_GLOBAL_INSTRUCTIONS}\n\nBefore formatting specific content (education, blog, experience), you can call 'get_content_guidelines' or check 'prompts/list' to retrieve domain-specific formatting standards and MDX component rules.`,
   };
 
   return jsonRpcResponse({ id: id as JsonRpcId, result });

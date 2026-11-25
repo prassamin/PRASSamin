@@ -12,10 +12,29 @@ export interface McpAuthContext {
 }
 
 /**
- * Authenticates a request using `Authorization: Bearer <token>`.
+ * Authenticates an MCP request using a Bearer token.
  *
- * Tokens are stored as SHA-256 hashes, so we hash the presented value and
- * look it up. Revoked/expired tokens are rejected.
+ * Extracts the token from the `Authorization` header, hashes it with SHA-256,
+ * and looks up the corresponding token record in the database.
+ *
+ * Authentication is rejected if the header is missing or malformed, the
+ * token does not exist, the token has been revoked or expired, or the
+ * database lookup fails.
+ *
+ * On successful authentication, updates the token's `lastUsedAt` timestamp
+ * asynchronously. This update is best-effort and does not affect the
+ * authentication result if it fails.
+ *
+ * This MCP server is primarily intended for a single administrator, so
+ * authentication deliberately skips in-memory caching. Each request performs
+ * a database lookup to ensure that token revocations and expiration changes
+ * are reflected immediately, without waiting for a cache to expire.
+ *
+ * @param authorizationHeader - The value of the request's `Authorization`
+ *   header, or `null` if the header is absent.
+ *
+ * @returns The authenticated token's ID, name, and scopes, or `null` if
+ *   authentication fails.
  */
 export async function authenticateMcpRequest(
   authorizationHeader: string | null,
@@ -46,7 +65,7 @@ export async function authenticateMcpRequest(
     // Touch lastUsedAt (fire-and-forget; never fail auth on this).
     db.mcpToken
       .update({ where: { id: record.id }, data: { lastUsedAt: new Date() } })
-      .catch(() => {});
+      .catch(() => { });
 
     return {
       tokenId: record.id,

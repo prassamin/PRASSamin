@@ -26,6 +26,23 @@ export interface GetPromptResult {
 }
 
 /**
+ * Universal Global Operational Rules for all AI agents connected to the MCP server.
+ * Pure, high-level policies that govern all content workflows.
+ */
+export const MCP_GLOBAL_INSTRUCTIONS = `### GLOBAL OPERATIONAL RULES (MANDATORY FOR ALL AI SESSIONS):
+
+1. RULE 1: DRAFT-FIRST POLICY (ALWAYS USE DRAFTS)
+   - ALWAYS create, propose, or modify content as a DRAFT (using \`create_*_draft\`, \`patch_*_draft\`, or \`put_*_draft\`) so the portfolio owner can review, diff, and approve changes in the admin panel before publishing.
+   - NEVER call direct live write/publish tools UNLESS the user explicitly and specifically instructs you in their prompt to write directly (e.g. "publish directly without draft", "update live record directly", or "skip draft review").
+
+2. RULE 2: SMART DRAFT DECISION (ONE ACTIVE DRAFT PER TARGET)
+   - Every published entry must have AT MOST ONE active pending revision draft in the review queue. Never create duplicate competing drafts.
+   - BEFORE drafting a revision for an existing entry:
+     a) Check if an active draft already exists using \`list_drafts\`.
+     b) IF an active draft ALREADY EXISTS targeting that entry, DO NOT call \`create_*_draft\`. You MUST call \`patch_*_draft\` (or \`put_*_draft\`) with the existing draft's ID (\`id: <draftId>\`) to update and refine it.
+     c) ONLY call \`create_*_draft\` if NO active draft currently exists for that target.`;
+
+/**
  * Full reference catalog of every block type and JSX component recognized
  * by the portfolio MDX compiler and MDX Studio visual builder.
  */
@@ -292,7 +309,11 @@ When drafting or updating an education credential for ${APP_NAME}'s portfolio, a
      - Do NOT use \`<Cards>\`, \`<Card>\`, \`<Tabs>\`, \`<Steps>\`, \`<Files>\`, \`<TypeTable>\`, full-width \`<ImageZoom>\`, or giant code block tabs inside education cards. Education entries are card-based credentials and must remain clean, fast-loading, and visually concise.
 
 5. **Workflow Safety & Modification Rules**:
-   - Always draft first: Use \`create_education_draft\` so changes land in the Admin MDX Studio for preview before live publication.
+   - **Check for Existing Drafts First (MANDATORY RULE)**:
+     - Before creating a revision draft targeting an existing education entry (\`targetId\`), always call \`list_drafts(type: "education")\`.
+     - If an active draft already exists targeting this \`targetId\`, **DO NOT call \`create_education_draft\`** (which creates duplicate competing drafts). Instead, use **\`patch_education_draft\`** (or \`put_education_draft\`) with the draft's ID (\`id: <draftId>\`) to update and refine the existing proposal!
+     - Only call \`create_education_draft\` if NO active draft currently exists for this entry.
+   - Always draft first: Use \`create_education_draft\` only when no active draft currently exists so changes land in the Admin MDX Studio for preview before live publication.
    - Use \`patch_education_draft\` (or \`patch_draft\`) when updating specific fields to avoid wiping existing fields.
    - Use \`put_education_draft\` (or \`put_draft\`) only when intentionally replacing the entire record content.
 `;
@@ -337,9 +358,12 @@ When drafting or updating a work or career experience entry for ${APP_NAME}'s po
    - **FORBIDDEN in Experience Cards**:
      - Do NOT use \`<Cards>\`, \`<Tabs>\`, \`<Steps>\`, \`<Files>\`, or full-width layout grids. Keep experience cards focused, scannable, and compact.
 
-5. **AI Revision Workflow**:
-   - If revising an existing published experience, pass \`targetId: <experienceId>\` to \`create_experience_draft\`.
-   - This triggers an "AI Revision Proposed" badge in the admin panel and opens a side-by-side diff review modal where the user can inspect changes and accept/reject individual segments.
+5. **AI Revision Workflow & Draft Management Rules**:
+   - **Check for Existing Drafts First (MANDATORY RULE)**:
+     - Before creating a revision draft targeting an existing experience (\`targetId\`), call \`list_drafts(type: "experience")\`.
+     - If an active draft already exists targeting this \`targetId\`, **DO NOT call \`create_experience_draft\`** (which creates duplicate competing drafts). Instead, use **\`patch_experience_draft\`** (or \`put_experience_draft\`) with the draft's ID (\`id: <draftId>\`) to update the existing proposal!
+     - Only call \`create_experience_draft\` if NO active draft currently exists for this \`targetId\`.
+   - Passing \`targetId: <experienceId>\` marks the draft as an AI revision, triggering an "AI Revision Proposed" badge in the admin panel and opening a side-by-side diff review modal where the user can inspect changes and accept/reject individual segments.
 `;
 
 export const MCP_PROMPTS: PromptDefinition[] = [
@@ -382,6 +406,11 @@ export const MCP_PROMPTS: PromptDefinition[] = [
         required: false,
       },
     ],
+  },
+  {
+    name: "global_rules",
+    description: "Universal operational rules for all AI interactions: Draft-First Policy and Smart Draft Decision Protocol.",
+    arguments: [],
   },
 ];
 
@@ -438,6 +467,21 @@ export function handleGetPrompt(
           content: {
             type: "text",
             text: `${EXPERIENCE_DRAFT_STANDARDS}${customContext}`,
+          },
+        },
+      ],
+    };
+  }
+
+  if (name === "global_rules") {
+    return {
+      description: "Universal operational rules for AI agents: Draft-First Policy and Smart Draft Decision Protocol",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: MCP_GLOBAL_INSTRUCTIONS,
           },
         },
       ],

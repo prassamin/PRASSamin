@@ -1,5 +1,5 @@
 import { ALL_MCP_TOOLS } from "./tools";
-export { MCP_PROMPTS, handleGetPrompt } from "./prompts";
+export { MCP_PROMPTS, handleGetPrompt, MCP_GLOBAL_INSTRUCTIONS } from "./prompts";
 
 /**
  * MCP (Model Context Protocol) primitives — JSON-RPC 2.0 + MCP message

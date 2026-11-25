@@ -7,13 +7,14 @@ import {
   EDUCATION_DRAFT_STANDARDS,
   EXPERIENCE_DRAFT_STANDARDS,
   MDX_COMPONENTS_REFERENCE,
+  MCP_GLOBAL_INSTRUCTIONS,
 } from "../prompts";
 
 export const GUIDELINE_TOOLS: ToolDefinition[] = [
   {
     name: "get_content_guidelines",
     description:
-      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', 'blog', 'project').",
+      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', project').",
     requiredScope: "read",
     inputSchema: {
       type: "object",
@@ -21,8 +22,8 @@ export const GUIDELINE_TOOLS: ToolDefinition[] = [
         type: {
           type: "string",
           description:
-            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'blog' | 'project'.",
-          enum: ["education", "experience", "mdx_components", "blog", "project"],
+            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'global_rules' | 'project'.",
+          enum: ["education", "experience", "mdx_components", "global_rules", "project"],
         },
       },
       required: ["type"],
@@ -81,6 +82,12 @@ export async function dispatchMcpTool(
     if (type === "mdx_components") {
       return {
         content: [{ type: "text", text: MDX_COMPONENTS_REFERENCE }],
+      };
+    }
+
+    if (type === "global_rules" || type === "rules") {
+      return {
+        content: [{ type: "text", text: MCP_GLOBAL_INSTRUCTIONS }],
       };
     }
 
