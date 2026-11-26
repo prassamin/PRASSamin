@@ -12,9 +12,9 @@ export const sectionVariants: Variants = {
 };
 
 export const handwritingVariants: Variants = {
-  hidden: { width: 0 },
+  hidden: { scaleX: 0 },
   visible: {
-    width: 500,
+    scaleX: 1,
     transition: {
       duration: 1.8,
       ease: [0.25, 0.1, 0.25, 1],

@@ -3,11 +3,15 @@
 import { Link } from "@/components/link";
 import { cardItemVariants } from "./motion";
 import { motion, type Variants } from "framer-motion";
+import { useInViewAnimationRef } from "@/hooks/use-in-view-animation";
 
 export const ThirdCard = () => {
+  const cardRef = useInViewAnimationRef<HTMLAnchorElement>();
+
   return (
     <motion.div variants={cardItemVariants as Variants} className="z-10">
       <Link
+        ref={cardRef}
         className="group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-150 w-80 lg:rotate-[4deg]"
         href="/#featured-posts"
         style={
@@ -18,7 +22,7 @@ export const ThirdCard = () => {
           } as React.CSSProperties
         }
       >
-        <div className="relative h-30 grid grid-cols-[repeat(2,3.5rem)] gap-2 mb-auto">
+        <div className="relative h-30 grid grid-cols-[repeat(2,3.5rem)] gap-2 mb-auto will-change-transform [transform:translateZ(0)]">
           <div className="absolute inset-0 grid grid-cols-[repeat(6,3.5rem)] grid-rows-[repeat(3,3.5rem)] gap-2 opacity-10 -translate-y-16 -translate-x-16 pointer-events-none">
             {[...Array(18)].map((_, i) => (
               <div

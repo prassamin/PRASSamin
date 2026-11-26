@@ -55,7 +55,7 @@ export const FeaturedProjects: React.FC<Props> = ({ projects = [] }) => {
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
+      viewport={{ once: true, amount: 0.15 }}
     >
       {/* Background Hand-drawn Scribble */}
       <Scribble />

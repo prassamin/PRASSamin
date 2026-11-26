@@ -56,7 +56,7 @@ export const FeaturedPosts: React.FC<Props> = ({ blogs = [] }) => {
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
+      viewport={{ once: true, amount: 0.15 }}
     >
       {/* Background hand-drawn scribble texture behind the title */}
       <Scribble />

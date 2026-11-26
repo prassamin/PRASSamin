@@ -28,7 +28,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
       variants={sectionVariants}
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.5 }}
+      viewport={{ once: true, amount: 0.1 }}
     >
       <div
         className="absolute inset-0 -z-10 h-full w-full"
@@ -52,7 +52,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
       <div className="layout text-center py-12 pt-20 md:py-20 flex flex-col items-center">
         <div className="relative">
           <h2 className="h2 sr-only">Complex Things Made Simple</h2>
-          <div className="relative w-full">
+          <div className="relative w-full will-change-transform [transform:translateZ(0)]">
             <svg
               className="w-full"
               fill="none"
@@ -66,7 +66,9 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
                   <motion.rect
                     x="0"
                     y="0"
+                    width="500"
                     height="80"
+                    style={{ transformOrigin: "0px 0px", transformBox: "fill-box" }}
                     variants={handwritingVariants}
                   />
                 </clipPath>
@@ -141,7 +143,7 @@ export const MentalModels: React.FC<Props> = ({ mentalModels }) => {
                 variants={textVariants}
                 className="pointer-events-auto transition-transform duration-500 hover:scale-110"
               >
-                <div className="isolate before:transition-opacity flex items-center justify-center relative bg-white/5 backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
+                <div className="isolate before:transition-opacity flex items-center justify-center relative bg-neutral-900/80 md:bg-white/5 md:backdrop-blur-sm rounded-full translate-y-[50%] translate-x-[20%] sm:translate-y-[60%] sm:translate-x-[45%] size-[clamp(1rem,10vw,5rem)] [&>svg]:size-12 [&>svg]:text-current gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
                   <svg
                     className="size-[50%]"
                     fill="none"

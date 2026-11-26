@@ -6,8 +6,10 @@ import { LuArrowUpRight as ArrowUpRight } from "react-icons/lu";
 import { FaGithub, FaLinkedin, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import Image from "next/image";
 import { cn } from "@heroui/styles";
+import { useInViewAnimationRef } from "@/hooks/use-in-view-animation";
 
 export const Footer: React.FC = () => {
+  const footerRef = useInViewAnimationRef<HTMLElement>();
   const navLinks = [
     { label: "Home", href: "/" },
     { label: "About", href: "/about" },
@@ -49,6 +51,7 @@ export const Footer: React.FC = () => {
 
   return (
     <footer
+      ref={footerRef}
       className={cn(
         "relative pt-24 not-sm:pt-14 w-full z-20 overflow-hidden bg-transparent text-left",
         // Hide the header when the 404 page is displayed, to avoid showing a blank header on top of the 404 page.
@@ -238,7 +241,7 @@ export const Footer: React.FC = () => {
 
           {/* Full Width Justify-Between Letter Track with max-h-44 */}
           <div
-            className="w-full max-h-44 h-28 sm:h-36 md:h-44 flex items-center justify-evenly"
+            className="w-full max-h-44 h-28 sm:h-36 md:h-44 flex items-center justify-evenly will-change-transform [transform:translateZ(0)]"
             style={{
               maskImage:
                 "linear-gradient(to bottom, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0.15) 100%)",

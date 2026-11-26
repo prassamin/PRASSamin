@@ -7,6 +7,7 @@ import { FaGithub, FaXTwitter, FaInstagram } from "react-icons/fa6";
 import { LuArrowDown } from "react-icons/lu";
 import { motion, type Variants } from "framer-motion";
 import { useOwner } from "@/providers/owner-provider";
+import { useInViewAnimationRef } from "@/hooks/use-in-view-animation";
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -43,6 +44,7 @@ const gridVariants: Variants = {
 };
 
 const HeroSection: React.FC = () => {
+  const heroRef = useInViewAnimationRef<HTMLElement>();
   const btnRef = useRef<HTMLAnchorElement>(null);
   const [cursorPos, setCursorPos] = useState({ x: 50, y: 50 });
   const { owner } = useOwner();
@@ -57,7 +59,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <section className="relative w-full">
+    <section ref={heroRef} className="relative w-full">
       {/* Ambient Emerald Glow Blob */}
       <div className="absolute overflow-hidden inset-0 select-none pointer-events-none">
         <div

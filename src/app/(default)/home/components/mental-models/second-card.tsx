@@ -3,11 +3,15 @@
 import { Link } from "@/components/link";
 import { cardItemVariants } from "./motion";
 import { motion, Variants } from "framer-motion";
+import { useInViewAnimationRef } from "@/hooks/use-in-view-animation";
 
 export const SecondCard = () => {
+  const cardRef = useInViewAnimationRef<HTMLAnchorElement>();
+
   return (
     <motion.div variants={cardItemVariants as Variants} className="z-20">
       <Link
+        ref={cardRef}
         className="relative group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-150 w-80 lg:-rotate-3 lg:translate-y-12"
         href="/#cache-invalidation"
         style={
@@ -19,7 +23,7 @@ export const SecondCard = () => {
         }
       >
         {/* Top SVG Graphic: Pure Invalidation Architecture */}
-        <div className="relative h-30 w-full flex items-center justify-center mb-auto overflow-hidden">
+        <div className="relative h-30 w-full flex items-center justify-center mb-auto overflow-hidden will-change-transform [transform:translateZ(0)]">
           <svg
             viewBox="0 0 240 100"
             className="w-full h-full max-w-60 overflow-visible"
@@ -74,20 +78,6 @@ export const SecondCard = () => {
               </radialGradient>
 
               {/* Luminous Specular Glow Filter (userSpaceOnUse to avoid zero-height clipping) */}
-              <filter
-                id="cache-stream-glow"
-                filterUnits="userSpaceOnUse"
-                x="0"
-                y="0"
-                width="240"
-                height="100"
-              >
-                <feGaussianBlur stdDeviation="2" result="blur" />
-                <feMerge>
-                  <feMergeNode in="blur" />
-                  <feMergeNode in="SourceGraphic" />
-                </feMerge>
-              </filter>
             </defs>
 
             {/* Subtle Background Matrix Dots */}
@@ -475,7 +465,6 @@ export const SecondCard = () => {
               strokeWidth="3.2"
               strokeLinecap="round"
               className="animate-query-stream"
-              filter="url(#cache-stream-glow)"
               style={{
                 filter: "drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))",
               }}
@@ -488,7 +477,6 @@ export const SecondCard = () => {
               strokeWidth="3.2"
               strokeLinecap="round"
               className="animate-return-stream"
-              filter="url(#cache-stream-glow)"
               style={{
                 filter: "drop-shadow(0 0 4px rgba(255, 255, 255, 0.9))",
               }}
@@ -502,7 +490,6 @@ export const SecondCard = () => {
               strokeLinecap="round"
               fill="none"
               className="animate-put-write"
-              filter="url(#cache-stream-glow)"
               style={{
                 filter: "drop-shadow(0 0 4px rgba(255, 255, 255, 0.85))",
               }}
@@ -515,7 +502,6 @@ export const SecondCard = () => {
               strokeWidth="4"
               strokeLinecap="round"
               className="animate-purge-laser"
-              filter="url(#cache-stream-glow)"
               style={{
                 filter: "drop-shadow(0 0 5px rgba(255, 255, 255, 0.95))",
               }}
@@ -529,7 +515,6 @@ export const SecondCard = () => {
               strokeLinecap="round"
               fill="none"
               className="animate-refill-stream"
-              filter="url(#cache-stream-glow)"
               style={{
                 filter: "drop-shadow(0 0 4px rgba(255, 255, 255, 0.85))",
               }}

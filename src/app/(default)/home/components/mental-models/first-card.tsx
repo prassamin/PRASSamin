@@ -3,11 +3,15 @@ import { Link } from "@/components/link";
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import { cardItemVariants } from "./motion";
+import { useInViewAnimationRef } from "@/hooks/use-in-view-animation";
 
 export const FirstCard = () => {
+  const cardRef = useInViewAnimationRef<HTMLAnchorElement>();
+
   return (
     <motion.div variants={cardItemVariants as Variants} className="z-30">
       <Link
+        ref={cardRef}
         className="group aspect-square py-10 px-8 rounded-xl bg-neutral-950 border border-neutral-900 text-left flex flex-col justify-end overflow-hidden transition duration-500 hover:brightness-150 w-80 lg:rotate-[5deg]"
         href="/#concurrency"
         style={
@@ -19,7 +23,7 @@ export const FirstCard = () => {
         }
       >
         {/* Top SVG Graphic: Concurrency (Sophisticated Parallel Pipeline, Zero Hover Color Shift) */}
-        <div className="relative h-30 w-full flex items-center justify-center mb-auto overflow-hidden">
+        <div className="relative h-30 w-full flex items-center justify-center mb-auto overflow-hidden will-change-transform [transform:translateZ(0)]">
           <svg
             viewBox="0 0 240 100"
             className="w-full h-full max-w-60 overflow-visible"

@@ -173,7 +173,17 @@
   }
 
   * {
-    @apply border-border scroll-smooth outline-ring/50;
+    @apply border-border outline-ring/50;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   *,
@@ -482,4 +492,10 @@ pre,
     color: var(--accent);
     text-decoration-color: var(--accent);
   }
+}
+
+/* Pause heavy CSS animations when elements are offscreen */
+[data-in-view="false"],
+[data-in-view="false"] * {
+  animation-play-state: paused !important;
 }
