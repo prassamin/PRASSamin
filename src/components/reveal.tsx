@@ -4,9 +4,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { cn } from "@heroui/styles";
 
-interface RevealProps {
-  children: React.ReactNode;
-  className?: string;
+interface RevealProps extends React.ComponentProps<typeof motion.div> {
   /** Delay before the reveal starts (seconds). */
   delay?: number;
   /** Initial vertical offset in px. */

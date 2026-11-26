@@ -25,29 +25,29 @@ export const HeroSection: React.FC = () => {
           </div>
 
           {/* Main Title */}
-          <h1 className="mt-4 h2 sm:h1 font-bold font-rethink text-white">
+          <h1 className="mt-4 h3 sm:h1">
             About{" "}
-            <span className="transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
+            <span className="relative transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
               Me
             </span>
           </h1>
 
           {/* Subtitle with subtle gradient */}
-          <p className="b1 mt-3 font-normal">
-            <span className="transition-colors bg-linear-to-r from-neutral-300/35 via-neutral-300/90 to-neutral-300/35 bg-clip-text text-transparent">
-              A story of growth and discovery
-            </span>
+          <p className="transition-colors bg-linear-to-r from-neutral-300 /35 via-neutral-300/90 to-neutral-300/35 bg-clip-text text-transparent b1 mt-2">
+            A story of growth and discovery
           </p>
         </div>
       </Reveal>
 
       {/* Main Content Area: Polaroid on Left, Bio on Right */}
-      <section className="overflow-hidden relative">
-        <Reveal delay={0.1}>
-          <div className="layout relative pb-12 pt-10 md:pb-20 md:pt-10 flex items-center gap-20 flex-col md:flex-row">
+      <section className="overflow-hidden relative" >
+        <div className="layout relative pb-12 pt-10 md:pb-20 md:pt-10 flex items-center gap-20 flex-col md:flex-row">
+          <Reveal delay={0.1} className="w-full h-full">
             {/* Left: Polaroid Photo Frame */}
             <PolaroidCard />
+          </Reveal>
 
+          <Reveal delay={0.1}>
             {/* Right: Bio Information */}
             <div className="[&_strong]:text-neutral-200">
               <h3 className="h3">
@@ -89,9 +89,9 @@ export const HeroSection: React.FC = () => {
               {/* Favorite Tech Stack */}
               <TechStack />
             </div>
-          </div>
-        </Reveal>
-      </section>
-    </div>
+          </Reveal>
+        </div>
+      </section >
+    </div >
   );
 };

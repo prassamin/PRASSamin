@@ -53,7 +53,7 @@ const ProjectsView = ({ initialProjects = [] }: ProjectsViewProps) => {
 
         {/* Header and Project Showcase Section */}
         <motion.div
-          className="pt-36 pb-20"
+          className="pb-12 pt-28 md:pb-20 md:pt-36"
           initial="hidden"
           animate="visible"
           variants={containerVariants}

@@ -156,19 +156,17 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
           </div>
 
           {/* Heading: The Blog */}
-          <h1 className="mt-4 h2 sm:h1">
+          <h1 className="mt-4 h3 sm:h1">
             The{" "}
-            <span className="transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
+            <span className="relative transition-colors bg-linear-to-br from-accent/30 via-accent/90 to-accent/30 bg-clip-text text-transparent">
               Blog
             </span>
           </h1>
 
           {/* Subtitle */}
-          <p className="b1 mt-3">
-            <span className="transition-colors bg-linear-to-r from-neutral-300/35 via-neutral-300/90 to-neutral-300/35 bg-clip-text text-transparent">
-              Thoughts, mental models, and tutorials about front-end
-              development.
-            </span>
+          <p className="transition-colors bg-linear-to-r from-neutral-300/35 via-neutral-300/90 to-neutral-300/35 bg-clip-text text-transparent b1 mt-2">
+            Thoughts, mental models, and tutorials about front-end
+            development.
           </p>
 
           {/* Search Box */}
@@ -245,8 +243,8 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
                               (t) => t.toLowerCase() === tag.toLowerCase(),
                             )
                               ? prev.filter(
-                                  (t) => t.toLowerCase() !== tag.toLowerCase(),
-                                )
+                                (t) => t.toLowerCase() !== tag.toLowerCase(),
+                              )
                               : [...prev, tag],
                           )
                         }
@@ -312,16 +310,15 @@ export default function BlogsView({ blogs }: BlogsViewProps = {}) {
                         setSelectedTopics((prev) =>
                           isSelected
                             ? prev.filter(
-                                (t) => t.toLowerCase() !== topic.toLowerCase(),
-                              )
+                              (t) => t.toLowerCase() !== topic.toLowerCase(),
+                            )
                             : [...prev, topic],
                         )
                       }
-                      className={`inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-sm disabled:grayscale disabled:opacity-25 ${
-                        isSelected
-                          ? "bg-accent-deep text-accent"
-                          : "bg-neutral-900 text-neutral-500 not-disabled:hover:text-white"
-                      }`}
+                      className={`inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-sm disabled:grayscale disabled:opacity-25 ${isSelected
+                        ? "bg-accent-deep text-accent"
+                        : "bg-neutral-900 text-neutral-500 not-disabled:hover:text-white"
+                        }`}
                       data-selected={isSelected ? "true" : "false"}
                     >
                       {topic}

@@ -27,37 +27,39 @@ const DateDurationPill: React.FC<PillProps> = ({
   const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <p
-      className="b2 text-neutral-400 tracking-wide uppercase self-start py-2 -mt-1 flex items-center cursor-pointer select-none"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
-      <span>{startDate}</span>
-      <span
-        className="overflow-hidden inline-flex flex-col justify-center items-center relative transition-[max-width] duration-700 ease-out h-5"
-        style={{ maxWidth: isHovered ? 240 : 25 }}
+    <Reveal delay={0.1}>
+      <p
+        className="b2 text-neutral-400 tracking-wide uppercase self-start py-2 -mt-1 flex items-center cursor-pointer select-none"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
+        <span>{startDate}</span>
         <span
-          className="text-xs lowercase px-1.5 whitespace-nowrap inline-block text-green-300 font-sans transition-opacity duration-500 ease-out"
-          style={{
-            opacity: isHovered ? 1 : 0,
-            transform: isHovered ? "translateY(0)" : "translateY(5px)",
-            transition: "opacity 500ms ease-out, transform 500ms ease-out",
-          }}
+          className="overflow-hidden inline-flex flex-col justify-center items-center relative transition-[max-width] duration-700 ease-out h-5"
+          style={{ maxWidth: isHovered ? 240 : 25 }}
         >
-          {duration}
+          <span
+            className="text-xs lowercase px-1.5 whitespace-nowrap inline-block text-green-300 font-sans transition-opacity duration-500 ease-out"
+            style={{
+              opacity: isHovered ? 1 : 0,
+              transform: isHovered ? "translateY(0)" : "translateY(5px)",
+              transition: "opacity 500ms ease-out, transform 500ms ease-out",
+            }}
+          >
+            {duration}
+          </span>
+          <span
+            className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 transition-opacity duration-500 ease-out"
+            style={{
+              opacity: isHovered ? 0 : 1,
+            }}
+          >
+            —
+          </span>
         </span>
-        <span
-          className="absolute left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 transition-opacity duration-500 ease-out"
-          style={{
-            opacity: isHovered ? 0 : 1,
-          }}
-        >
-          —
-        </span>
-      </span>
-      <span>{endDate}</span>
-    </p>
+        <span>{endDate}</span>
+      </p>
+    </Reveal>
   );
 };
 
@@ -88,29 +90,29 @@ export const AboutExperience: React.FC<Props> = ({ experiences }) => {
         </Reveal>
 
         {/* Timeline Entries */}
-        <Reveal delay={0.1}>
-          <div className="flex flex-col gap-20 mt-16">
-            {experiences.map((exp) => {
-              const periodParts = (exp.period || "")
-                .split("•")
-                .map((p) => p.trim());
-              const startDate = periodParts[0]?.split(" - ")[0] || "";
-              const endDate = periodParts[0]?.split(" - ")[1] || "";
-              const duration = periodParts[1] || "";
+        <div className="flex flex-col gap-20 mt-16">
+          {experiences.map((exp) => {
+            const periodParts = (exp.period || "")
+              .split("•")
+              .map((p) => p.trim());
+            const startDate = periodParts[0]?.split(" - ")[0] || "";
+            const endDate = periodParts[0]?.split(" - ")[1] || "";
+            const duration = periodParts[1] || "";
 
-              return (
-                <div
-                  key={exp.id}
-                  id={`experience-${exp.id}`}
-                  className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
-                >
-                  <DateDurationPill
-                    startDate={startDate}
-                    endDate={endDate}
-                    duration={duration}
-                  />
+            return (
+              <div
+                key={exp.id}
+                id={`experience-${exp.id}`}
+                className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
+              >
+                <DateDurationPill
+                  startDate={startDate}
+                  endDate={endDate}
+                  duration={duration}
+                />
 
-                  <div>
+                <div>
+                  <Reveal delay={0.1}>
                     <h3 className="h5">{exp.role}</h3>
 
                     <p className="b2 text-neutral-300 mt-1 flex items-center gap-1.5 text-sm">
@@ -143,18 +145,20 @@ export const AboutExperience: React.FC<Props> = ({ experiences }) => {
                         </span>
                       )}
                     </p>
+                  </Reveal>
 
+                  <Reveal delay={0.1}>
                     {exp.description && (
                       <div className="mt-4 b2 text-neutral-400 space-y-3 leading-relaxed [&>ul]:list-disc [&>ul]:list-outside [&>ul]:space-y-1.5 [&>ul]:pl-3">
                         <MDXContent content={exp.description} />
                       </div>
                     )}
-                  </div>
+                  </Reveal>
                 </div>
-              );
-            })}
-          </div>
-        </Reveal>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

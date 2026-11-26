@@ -81,11 +81,13 @@ const EducationSchoolField: React.FC<SchoolFieldProps> = ({
 
 const DateDurationPill: React.FC<PillProps> = ({ startDate, endDate }) => {
   return (
-    <p className="b2 text-neutral-400 tracking-wide uppercase self-start py-2 -mt-1 flex items-center cursor-pointer select-none">
-      <span>{startDate}</span>
-      <span className="px-1.5">—</span>
-      <span>{endDate}</span>
-    </p>
+    <Reveal delay={0.1}>
+      <p className="b2 text-neutral-400 tracking-wide uppercase self-start py-2 -mt-1 flex items-center cursor-pointer select-none">
+        <span>{startDate}</span>
+        <span className="px-1.5">—</span>
+        <span>{endDate}</span>
+      </p>
+    </Reveal>
   );
 };
 
@@ -102,7 +104,7 @@ export const AboutEducation: React.FC<Props> = ({ educations }) => {
 
       <div className="layout relative pb-12 pt-24 md:pb-20 md:pt-32">
         {/* Section Header */}
-        <Reveal>
+        <Reveal delay={0.1}>
           <div className="flex items-center justify-center flex-col gap-2">
             <div className="isolate before:transition-opacity size-11 rounded-xl flex items-center justify-center relative bg-white/5 backdrop-blur-sm gradient-border gb-color-[linear-gradient(to_bottom_right,rgba(23,23,23,70%)_0%,#525252_62%,rgba(23,23,23,70%)_100%)] border border-transparent">
               <LuGraduationCap className="size-[45%] text-neutral-300" />
@@ -112,42 +114,44 @@ export const AboutEducation: React.FC<Props> = ({ educations }) => {
         </Reveal>
 
         {/* Timeline Entries */}
-        <Reveal delay={0.1}>
-          <div className="flex flex-col gap-20 mt-16">
-            {educations.map((edu) => {
-              const periodParts = (edu.period || "")
-                .split("-")
-                .map((p) => p.trim());
-              const startDate = periodParts[0] || "";
-              const endDate = periodParts[1] || "";
+        <div className="flex flex-col gap-20 mt-16">
+          {educations.map((edu) => {
+            const periodParts = (edu.period || "")
+              .split("-")
+              .map((p) => p.trim());
+            const startDate = periodParts[0] || "";
+            const endDate = periodParts[1] || "";
 
-              return (
-                <div
-                  key={edu.id}
-                  id={`education-${edu.id}`}
-                  className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
-                >
-                  <DateDurationPill startDate={startDate} endDate={endDate} />
+            return (
+              <div
+                key={edu.id}
+                id={`education-${edu.id}`}
+                className="grid gap-4 md:grid-cols-[250px_1fr] md:gap-8 scroll-mt-24"
+              >
+                <DateDurationPill startDate={startDate} endDate={endDate} />
 
-                  <div>
+                <div>
+                  <Reveal delay={0.1}>
                     <h3 className="h5">{edu.degree}</h3>
 
                     <EducationSchoolField
                       school={edu.school}
                       field={edu.field}
                     />
+                  </Reveal>
 
+                  <Reveal delay={0.1}>
                     {edu.description && (
                       <div className="mt-4 b2 text-neutral-400 space-y-3 leading-relaxed [&>ul]:list-disc [&>ul]:list-outside [&>ul]:space-y-1.5 [&>ul]:pl-3">
                         <MDXContent content={edu.description} />
                       </div>
                     )}
-                  </div>
+                  </Reveal>
                 </div>
-              );
-            })}
-          </div>
-        </Reveal>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

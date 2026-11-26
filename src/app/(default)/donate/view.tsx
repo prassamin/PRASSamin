@@ -44,7 +44,7 @@ function Input({
             "peer w-full h-12 rounded-xl bg-white/3 border border-white/6 px-4 text-sm text-foreground outline-none transition-colors focus:border-accent/50 focus:ring-1 focus:ring-accent/30",
             "placeholder:text-transparent",
             error &&
-              "border-red-500/60 focus:border-red-500 focus:ring-red-500/30",
+            "border-red-500/60 focus:border-red-500 focus:ring-red-500/30",
             className,
           )}
         />
@@ -234,7 +234,7 @@ export default function DonatePageView() {
                   <span className="block text-xs font-medium text-neutral-300 uppercase tracking-wider">
                     Amount
                   </span>
-                  <div className="grid grid-cols-4 gap-2.5">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     {PRESET_AMOUNTS.map((value) => {
                       const isSelected = amount === value;
                       return (
@@ -246,18 +246,18 @@ export default function DonatePageView() {
                             setCustomAmount("");
                           }}
                           className={cn(
-                            "h-14 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1",
+                            "flex items-center justify-center h-14 rounded-xl border text-sm font-semibold transition-all duration-200 cursor-pointer",
                             isSelected
                               ? "bg-accent/15 border-transparent text-accent"
                               : "border-neutral-800 bg-white/2 text-neutral-300 hover:border-neutral-700 hover:text-white",
                           )}
                         >
-                          <span>${value}</span>
-                          {mode === "monthly" && (
-                            <span className="text-[10px] font-medium text-neutral-500">
-                              /mo
-                            </span>
-                          )}
+                          <div className="relative"><span>${value}</span>
+                            {mode === "monthly" && (
+                              <span className="absolute top-0 -right-5 text-[8px] font-medium text-neutral-500">
+                                /mo
+                              </span>
+                            )}</div>
                         </button>
                       );
                     })}
