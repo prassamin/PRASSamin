@@ -37,6 +37,7 @@ import {
 import { MdxProfile, Profile } from "./components/mdx/mdx-profile";
 import { MdxUser, User } from "./components/mdx/mdx-user";
 import { MdxBlockquote, Blockquote } from "./components/mdx/mdx-blockquote";
+import { Stacks, Stack, MdxStacks, MdxStack } from "./components/mdx/mdx-stacks";
 export {
   MdxAvatar,
   Avatar,
@@ -48,6 +49,10 @@ export {
   User,
   MdxBlockquote,
   Blockquote,
+  Stacks,
+  Stack,
+  MdxStacks,
+  MdxStack,
 };
 import { InlineTooltip as MdxInlineTooltip } from "@/components/ui/inline-tooltip";
 import { MdxAccordion, MdxAccordionItem } from "./components/mdx/mdx-accordion";
@@ -587,6 +592,8 @@ export const mdxComponents = {
   Checkbox,
   Card: MdxCard,
   Cards: MdxCards,
+  Stacks,
+  Stack,
   Accordion: MdxAccordion,
   AccordionItem: MdxAccordionItem,
   Accordions: MdxAccordion,
@@ -645,6 +652,8 @@ export function getMDXComponents(components?: MDXComponents): MDXComponents {
     Checkbox,
     Card: MdxCard,
     Cards: MdxCards,
+    Stacks,
+    Stack,
     Accordion: MdxAccordion,
     AccordionItem: MdxAccordionItem,
     Accordions: MdxAccordion,

@@ -48,6 +48,7 @@ import {
   AvatarGroupBlockEditor,
 } from "../blocks/editors/profile-avatar-editor";
 import { InlineUserBlockEditor } from "../blocks/editors/inline-user-editor";
+import { StacksBlockEditor } from "../blocks/editors/stacks-block-editor";
 import { TemplateBlockEditor } from "../blocks/editors/template-block-editor";
 import { UseTemplateBlockEditor } from "../blocks/editors/use-template-editor";
 import { HtmlBlockEditor } from "../blocks/editors/html-block-editor";
@@ -143,14 +144,20 @@ const CanvasBlockItemInner: React.FC<CanvasBlockItemProps> = ({
           : undefined
       }
       className={cn(
-        "transition-all shadow-sm group relative overflow-hidden [&_*::placeholder]:text-neutral-500",
+        "transition-all shadow-sm group relative [&_*::placeholder]:text-neutral-500",
+        type === "stacks" ? "overflow-visible z-20" : "overflow-hidden",
         depth === 0
           ? "rounded-2xl border border-white/8 bg-muted/40 hover:border-white/14"
           : "rounded-xl border border-white/8 bg-neutral-900/80 hover:border-white/16 my-2",
       )}
     >
       {/* Block Header Bar */}
-      <div className="flex items-center justify-between px-4 py-2.5 bg-white/2 border-b border-white/6 select-none">
+      <div
+        className={cn(
+          "flex items-center justify-between px-4 py-2.5 bg-white/2 border-b border-white/6 select-none",
+          depth === 0 ? "rounded-t-2xl" : "rounded-t-xl",
+        )}
+      >
         <div className="flex items-center gap-2">
           {onDragStart && (
             <div
@@ -300,6 +307,9 @@ const CanvasBlockItemInner: React.FC<CanvasBlockItemProps> = ({
         )}
         {type === "chipGroup" && (
           <ChipGroupBlockEditor props={props} updateProp={updateProp} />
+        )}
+        {type === "stacks" && (
+          <StacksBlockEditor props={props} updateProp={updateProp} />
         )}
         {type === "codeBlockTabs" && (
           <CodeBlockTabsEditor props={props} updateProp={updateProp} />

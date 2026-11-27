@@ -28,6 +28,8 @@ import {
   Blockquote,
   MdxTabs,
   MdxTab,
+  Stacks,
+  Stack,
 } from "@/mdx-components";
 import { MdxAccordion, MdxAccordionItem } from "./mdx-accordion";
 import { MdxCard, MdxCards } from "./mdx-card";
@@ -172,6 +174,8 @@ const BASE_MDX_COMPONENTS = {
   Accordions: MdxAccordion,
   Card: MdxCard,
   Cards: MdxCards,
+  Stacks,
+  Stack,
   Tabs: MdxTabs,
   Tab: MdxTab,
   pre: MdxCodeBlock,

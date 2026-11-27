@@ -626,6 +626,31 @@ export function mdxToBlocks(mdx: string): MdxBlock[] {
       }
     }
 
+    // Stacks (<Stacks>...</Stacks> or <Stacks />)
+    const stacksMatch = trimmed.match(/^<Stacks\b([^>]*)>([\s\S]*?)<\/Stacks>$/i);
+    if (stacksMatch) {
+      const stackMatches = [
+        ...stacksMatch[2].matchAll(
+          /<Stack\b[^>]*name=["']([^"']+)["'][^>]*(?:\/>|>.*?<\/Stack>)/gi,
+        ),
+      ];
+      const stackNames = stackMatches.map((m) => m[1].trim());
+      blocks.push(
+        createBlock("stacks", {
+          stacks: stackNames,
+        }),
+      );
+      continue;
+    }
+    if (/^<Stacks\s*\/>$/i.test(trimmed)) {
+      blocks.push(
+        createBlock("stacks", {
+          stacks: [],
+        }),
+      );
+      continue;
+    }
+
     // 9b. Table block
     const tableData = parseMarkdownTable(trimmed);
     if (tableData) {

@@ -27,6 +27,7 @@ import {
   LuTerminal,
   LuBlocks,
   LuCopyPlus,
+  LuBoxes,
 } from "react-icons/lu";
 import { MdxBlockType } from "../types";
 
@@ -59,6 +60,7 @@ export const TRAY_ICONS: Record<MdxBlockType, React.ReactNode> = {
   template: <LuBlocks className="w-4 h-4 text-indigo-400" />,
   useTemplate: <LuCopyPlus className="w-4 h-4 text-fuchsia-400" />,
   user: <LuCircleUser className="w-4 h-4 text-sky-400" />,
+  stacks: <LuBoxes className="w-4 h-4 text-emerald-400" />,
   html: <LuCodeXml className="w-4 h-4 text-pink-400" />,
 };
 
@@ -91,6 +93,7 @@ export const BLOCK_ICONS: Record<MdxBlockType, React.ReactNode> = {
   template: <LuBlocks className="w-3.5 h-3.5 text-indigo-400" />,
   useTemplate: <LuCopyPlus className="w-3.5 h-3.5 text-fuchsia-400" />,
   user: <LuUser className="w-3.5 h-3.5 text-sky-400" />,
+  stacks: <LuBoxes className="w-3.5 h-3.5 text-emerald-400" />,
   html: <LuCodeXml className="w-3.5 h-3.5 text-pink-400" />,
 };
 
@@ -123,6 +126,7 @@ export const BLOCK_TITLES: Record<MdxBlockType, string> = {
   template: "Template Definition",
   useTemplate: "Use Template",
   user: "Inline User",
+  stacks: "Tech Stacks",
   html: "Custom HTML / JSX",
 };
 

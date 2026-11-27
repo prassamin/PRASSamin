@@ -48,7 +48,7 @@ export const MCP_GLOBAL_INSTRUCTIONS = `### GLOBAL OPERATIONAL RULES (MANDATORY 
  */
 export const MDX_COMPONENTS_REFERENCE = `### Comprehensive MDX Studio Blocks & Components Reference for ${APP_NAME}'s Portfolio
 
-The portfolio MDX compiler and MDX Studio visual builder support 26 distinct block types and inline JSX helpers.
+The portfolio MDX compiler and MDX Studio visual builder support 27 distinct block types and inline JSX helpers.
 Always separate every block and section with a blank line (\`\\n\\n\`) so the builder AST parser can tokenize them into separate nodes.
 
 ---
@@ -180,7 +180,17 @@ Always separate every block and section with a blank line (\`\\n\\n\`) so the bu
       \`  </Tab>\`
       \`</Tabs>\`
 
-16. **Tag Badges / Chip Group (\`chipGroup\`)**:
+16. **Tech Stacks (\`stacks\`)**:
+    - Interactive technology badges with official brand icons and subtle gradient borders:
+      \`<Stacks>\`
+      \`  <Stack name="Next.js" />\`
+      \`  <Stack name="TypeScript" />\`
+      \`  <Stack name="Tailwind CSS" />\`
+      \`  <Stack name="PostgreSQL" />\`
+      \`</Stacks>\`
+    - Supported by 140+ official tech stack. Call \`get_content_guidelines(type: "stacks")\` to retrieve the complete list of exact supported names.
+
+17. **Tag Badges / Chip Group (\`chipGroup\`)**:
     - Color variants: \`"default"\`, \`"accent"\`, \`"emerald"\`, \`"sky"\`
     - Style variants: \`"soft"\`, \`"outline"\`, \`"solid"\`, \`"ghost"\`
     - Container syntax:
@@ -189,27 +199,27 @@ Always separate every block and section with a blank line (\`\\n\\n\`) so the bu
       \`  <Chip size="sm" variant="soft" color="accent">TypeScript</Chip>\`
       \`</div>\`
 
-17. **Announcement Banner (\`banner\`)**:
+18. **Announcement Banner (\`banner\`)**:
     - Dismissible top banner:
       \`<Banner variant="normal" id="release-notice">\`
       \`  v3.0 of the portfolio is now open-source and live!\`
       \`</Banner>\`
 
-18. **Profile Card (\`profile\`)**:
+19. **Profile Card (\`profile\`)**:
     - Contributor / team profile card:
       \`<Profile name="PRAS Samin" description="Software Engineer" src="https://..." color="accent" href="https://pras.me" />\`
 
-19. **Avatar & Avatar Group (\`avatar\`)**:
+20. **Avatar & Avatar Group (\`avatar\`)**:
     - Overlapping avatars list:
       \`<AvatarGroup max={4} size="md" shape="circle"\`
       \`  items={[{ name: "Alex", src: "https://..." }, { name: "Sarah" }]}\`
       \`/>\`
 
-20. **Inline User Mention (\`user\`)**:
+21. **Inline User Mention (\`user\`)**:
     - Pill user reference inside paragraphs:
       \`<User name="Jane Doe" role="Tech Lead" avatar="https://..." href="https://github.com/..." />\`
 
-21. **Inline Tooltip**:
+22. **Inline Tooltip**:
     - Tooltip hover text inside running text:
       \`<InlineTooltip content="Model Context Protocol">MCP</InlineTooltip>\`
 
@@ -217,14 +227,14 @@ Always separate every block and section with a blank line (\`\\n\\n\`) so the bu
 
 ### Category 3: Code & Media
 
-22. **Code Snippet (\`code\`)**:
+23. **Code Snippet (\`code\`)**:
     - Fenced code block with optional metadata:
       \`\`\`typescript title="src/server.ts" showLineNumbers {2,4-6}
       import { db } from "@/lib/db";
       export const users = await db.user.findMany();
       \`\`\`
 
-23. **Code Tabs (\`codeBlockTabs\`)**:
+24. **Code Tabs (\`codeBlockTabs\`)**:
     - Native package manager / multi-language switcher:
       \`<CodeBlockTabs defaultValue="bun">\`
       \`  <CodeBlockTabsList>\`
@@ -243,12 +253,12 @@ Always separate every block and section with a blank line (\`\\n\\n\`) so the bu
       \`  </CodeBlockTab>\`
       \`</CodeBlockTabs>\`
 
-24. **Image Embed & Zoomable Image (\`image\`)**:
+25. **Image Embed & Zoomable Image (\`image\`)**:
     - Markdown: \`![Alt Text](https://...)*Optional caption*\`
     - Zoomable high-res:
       \`<ImageZoom src="https://..." alt="Architecture diagram" width={1200} height={675} className="mx-auto rounded-xl" />\`
 
-25. **Custom HTML / JSX (\`html\`)**:
+26. **Custom HTML / JSX (\`html\`)**:
     - Embeds for semantic elements, video players, or figures:
       \`<figure className="my-4">\`
       \`  <figcaption className="text-xs text-neutral-400">Database cluster topology</figcaption>\`
@@ -258,7 +268,7 @@ Always separate every block and section with a blank line (\`\\n\\n\`) so the bu
 
 ### Category 4: Reusable Templates (MDX Studio Macros)
 
-26. **Template Definition & Instantiation (\`template\` & \`useTemplate\`)**:
+27. **Template Definition & Instantiation (\`template\` & \`useTemplate\`)**:
     - **Define a template**:
       \`<Template name="callout-box">\`
       \`  <Callout type="info" title="{{title}}">\`
@@ -299,8 +309,9 @@ When drafting or updating an education credential for ${APP_NAME}'s portfolio, a
    - **Tone & Style**: Direct, professional, technically accurate, active voice, and impact-driven.
 
 4. **Permitted MDX Studio Blocks in Education Credentials**:
-   - Refer to the prompt **\`mdx_components_reference\`** (or tool \`get_content_guidelines(type: "mdx_components")\`) for complete specs of all 26 MDX Studio blocks.
+   - Refer to the prompt **\`mdx_components_reference\`** (or tool \`get_content_guidelines(type: "mdx_components")\`) for complete specs of all 27 MDX Studio blocks.
    - **ALLOWED in Education Descriptions**:
+     - **\`stacks\` / \`<Stacks>\` & \`<Stack>\`**: For displaying programming languages, frameworks, or database technologies learned in coursework/degree with official brand icons (e.g. \`<Stacks><Stack name="C++" /><Stack name="Python" /><Stack name="PostgreSQL" /></Stacks>\`).
      - **\`chipGroup\` / \`<Chip>\`**: For badges, honors, Dean's List distinctions, or focus tags.
      - **\`InlineTooltip\`**: For defining academic terminology (e.g. \`<InlineTooltip content="Cumulative Grade Point Average">CGPA</InlineTooltip>\`).
      - **Inline Icons**: Lucide icons like \`<LuAward />\`, \`<LuBookOpen />\`, \`<LuGraduationCap />\`.
@@ -352,6 +363,7 @@ When drafting or updating a work or career experience entry for ${APP_NAME}'s po
 4. **Permitted MDX Studio Blocks in Experience Cards**:
    - Refer to **\`mdx_components_reference\`** for complete syntax.
    - **ALLOWED in Experience Descriptions**:
+     - **\`stacks\` / \`<Stacks>\` & \`<Stack>\`**: Recommended for highlighting technologies and frameworks used during the role with official brand icons (e.g. \`<Stacks><Stack name="Next.js" /><Stack name="TypeScript" /><Stack name="Docker" /><Stack name="PostgreSQL" /></Stacks>\`).
      - **\`chipGroup\` / \`<Chip>\`**: For technology tags (e.g. Next.js, TypeScript, PostgreSQL, Docker, AWS).
      - **\`InlineTooltip\`**: For defining domain terms or metrics.
      - Standard Markdown bold, italic, inline code (\`code\`), and unordered bullet lists.
@@ -439,7 +451,7 @@ export const MCP_PROMPTS: PromptDefinition[] = [
   {
     name: "mdx_components_reference",
     description:
-      "Comprehensive catalog of all 26 MDX Studio blocks and JSX components (Callout, Chip, Card, Cards, Accordion, Steps, Tabs, CodeBlockTabs, Files, TypeTable, Profile, Avatar, User, Tooltip, Templates, etc.) with exact syntax examples.",
+      "Comprehensive catalog of all 27 MDX Studio blocks and JSX components (Callout, Chip, Card, Cards, Accordion, Steps, Tabs, CodeBlockTabs, Files, TypeTable, Profile, Avatar, User, Tooltip, Templates, Stacks, etc.) with exact syntax examples.",
     arguments: [],
   },
   {
@@ -513,7 +525,7 @@ export function handleGetPrompt(
 ): GetPromptResult | null {
   if (name === "mdx_components_reference") {
     return {
-      description: `Catalog of all 26 MDX Studio blocks and interactive components in ${APP_NAME}'s portfolio`,
+      description: `Catalog of all 27 MDX Studio blocks and interactive components in ${APP_NAME}'s portfolio`,
       messages: [
         {
           role: "user",

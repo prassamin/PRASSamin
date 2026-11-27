@@ -120,9 +120,36 @@ export const StackPicker: React.FC<{
   const [input, setInput] = useState("");
   const [open, setOpen] = useState(false);
   const [highlight, setHighlight] = useState(0);
+  const [placement, setPlacement] = useState<"bottom" | "top">("bottom");
   const rootRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<Array<HTMLButtonElement | null>>([]);
+
+  const updatePlacement = () => {
+    if (!rootRef.current) return;
+    const rect = rootRef.current.getBoundingClientRect();
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    const POPOVER_APPROX_HEIGHT = 320;
+
+    if (spaceBelow < POPOVER_APPROX_HEIGHT && spaceAbove > spaceBelow) {
+      setPlacement("top");
+    } else {
+      setPlacement("bottom");
+    }
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    updatePlacement();
+    window.addEventListener("resize", updatePlacement);
+    window.addEventListener("scroll", updatePlacement, true);
+    return () => {
+      window.removeEventListener("resize", updatePlacement);
+      window.removeEventListener("scroll", updatePlacement, true);
+    };
+  }, [open]);
 
   // Close only when clicking outside the whole picker (not on internal blur).
   useEffect(() => {
@@ -260,11 +287,15 @@ export const StackPicker: React.FC<{
           value={input}
           onChange={(e) => {
             setInput(e.target.value);
+            updatePlacement();
             setOpen(true);
             setHighlight(0);
           }}
           onKeyDown={handleKeyDown}
-          onFocus={() => setOpen(true)}
+          onFocus={() => {
+            updatePlacement();
+            setOpen(true);
+          }}
           placeholder={tools.length === 0 ? "Browse or type to search…" : ""}
           className="min-w-24 w-0 flex-1 bg-transparent text-xs text-foreground placeholder:text-neutral-500 outline-none py-1"
         />
@@ -287,12 +318,26 @@ export const StackPicker: React.FC<{
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+            initial={{
+              opacity: 0,
+              y: placement === "top" ? 8 : -8,
+              scale: 0.97,
+            }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+            exit={{
+              opacity: 0,
+              y: placement === "top" ? 8 : -8,
+              scale: 0.97,
+            }}
             transition={{ duration: 0.2, ease: [0.32, 0.72, 0, 1] }}
-            style={{ transformOrigin: "top center" }}
-            className="absolute z-30 mt-1.5 w-full overflow-hidden rounded-xl border border-white/5 bg-muted backdrop-blur-xl shadow-2xl"
+            style={{
+              transformOrigin:
+                placement === "top" ? "bottom center" : "top center",
+            }}
+            className={cn(
+              "absolute z-30 w-full overflow-hidden rounded-xl border border-white/5 bg-muted backdrop-blur-xl shadow-2xl",
+              placement === "top" ? "bottom-full mb-1.5" : "top-full mt-1.5",
+            )}
           >
             <div className="flex items-center justify-between px-3.5 py-3 border-b border-white/6">
               <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-neutral-500">

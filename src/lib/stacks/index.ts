@@ -133,3 +133,15 @@ export const EXT_STACKS = {
   Xml,
   Yaml,
 } as const;
+
+/**
+ * Deduplicated, sorted list of all available stack display names.
+ * Computed once at module initialization.
+ */
+export const AVAILABLE_STACK_NAMES = Array.from(
+  new Set(
+    Object.values(stacks)
+      .filter((s) => s && typeof s === "object" && "name" in s)
+      .map((s) => (s as { name: string }).name),
+  ),
+).sort((a, b) => a.localeCompare(b));

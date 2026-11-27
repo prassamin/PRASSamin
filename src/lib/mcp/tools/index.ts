@@ -13,12 +13,13 @@ import {
   MDX_COMPONENTS_REFERENCE,
   MCP_GLOBAL_INSTRUCTIONS,
 } from "../prompts";
+import { AVAILABLE_STACK_NAMES } from "@/lib/stacks";
 
 export const GUIDELINE_TOOLS: ToolDefinition[] = [
   {
     name: "get_content_guidelines",
     description:
-      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', 'blog', 'project').",
+      "Retrieve editorial guidelines, formatting standards, allowed MDX components, or full component catalogs for portfolio content (e.g. 'education', 'experience', 'mdx_components', 'blog', 'project', 'stacks').",
     requiredScope: "read",
     inputSchema: {
       type: "object",
@@ -26,8 +27,8 @@ export const GUIDELINE_TOOLS: ToolDefinition[] = [
         type: {
           type: "string",
           description:
-            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'blog' | 'global_rules' | 'project'.",
-          enum: ["education", "experience", "mdx_components", "blog", "global_rules", "project"],
+            "Category to fetch standards for: 'education' | 'experience' | 'mdx_components' | 'blog' | 'global_rules' | 'project' | 'stacks'.",
+          enum: ["education", "experience", "mdx_components", "blog", "global_rules", "project", "stacks"],
         },
       },
       required: ["type"],
@@ -106,6 +107,17 @@ export async function dispatchMcpTool(
     if (type === "global_rules" || type === "rules") {
       return {
         content: [{ type: "text", text: MCP_GLOBAL_INSTRUCTIONS }],
+      };
+    }
+
+    if (type === "stacks") {
+      return {
+        content: [
+          {
+            type: "text",
+            text: `### Available Tech Stacks (${AVAILABLE_STACK_NAMES.length} registered)\nUse these exact names in <Stack name="..." /> or project frontmatter \`tools\` array:\n\n${AVAILABLE_STACK_NAMES.join(", ")}`,
+          },
+        ],
       };
     }
 

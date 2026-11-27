@@ -342,6 +342,19 @@ export function blocksToMdx(
         break;
       }
 
+      case "stacks": {
+        const stacksList = Array.isArray(props.stacks) ? props.stacks : [];
+        const stackItems = stacksList
+          .map((s: string) => `  <Stack name="${s}" />`)
+          .join("\n");
+        segments.push(
+          stackItems.length > 0
+            ? `<Stacks>\n${stackItems}\n</Stacks>`
+            : `<Stacks />`,
+        );
+        break;
+      }
+
       case "code": {
         const lang = props.language || "typescript";
         const titleAttr = props.title ? ` title="${props.title}"` : "";

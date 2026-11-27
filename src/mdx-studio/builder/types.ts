@@ -24,6 +24,7 @@ export type MdxBlockType =
   | "template"
   | "useTemplate"
   | "user"
+  | "stacks"
   | "html";
 
 export interface TemplateDefinitionInfo {
@@ -90,10 +91,7 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     label: "Use Template",
     description: "Insert template via #template-name or <UseTemplate />",
     category: "Templates",
-    defaultProps: {
-      name: "",
-      values: {},
-    },
+    defaultProps: {},
   },
 
   // Structure
@@ -212,6 +210,13 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     defaultProps: {},
   },
   {
+    type: "stacks",
+    label: "Tech Stacks",
+    description: "Technology badges with official icons",
+    category: "Interactive",
+    defaultProps: {},
+  },
+  {
     type: "banner",
     label: "Announcement Banner",
     description: "Sticky top banner",
@@ -237,12 +242,7 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     label: "Inline User",
     description: "Inline user mention pill",
     category: "Interactive",
-    defaultProps: {
-      name: "Jane Doe",
-      avatar: "",
-      role: "",
-      href: "",
-    },
+    defaultProps: {},
   },
 
   // Code & Media
@@ -258,32 +258,7 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     label: "Code Tabs",
     description: "Multi-tab code block switcher (npm, pnpm, etc.)",
     category: "Code & Media",
-    defaultProps: {
-      defaultValue: "npm",
-      tabs: [
-        {
-          id: "tab-npm",
-          value: "npm",
-          label: "npm",
-          language: "bash",
-          code: "npm install package-name",
-        },
-        {
-          id: "tab-pnpm",
-          value: "pnpm",
-          label: "pnpm",
-          language: "bash",
-          code: "pnpm add package-name",
-        },
-        {
-          id: "tab-yarn",
-          value: "yarn",
-          label: "yarn",
-          language: "bash",
-          code: "yarn add package-name",
-        },
-      ],
-    },
+    defaultProps: {},
   },
   {
     type: "image",
@@ -297,8 +272,6 @@ export const COMPONENT_TRAY_ITEMS: ComponentTrayItem[] = [
     label: "Custom HTML / JSX",
     description: "Custom HTML or JSX markup (<figure>, <video>, <iframe>, etc.)",
     category: "Code & Media",
-    defaultProps: {
-      code: '<figure className="my-4">\n  <figcaption className="text-xs text-neutral-400">Caption</figcaption>\n</figure>',
-    },
+    defaultProps: {},
   },
 ];

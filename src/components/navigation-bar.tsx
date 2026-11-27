@@ -103,12 +103,6 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
       icon: LuListTodo,
     },
     {
-      href: "/shorts",
-      label: "Shorts",
-      description: "Personal notes & insights",
-      icon: LuNotebook,
-    },
-    {
       href: "/guestbook",
       label: "Guest Book",
       description: "Leave me a message",
@@ -163,11 +157,10 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
             >
               Menu
               <LuChevronDown
-                className={`mt-0.5 size-3.5 transition-transform duration-200 ${
-                  isMobileMenuOpen
-                    ? "rotate-180 text-neutral-400 hover:text-neutral-300"
-                    : "text-neutral-500 group-hover:text-neutral-400"
-                }`}
+                className={`mt-0.5 size-3.5 transition-transform duration-200 ${isMobileMenuOpen
+                  ? "rotate-180 text-neutral-400 hover:text-neutral-300"
+                  : "text-neutral-500 group-hover:text-neutral-400"
+                  }`}
               />
             </button>
           </div>
@@ -222,11 +215,10 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                 return (
                   <Link
                     key={index}
-                    className={`py-3 px-2 font-rethink transition-colors ${
-                      isActive(link.href)
-                        ? "text-accent-300 hover:text-accent-300"
-                        : "text-neutral-200 hover:text-neutral-50"
-                    }`}
+                    className={`py-3 px-2 font-rethink transition-colors ${isActive(link.href)
+                      ? "text-accent-300 hover:text-accent-300"
+                      : "text-neutral-200 hover:text-neutral-50"
+                      }`}
                     href={link.href}
                   >
                     {link.label}
@@ -241,20 +233,18 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
               <li>
                 <button
                   onClick={() => setIsMoreOpen(!isMoreOpen)}
-                  className={`py-3 px-2 group font-rethink transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${
-                    isMoreOpen
-                      ? "text-neutral-200 hover:text-neutral-100"
-                      : "text-neutral-500 hover:text-neutral-400"
-                  }`}
+                  className={`py-3 px-2 group font-rethink transition-colors flex items-center justify-center gap-1.5 cursor-pointer ${isMoreOpen
+                    ? "text-neutral-200 hover:text-neutral-100"
+                    : "text-neutral-500 hover:text-neutral-400"
+                    }`}
                   aria-expanded={isMoreOpen}
                 >
                   More
                   <LuChevronDown
-                    className={`mt-0.5 size-3.5 transition-transform duration-200 ${
-                      isMoreOpen
-                        ? "rotate-180 text-neutral-400 hover:text-neutral-300"
-                        : "text-neutral-500 group-hover:text-neutral-400"
-                    }`}
+                    className={`mt-0.5 size-3.5 transition-transform duration-200 ${isMoreOpen
+                      ? "rotate-180 text-neutral-400 hover:text-neutral-300"
+                      : "text-neutral-500 group-hover:text-neutral-400"
+                      }`}
                   />
                 </button>
               </li>
@@ -301,12 +291,6 @@ const NavigationBar: FC<React.ComponentPropsWithoutRef<"header">> = ({
                 {/* Column 2: Stacked Quick Links (Shorts, Guest Book) */}
                 <div className="w-60 flex flex-col gap-2">
                   {[
-                    {
-                      label: "Shorts",
-                      href: "/shorts",
-                      description: "Personal notes & insights",
-                      icon: LuNotebook,
-                    },
                     {
                       label: "Guest Book",
                       href: "/guest-book",
