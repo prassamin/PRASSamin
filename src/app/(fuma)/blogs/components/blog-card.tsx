@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { LuClock, LuEye } from "react-icons/lu";
 import type { QueryBlogs } from "@/lib/get-blogs";
@@ -59,13 +58,11 @@ export function BlogCard({
     >
       <div className="flex flex-col gap-5 lg:flex-row-reverse lg:gap-8 lg:items-center">
         {/* Thumbnail */}
-        <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-md border border-neutral-800/80 bg-neutral-950 w-full lg:w-44 aspect-5/3 shadow-md transition-colors">
-          <Image
+        <figure className="relative isolate z-10 shrink-0 overflow-hidden rounded-xl border-[1.5px] border-neutral-700/30 bg-neutral-950 w-full lg:w-44 aspect-5/3 shadow-md transition-colors">
+          <img
             src={post.thumbnail}
             alt={post.title}
-            fill
             className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
-            sizes="(max-width: 1024px) 100vw, 176px"
           />
         </figure>
 
@@ -115,11 +112,10 @@ export function BlogCard({
                 const isTagActive = selectedTags.some(
                   (t) => t.toLowerCase() === tag.toLowerCase(),
                 );
-                const className = `inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-xs ${
-                  isTagActive
-                    ? "bg-accent/15 text-accent"
-                    : "bg-neutral-900 text-neutral-500 hover:text-white"
-                }`;
+                const className = `inline-block rounded-md px-2 py-0.5 font-medium transition cursor-pointer text-xs ${isTagActive
+                  ? "bg-accent/15 text-accent"
+                  : "bg-neutral-900 text-neutral-500 hover:text-white"
+                  }`;
 
                 return onToggleTag ? (
                   <button
